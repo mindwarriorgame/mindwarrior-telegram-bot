@@ -1,0 +1,17 @@
+MindWarriorGame
+MindWarriorGame_bot
+
+description:
+🥷Welcome to "MindWarrior" game!
+
+intro:
+🥷"MindWarrior" is a game that helps you stay focused on what's really important for you.
+
+
+commands:
+en - English
+es - Español
+ru - Русский
+
+
+t.me/MindWarriorGame_bot
