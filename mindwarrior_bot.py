@@ -139,7 +139,7 @@ async def fetch_and_process_updates(app: Application):
         if len(updates) > 0:
             print('Received ' + str(len(updates)) + ' updates at ' + str(datetime.datetime.now()))
         for update in updates:
-            print(update)
+            # print(update)
             await app.process_update(update)
             offset = update.update_id + 1
 
