@@ -1,0 +1,747 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MindWarrior</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+
+    <script>
+        window.langs = {
+            en: {
+                applyChange: 'Apply Change',
+                startNewGame: 'Start Game',
+                reward: 'Get Reward',
+                submittingData: 'Submitting data...',
+                error: 'Error',
+                tryAgain: 'try again',
+                sure: "Are you sure you want to delete all the data (including your Formula)?",
+                sureDetails: 'This action cannot be undone.',
+                yesDelete: "Yes, erase all my data",
+
+                errBackend: 'Server responded with ',
+                errTelegram: 'Telegram responded with ',
+
+                formulaSafe: 'Your Formula stays private.',
+                formulaSafeExplained: 'We do not copy or store your Formula on our servers. ' +
+                    'It is stored only on your device.',
+                backToEditor: 'back to editor',
+                placeholderNewGame: 'Write "Formula of firm resolution" here and press "Start Game" button above',
+                placeholderChange: 'Write "Formula of firm resolution" here and press "Apply Change" button above',
+                share: 'Share your Formula with other players',
+                shareExplained: 'To share the Formula, please follow ' +
+                    '<a href="https://github.com/mindwarriorgame/public-formulas/blob/main/README.md" target="_blank">these instructions</a>' +
+                    '<br /><br />' +
+                    'Your shared_key_uuid is:'
+            },
+            ru: {
+                applyChange: 'Применить изменения',
+                startNewGame: 'Начать игру',
+                reward: 'Получить награду',
+                submittingData: 'Отправка данных...',
+                error: 'Ошибка',
+                tryAgain: 'попробовать снова',
+                sure: "Вы уверены, что хотите удалить все данные (включая свою Формулу)?",
+                sureDetails: 'Это действие нельзя отменить.',
+                yesDelete: "Да, безвозвратно удалить все мои данные",
+
+                errBackend: 'Сервер вернул ошибку ',
+                errTelegram: 'Телеграм вернул ошибку ',
+
+                formulaSafe: 'Ваша Формула остается конфиденциальной.',
+                formulaSafeExplained: 'Мы не копируем и не храним вашу Формулу на наших серверах. ' +
+                    'Она хранится только на вашем устройстве.',
+                backToEditor: 'вернуться к редактору',
+                placeholderNewGame: 'Напишите здесь свою "Формулу твердой решимости" и нажмите кнопку "Начать игру" (сверху)',
+                placeholderChange: 'Напишите здесь свою "Формулу твердой решимости" и нажмите кнопку "Применить изменения" (сверху)',
+                share: 'Поделитесь своей "Формулой" с другими игроками',
+                shareExplained: 'Чтобы поделиться "Формулой", пожалуйста, следуйте ' +
+                    '<a href="https://github.com/mindwarriorgame/public-formulas/blob/main/README.ru.md" target="_blank">этим инструкциям</a>' +
+                    '<br /><br />' +
+                    'Ваш shared_key_uuid: '
+            },
+            es: {
+                applyChange: 'Aplicar Cambio',
+                startNewGame: 'Iniciar Juego',
+                reward: 'Obtener Recompensa',
+                submittingData: 'Enviando datos...',
+                error: 'Error',
+                tryAgain: 'inténtalo de nuevo',
+                sure: "¿Estás seguro de que quieres borrar todos los datos (incluida tu Fórmula)?",
+                sureDetails: 'Esta acción no se puede deshacer.',
+                yesDelete: "Sí, borrar todos mis datos",
+
+                errBackend: 'El servidor respondió con ',
+                errTelegram: 'Telegram respondió con ',
+
+                formulaSafe: 'Tu Fórmula permanece privada.',
+                formulaSafeExplained: 'No copiamos ni almacenamos tu Fórmula en nuestros servidores. ' +
+                    'Solo se almacena en tu dispositivo.',
+                backToEditor: 'volver al editor',
+                placeholderNewGame: 'Escribe tu "Fórmula de firme resolución" aquí y presiona el botón "Iniciar Juego" arriba',
+                placeholderChange: 'Escribe tu "Fórmula de firme resolución" aquí y presiona el botón "Aplicar Cambio" arriba',
+                share: 'Comparte tu Fórmula con otros jugadores',
+                shareExplained: 'Para compartir la Fórmula, sigue ' +
+                    '<a href="https://github.com/mindwarriorgame/public-formulas/blob/main/README.md" target="_blank">estas instrucciones</a>' +
+                    '<br /><br />' +
+                    'Tu shared_key_uuid es:'
+            }
+        };
+
+    </script>
+
+    <meta
+            name="description"
+            content="MindWarrior"
+    />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #222222;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        #root {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        textarea.active {
+            background-color:#eeeeff;
+        }
+
+        #header, #footer {
+            padding: 4px 0;
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        img {
+            padding: 0 4px;
+        }
+
+        #content {
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        textarea {
+            width: 100%;
+            flex-grow: 1;
+            padding: 10px;
+            font-size: large;
+            border: none;
+            resize: none;
+        }
+
+        #review {
+            background-color:#eeeeee;
+            color: #000000;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            flex-grow: 1;
+            min-width: 95%;
+            padding: 5px;
+            font-size: large;
+            min-height:0;
+        }
+        #review a {
+            color: #777777;
+        }
+
+        #text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        #text button {
+            background-color: darkred;
+            padding: 8px;
+            color: white;
+        }
+
+        #text .title {
+            font-size: large;
+        }
+        #text .error {
+            text-align: center;
+        }
+        pre {
+            white-space: normal;
+            word-break: break-word;
+        }
+        a {
+            color: #777777;
+            text-decoration: underline;
+        }
+
+        button.action-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            height: 5vh;
+        }
+
+        button.action-btn:hover {
+            background-color: #218838;
+        }
+
+        button.action-btn:active {
+            background-color: #1e7e34;
+            transform: scale(0.98);
+        }
+
+        button.action-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+        }
+
+        button.action-btn:disabled {
+            background-color: #8ba290;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        button.blue-btn {
+            background-color: #007bff;
+        }
+
+        button.blue-btn:hover {
+            background-color: #0069d9;
+        }
+
+        button.blue-btn:active {
+            background-color: #005cbf;
+        }
+
+        button.blue-btn:focus {
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+        }
+
+        button.blue-btn:disabled {
+            background-color: #b8daff;
+        }
+
+        #text input {
+            width: 100%;
+            padding: 10px;
+            font-size: large;
+            text-align: center;
+            border: none;
+            resize: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="root">
+    <div id="header">
+        <img src="eye.png" height="32" />
+        <img src="pencil.png" height="32" />
+        <div style="flex-grow: 1">&nbsp;</div>
+        <button class="action-btn">Apply Change</button>
+        <div style="flex-grow: 1">&nbsp;</div>
+        <img src="close.png" height="32" />
+    </div>
+    <div id="content">
+        <textarea class="" autofocus="autofocus"></textarea>
+        <div id="text" class="hidden">
+            <div class="title">Submitting data...</div>
+            <pre></pre>
+            <pre></pre>
+            <input type="text" /> <br />
+            <a href="#">try again</a><br />
+            <button>Yes, delete all data</button>
+        </div>
+        <div id="review" class="hidden"> asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
+            asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
+            asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
+            asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
+            asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
+            asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
+            asd asd asd asd asd asd asd asd asd asd asd asd asd a1sd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
+            asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
+            asd asd asd asd asd asd asd asd asd asd asd asd asd asd a
+        </div>
+    </div>
+
+    <div id="footer">
+        <img src="lock.png" height="32" />
+        <img src="share.png" height="32" />
+        <div style="flex-grow: 1">&nbsp;</div>
+    </div>
+</div>
+</body>
+
+<script>
+
+    class ServerTime {
+        constructor() {
+            this.clientStartedAt = 0;
+            this.serverStartedAt = 0;
+            let syncOffset = () => {};
+            syncOffset = () => {
+                fetch('https://boo.great-site.net/time.php', {method: 'POST', mode: 'cors'})
+                    .then(response => {
+                        if (response.ok) {
+                            return response.text();
+                        } else {
+                            throw new Error('Network response was not ok');
+                        }
+                    })
+                    .then(serverTime => {
+                        this.serverStartedAt = parseInt(serverTime) * 1000;
+                        this.clientStartedAt = Date.now();
+
+                        window.localStorage.setItem('serverTime', this.serverStartedAt);
+                        window.localStorage.setItem('clientTime', this.clientStartedAt);
+
+                        console.log("Server time offset: " + (this.serverStartedAt - this.clientStartedAt) + "ms");
+                    }).catch(err => {
+                    console.error(err);
+                    setTimeout(syncOffset, 1000);
+                });
+            };
+            syncOffset();
+        }
+
+        now() {
+            if (this.serverStartedAt === 0 && window.localStorage.getItem('serverTime')) {
+                this.serverStartedAt = parseInt(window.localStorage.getItem('serverTime'));
+                this.clientStartedAt = parseInt(window.localStorage.getItem('clientTime'));
+            }
+            return this.serverStartedAt + (Date.now() - this.clientStartedAt);
+        }
+    }
+
+    const SERVER_TIME = new ServerTime();
+
+    // https://github.com/adamvleggett/drawdown/blob/master/drawdown.js
+    function markdown(n){var r=/\\([\\\|`*_{}\[\]()#+\-~])/g,t=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,e=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,u=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,c=/^.*\n( *\|( *\:?-+\:?-+\:? *\|)* *\n|)/,f=/.*\n/g,l=/\||(.*?[^\\])\|/g;function o(r,t){n=n.replace(r,t)}function a(n,r){return"<"+n+">"+r+"</"+n+">"}function g(n){return n.replace(u,function(n,r,t,e,u,c,f,l,o,i){return r+a(e?o?"strong":"em":u?o?"s":"sub":c?"sup":f?"small":l?"big":"code",g(i))})}function i(n){return n.replace(r,"$1")}var p=[],s=0;return n="\n"+n+"\n",o(/</g,"&lt;"),o(/>/g,"&gt;"),o(/\t|\r|\uf8ff/g,"  "),n=function n(r){return r.replace(t,function(r,t){return a("blockquote",n(g(t.replace(/^ *&gt; */gm,""))))})}(n),o(/^([*\-=_] *){3,}$/gm,"<hr/>"),n=function n(r){return r.replace(e,function(r,t,e,u,c,f){var l=a("li",g(f.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(n).join("</li><li>")));return"\n"+(e?'<ol start="'+(u?e+'">':parseInt(e,36)-9+'" style="list-style-type:'+(c?"low":"upp")+'er-alpha">')+l+"</ol>":a("ul",l))})}(n),o(/<\/(ol|ul)>\n\n<\1>/g,""),o(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,function(n,r,t,e,u){return p[--s]=a("pre",a("code",e||u.replace(/^    /gm,""))),s+""}),o(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,function(n,r,t,e,u,c,f){return p[--s]=u?t?'<img src="'+u+'" alt="'+e+'"/>':'<a href="'+u+'">'+i(g(e))+"</a>":f,s+""}),o(/\n(( *\|.*?\| *\n)+)/g,function(n,r){var t=r.match(c)[1];return"\n"+a("table",r.replace(f,function(n,r){return n==t?"":a("tr",n.replace(l,function(n,e,u){return u?a(t&&!r?"th":"td",i(g(e||""))):""}))}))}),o(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,function(n,r,t,e){return r+a("h"+t.length,i(g(e)))}),o(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,function(n,r){return a("p",i(g(r)))}),o(/-\d+\uf8ff/g,function(n){return p[parseInt(n)]}),n.trim()}
+
+    function textToHtml(inputText) {
+        return markdown(inputText);
+    }
+    const HEADER = {
+        close: document.querySelector('#header img:last-child'),
+        actionButton: document.querySelector('#header button'),
+        pencil: document.querySelector('#header img:nth-child(2)'),
+        eye: document.querySelector('#header img:first-child')
+    };
+
+    const CONTENT = {
+        textarea: document.querySelector('#content textarea'),
+        review: document.querySelector('#content #review'),
+        text: {
+            parent: document.querySelector('#content #text'),
+            title: document.querySelector('#content #text .title'),
+            preFirst: document.querySelectorAll('#content #text pre')[0],
+            preSecond: document.querySelectorAll('#content #text pre')[1],
+            link: document.querySelector('#content #text a'),
+            button: document.querySelector('#content #text button'),
+            input: document.querySelector('#content #text input')
+        }
+    };
+
+    const FOOTER = {
+        parent: document.querySelector('#footer'),
+        lock: document.querySelector('#footer img:first-child'),
+        share: document.querySelector('#footer img:nth-child(2)')
+    };
+
+    function hide(elt) {
+        elt.classList.add('hidden');
+    }
+
+    function show(elt) {
+        elt.classList.remove('hidden');
+    }
+
+    function hideEverything() {
+        hide(HEADER.pencil);
+        hide(HEADER.eye);
+        hide(HEADER.actionButton);
+        hide(HEADER.close);
+
+        hide(FOOTER.parent);
+        hide(FOOTER.lock);
+        hide(FOOTER.share);
+
+        hide(CONTENT.textarea);
+        hide(CONTENT.review);
+
+        hide(CONTENT.text.parent);
+        hide(CONTENT.text.preSecond);
+        hide(CONTENT.text.link);
+        hide(CONTENT.text.button);
+        hide(CONTENT.text.input);
+    }
+
+
+    class DataSubmitComponent {
+        constructor(app, lang) {
+            this.app = app;
+            this.queryId = app.initDataUnsafe.query_id;
+            this.data = null;
+            this.lang = lang;
+        }
+
+        _showData(data) {
+            hideEverything();
+
+            show(CONTENT.text.parent);
+            hide(CONTENT.text.preSecond);
+            hide(CONTENT.text.link);
+
+            CONTENT.text.title.innerHTML = this.lang.submittingData;
+            CONTENT.text.link.innerHTML = this.lang.tryAgain;
+
+            show(CONTENT.text.preFirst);
+            CONTENT.text.preFirst.textContent = data;
+        }
+
+        _showError(error) {
+            show(CONTENT.text.preSecond);
+            show(CONTENT.text.link);
+            CONTENT.text.preSecond.textContent = this.lang.error + ': ' + error;
+
+            const tryAgainHandler = (e) => {
+                e.preventDefault();
+                hide(CONTENT.text.preSecond);
+                hide(CONTENT.text.link);
+                this.submitData(this.dataProvider);
+                CONTENT.text.link.removeEventListener("click", tryAgainHandler);
+
+                CONTENT.text.link.removeEventListener('click', tryAgainHandler);
+            }
+
+            CONTENT.text.link.addEventListener('click', tryAgainHandler);
+        }
+
+        async submitData(dataProvider) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const langCode = urlParams.get('lang_code') || 'en';
+            const env = urlParams.get('env') || "prod";
+
+            this.dataProvider = dataProvider;
+            const data = this.dataProvider();
+            this._showData(data);
+            const url = `https://boo.great-site.net?env=${env}&lang_code=${langCode}&query_id=` + encodeURIComponent(this.queryId) + '&data=' + encodeURIComponent(data)+'&_=' + new Date().getTime();
+            const corsUrl = url; //'https://corsproxy.io/?' + encodeURIComponent(url);
+            try {
+                const response = await fetch(corsUrl, {mode: 'cors', signal: AbortSignal.timeout(15000)});
+                if (!response.ok) {
+                    this._showError(this.lang.errBackend + `${response.status} ${response.statusText}`);
+                    return;
+                }
+                const json = await response.json();
+                if (json.status < 200 || json.status > 299) {
+                    this._showError(this.lang.errTelegram + `${json.status} ${json.response}`);
+                    return;
+                }
+                this.app.close();
+            } catch (err) {
+                this._showError(err.message);
+            }
+
+        }
+    }
+
+    class DeleteDataComponent {
+        constructor(dataSubmitter, lang) {
+            hideEverything();
+
+            show(CONTENT.text.parent);
+            CONTENT.text.title.innerHTML = lang.sure;
+            CONTENT.text.preFirst.innerHTML = lang.sureDetails;
+            show(CONTENT.text.button);
+            CONTENT.text.button.textContent = lang.yesDelete;
+            CONTENT.text.button.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.localStorage.clear();
+
+                dataSubmitter.submitData(() => "delete_data_confirmed");
+            });
+        }
+    }
+
+    class ViewLocalstorageDataComponent {
+        constructor() {
+            hideEverything();
+
+            show(CONTENT.text.parent);
+            CONTENT.text.parent.innerHTML = JSON.stringify(window.localStorage, null, 2).replace(/\n( *)/g, function (match, p1) {
+                return '<br>' + '&nbsp;'.repeat(p1.length);
+            });
+            CONTENT.text.parent.style['text-align'] = "left";
+        }
+    }
+
+    class NextReviewDataProvider {
+        constructor(nextReviewPromptMinutes) {
+            this.nextReviewPromptMinutes = nextReviewPromptMinutes;
+        }
+
+        calculateNextReviewsData() {
+            const splitOffsets = this.nextReviewPromptMinutes.split(',');
+            console.log("Client time", Date.now());
+            console.log("Server time", SERVER_TIME.now());
+            const nextReviewTimes = splitOffsets.map(offset => {
+                const offsetInt = parseInt(offset);
+                const nextReviewAt = new Date(SERVER_TIME.now() + offsetInt * 60 * 1000);
+                return nextReviewAt.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric' });
+            });
+
+            return "next_review:" + nextReviewTimes.join(',,');
+        }
+
+    }
+
+    class ReviewComponent {
+        constructor(dataSubmitter, lang, nextReviewPromptMinutes) {
+
+            this.dataSubmitter = dataSubmitter;
+
+            this.nextReviewsDataProvider = new NextReviewDataProvider(nextReviewPromptMinutes);
+
+            hideEverything();
+
+            show(CONTENT.review);
+            CONTENT.review.innerHTML = textToHtml(window.localStorage.getItem("formula") || '');
+
+            show(HEADER.actionButton);
+
+            HEADER.actionButton.addEventListener("click", (e) => {
+                e.preventDefault();
+
+                this.dataSubmitter.submitData(() => {
+
+                    return "reviewed_at:__timestamp__;" + this.nextReviewsDataProvider.calculateNextReviewsData();
+                });
+            });
+
+            let reviewCountdown = 10;
+            function refreshReviewButton() {
+                reviewCountdown--;
+                if (reviewCountdown > 0) {
+                    HEADER.actionButton.innerHTML = lang.reward + " <span style='color: white'>(" + reviewCountdown + ")</span>";
+                    HEADER.actionButton.setAttribute('disabled', 'disabled');
+                }
+                if (reviewCountdown === 0) {
+                    HEADER.actionButton.innerHTML = lang.reward;
+                    HEADER.actionButton.removeAttribute('disabled');
+                }
+            }
+            setInterval(() => {
+                refreshReviewButton()
+            }, 1000);
+            refreshReviewButton();
+        }
+    }
+
+    class FormulaEditor {
+        constructor(dataSubmitter, isNewGame, lang, nextReviewPromptMinutes) {
+            this.dataSubmitter = dataSubmitter;
+
+            hideEverything();
+
+            const nextReviewsDataProvider = nextReviewPromptMinutes ? new NextReviewDataProvider(nextReviewPromptMinutes) : null;
+
+            show(CONTENT.textarea);
+            show(HEADER.eye);
+            show(HEADER.actionButton);
+
+            HEADER.actionButton.textContent = isNewGame ? lang.startNewGame : lang.applyChange;
+
+            CONTENT.textarea.placeholder = isNewGame ? lang.placeholderNewGame : lang.placeholderChange;
+
+            HEADER.actionButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.localStorage.setItem("formula", CONTENT.textarea.value);
+                this.dataSubmitter.submitData(() => {
+                    let data = isNewGame ? "start_game" : "formula_updated";
+                    if (nextReviewsDataProvider) {
+                        data += ";" + nextReviewsDataProvider.calculateNextReviewsData();
+                    }
+                    return data;
+                });
+            });
+            HEADER.actionButton.setAttribute('disabled', true);
+
+            CONTENT.textarea.addEventListener("input", () => {
+                const value = CONTENT.textarea.value;
+                if (value.trim()) {
+                    HEADER.actionButton.removeAttribute("disabled");
+                } else {
+                    HEADER.actionButton.setAttribute('disabled', true);
+                }
+            });
+
+            CONTENT.textarea.value = window.localStorage.getItem("formula") || "";
+            if (!CONTENT.textarea.value) {
+                let cnt = 0;
+                const interval = setInterval(() => {
+                    cnt ++;
+                    if (cnt < 5) {
+                        CONTENT.textarea.classList.toggle('active');
+                    }
+                    CONTENT.textarea.focus();
+                }, 300);
+                CONTENT.textarea.addEventListener('click', () => {
+                    clearInterval(interval);
+                    CONTENT.textarea.classList.remove('active');
+                });
+            }
+
+            HEADER.eye.addEventListener("click", (e) => {
+                e.preventDefault();
+                hide(HEADER.eye);
+                show(HEADER.pencil);
+                hide(CONTENT.textarea);
+                show(CONTENT.review);
+                CONTENT.review.innerHTML = textToHtml(CONTENT.textarea.value);
+            });
+
+            HEADER.pencil.addEventListener("click", (e) => {
+                e.preventDefault();
+                hide(HEADER.pencil);
+                show(HEADER.eye);
+                show(CONTENT.textarea);
+                hide(CONTENT.review);
+            });
+
+            show(FOOTER.parent);
+            show(FOOTER.lock);
+            show(FOOTER.share);
+
+            FOOTER.lock.addEventListener("click", (e) => {
+                hideEverything();
+                CONTENT.text.title.innerHTML = lang.formulaSafe;
+                CONTENT.text.preFirst.innerHTML = lang.formulaSafeExplained;
+                CONTENT.text.link.innerHTML = lang.backToEditor;
+                show(CONTENT.text.parent);
+                show(CONTENT.text.link);
+
+                function backToEditor(e) {
+                    e.preventDefault();
+                    hideEverything();
+
+                    show(HEADER.eye);
+                    show(HEADER.actionButton);
+                    show(CONTENT.textarea);
+                    show(FOOTER.parent);
+                    show(FOOTER.lock);
+                    show(FOOTER.share);
+
+                    CONTENT.text.link.removeEventListener("click", backToEditor);
+                }
+                CONTENT.text.link.addEventListener("click", backToEditor);
+
+            });
+
+            FOOTER.share.addEventListener("click", (e) => {
+                hideEverything();
+                CONTENT.text.title.innerHTML = lang.share;
+                CONTENT.text.preFirst.innerHTML = lang.shareExplained;
+                CONTENT.text.link.innerHTML = lang.backToEditor;
+                show(CONTENT.text.parent);
+                show(CONTENT.text.link);
+                show(CONTENT.text.input);
+
+                const shared_key_uuid = new URLSearchParams(window.location.search).get('shared_key_uuid') || 'undefined';
+                CONTENT.text.input.value = shared_key_uuid;
+
+                function backToEditor(e) {
+                    e.preventDefault();
+                    hideEverything();
+
+                    show(HEADER.eye);
+                    show(HEADER.actionButton);
+                    show(CONTENT.textarea);
+                    show(FOOTER.parent);
+                    show(FOOTER.lock);
+                    show(FOOTER.share);
+
+                    CONTENT.text.link.removeEventListener("click", backToEditor);
+                }
+                CONTENT.text.link.addEventListener("click", backToEditor);
+
+            });
+
+            CONTENT.textarea.focus();
+
+
+        }
+    }
+
+
+    const app = window?.Telegram?.WebApp;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const langCode = urlParams.get('lang_code') || 'en';
+    const isNewGame = !!(urlParams.get('new_game'));
+    const isReview = !!(urlParams.get('review'));
+    const isFormula = !!(urlParams.get('formula'));
+    const isDeleteData = !!(urlParams.get('delete_data'));
+    const isViewLocalstorageData = !!(urlParams.get('view_localstorage'));
+    const newDifficulty = urlParams.get('set_difficulty') || null;
+
+
+    const nextReviewPromptMinutes = urlParams.get('next_review_prompt_minutes') || null;
+
+    const dataSubmitter = new DataSubmitComponent(app, window.langs[langCode]);
+
+    if (newDifficulty) {
+        dataSubmitter.submitData(() => "set_difficulty:" + newDifficulty + ";" + new NextReviewDataProvider(nextReviewPromptMinutes).calculateNextReviewsData());
+    }
+
+    if (isDeleteData) {
+        new DeleteDataComponent(dataSubmitter, window.langs[langCode]);
+    }
+
+    if (isViewLocalstorageData) {
+        new ViewLocalstorageDataComponent();
+    }
+
+    if (isReview) {
+        new ReviewComponent(dataSubmitter, window.langs[langCode], nextReviewPromptMinutes);
+    }
+
+    if (isFormula || isNewGame) {
+        (new FormulaEditor(dataSubmitter, isNewGame, window.langs[langCode], nextReviewPromptMinutes));
+    }
+
+    app?.ready();
+    setTimeout(() => {
+        app?.expand();
+    }, 0);
+
+</script>
+
+</html>
