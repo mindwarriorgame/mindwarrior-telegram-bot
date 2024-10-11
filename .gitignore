@@ -1,2 +1,3 @@
 .idea
-mindwarrior_bot_launcher.sh
+/mindwarrior.db
+/mindwarrior_bot_launcher.test.sh
