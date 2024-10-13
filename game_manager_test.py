@@ -330,8 +330,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
                                            '\n'
                                            '<b>Medium -> Hard</b>\n'
                                            '\n'
-                                           '🌟Total stars: 0\n'
-                                           '⏳Play time: 0d 0h 0m\n'
+                                           '🌟 Total stars: 0\n'
+                                           '⏳ Play time: 0d 0h 0m\n'
                                            '\n'
                                            'Next review before 00:29\n',
                                 'to_chat_id': 1})
@@ -382,8 +382,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
                                            '\n'
                                            '<b>Medium -> Easy</b>\n'
                                            '\n'
-                                           '🌟Total stars: 0\n'
-                                           '⏳Play time: 0d 0h 0m\n'
+                                           '🌟 Total stars: 0\n'
+                                           '⏳ Play time: 0d 0h 0m\n'
                                            '\n'
                                            'Next review before 02:29\n',
                                 'to_chat_id': 1})
@@ -683,8 +683,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).">cool-down '
                                             'rule</a>)\n'
                                             '\n'
-                                            '🌟Total stars: 6\n'
-                                            '⏳Play time: 0d 0h 25m\n'
+                                            '🌟 Total stars: 6\n'
+                                            '⏳ Play time: 0d 0h 25m\n'
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'

@@ -217,8 +217,10 @@ class GameManager:
 
         is_resumed = self._maybe_resume(user, lang)
 
+        since_last_review_secs = int(Counter(user['review_counter_state']).get_total_seconds())
+
         new_stars = REWARD_AFTER_REMINDER[user['difficulty']]
-        if user['next_prompt_type'] == NEXT_PROMPT_TYPE_REMINDER:
+        if user['next_prompt_type'] == NEXT_PROMPT_TYPE_REMINDER and since_last_review_secs < PROMPT_MINUTES[user['difficulty']] * 60:
             new_stars = REWARD_BEFORE_REMINDER[user['difficulty']]
 
         if user['last_reward_time'] is not None and (now_utc() - user['last_reward_time']).total_seconds() < 5*60:
@@ -780,6 +782,8 @@ class GameManager:
             'menu_commands': [],
             'image': None
         }
+
+
 
 
 
