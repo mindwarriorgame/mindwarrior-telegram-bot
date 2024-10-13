@@ -11,7 +11,7 @@ from counter import Counter
 from history import get_timer_recs_from_history, add_timer_rec_to_history
 from users_orm import UsersOrm, User
 
-db_fname = os.path.abspath('../betterninja_v8.db')
+db_fname = os.path.abspath('../mindwarrior.db')
 if not os.path.exists(db_fname):
     raise Exception('Database file not found')
 users_orm = UsersOrm(db_fname)
