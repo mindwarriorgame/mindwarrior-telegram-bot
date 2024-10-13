@@ -13,11 +13,8 @@ class Lang:
 
     help_command_start_playing_button: str
 
-    review_prompt_command_text_penalty_first: str
-    review_prompt_command_text_penalty_next: str
-    review_prompt_command_text_no_penalty_beginner: str
-    review_prompt_command_text_no_penalty_easy: str
-
+    review_reward_msg_very_happy: str
+    review_reward_msg: str
     review_command_success_text: str
     review_command_success_no_rewards_text: str
     review_command_text: str
@@ -72,6 +69,16 @@ class Lang:
 
     review_btn: str
 
+    reminder_text: str
+
+    penalty_msg_no_penalty_for_level: str
+    penalty_msg_no_penalty_first_time: str
+    penalty_msg_first_time: str
+    penalty_msg_generic_small: str
+    penalty_msg_generic_full: str
+
+    penalty_text: str
+
 es = Lang(
     lang_code='es',
     lang_name='Español',
@@ -94,34 +101,6 @@ es = Lang(
 
     help_command_start_playing_button="¡Escribe \"Fórmula\" y comienza a jugar!",
 
-    review_prompt_command_text_penalty_first="Revisa tu <i>Fórmula</i> ⏰\n"
-                                "\n"
-                                "<b>😿Has perdido {penalty} estrellas❗</b>\n"
-                                "\n"
-                                "🌟Estrellas restantes: {score}\n"   
-                                "\n"
-                                "/pause - pausar el juego",
-
-    review_prompt_command_text_penalty_next="Revisa tu <i>Fórmula</i> ⏰\n"
-                                        "\n"
-                                        "<b>🙀Has perdido {penalty} estrellas❗</b>\n"
-                                        "\n"
-                                        "🌟Estrellas restantes: {score}\n"
-                                        "\n"    
-                                        "/pause - pausar el juego",
-
-    review_prompt_command_text_no_penalty_beginner="Revisa tu <i>Fórmula</i> ⏰\n"
-                                "\n"
-                                "😌Sin penalización (<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel \"Principiante\"</a>)\n"
-                                "\n"    
-                                "/pause - pausar el juego",
-
-    review_prompt_command_text_no_penalty_easy="Revisa tu <i>Fórmula</i> ⏰\n"
-                                "\n"
-                                "😌Sin penalización (<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel \"Fácil\", primer fallo</a> 😬)\n"
-                                "\n"
-                                "/pause - pausar el juego",
-
     review_command_text="Revisa tu <i>Fórmula</i> 💫\n"
                         "\n"
                         "Presiona cualquier botón a continuación para revisar tu <i>Fórmula</i>.",
@@ -129,9 +108,11 @@ es = Lang(
     review_command_button_yourself="Mejórate a ti mismo 💪",
     review_command_button_world="Mejora el mundo 🙌",
 
+    review_reward_msg_very_happy="😻 ¡Has ganado 2 nuevas estrellas!",
+    review_reward_msg="😺 ¡Has ganado una nueva estrella!",
     review_command_success_text="<i>Fórmula</i> revisada 🎉\n"
                                 "\n"
-                                "<b>¡Has ganado 1 estrella!</b>\n"
+                                "<b>{reward_msg}</b>\n"
                                 "\n"
                                 "🌟Estrellas totales: {score}\n"
                                 "⏳Tiempo de juego: {time}\n"
@@ -227,7 +208,26 @@ es = Lang(
     data_view="Tus datos crudos:",
     data_view_localstorage_button="Ver datos de localStorage",
     data_delete_button="ELIMINAR TODOS LOS DATOS",
-    data_deleted="Todos tus datos han sido eliminados. Por favor, borra el historial del chat para eliminar los datos del chat de Telegram."
+    data_deleted="Todos tus datos han sido eliminados. Por favor, borra el historial del chat para eliminar los datos del chat de Telegram.",
+
+    reminder_text="¡No olvides revisar tu <i>Fórmula</i>! ⏰\n"
+                    "\n"
+                    "¡El tiempo límite es en 15 minutos, date prisa!",
+
+    penalty_msg_no_penalty_for_level = "😼 Sin penalización (nivel <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">\"{difficulty}\"</a>)",
+    penalty_msg_no_penalty_first_time = "😼 Sin penalización (<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel \"Fácil\", primer fallo</a> 😬)\n",
+    penalty_msg_first_time = "😿 Has perdido {penalty} estrellas (primera vez que se pierde) ❗\n"
+                            "\n"
+                            "🌟 Estrellas restantes: {score}",
+    penalty_msg_generic_small = "😿 Has perdido {penalty} estrellas ❗\n"
+                                "\n"
+                                "🌟 Estrellas restantes: {score}",
+    penalty_msg_generic_full = "🙀 Has perdido {penalty} estrellas ❗\n"
+                               "\n"
+                                 "🌟 Estrellas restantes: {score}",
+    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥\n"
+                   "\n"
+                   "{penalty_msg}"
 )
 
 
@@ -254,34 +254,6 @@ en = Lang(
 
     help_command_start_playing_button="Write \"Formula\" and start playing!",
 
-    review_prompt_command_text_penalty_first="Review your <i>Formula</i> ⏰\n"
-                               "\n"
-                               "<b>😿You've lost {penalty} stars❗</b>\n"
-                               "\n"
-                               "🌟Remaining stars: {score}\n"
-                               "\n"
-                               "/pause - pause the game",
-
-    review_prompt_command_text_penalty_next="Review your <i>Formula</i> ⏰\n"
-                               "\n"
-                               "<b>🙀You've lost {penalty} stars❗</b>\n"
-                               "\n"
-                               "🌟Remaining stars: {score}\n"
-                               "\n"
-                               "/pause - pause the game",
-
-    review_prompt_command_text_no_penalty_beginner="Review your <i>Formula</i> ⏰\n"
-                               "\n"
-                               "😌No penalty (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">\"Beginner\" level</a>)\n"
-                               "\n"
-                               "/pause - pause the game",
-
-    review_prompt_command_text_no_penalty_easy="Review your <i>Formula</i> ⏰\n"
-                                                   "\n"
-                                                   "😌No penalty (<a href=\"https://mindwarriorgame.org/faq.en.html#diffiulty\">\"Easy\" level, first miss</a> 😬)\n"
-                                                   "\n"
-                                                   "/pause - pause the game",
-
     review_command_text="Review your <i> Formula</i> 💫\n"
                         "\n"
                         "Press any button below to review your <i>Formula</i>.",
@@ -289,12 +261,14 @@ en = Lang(
     review_command_button_yourself="Improve yourself 💪",
     review_command_button_world="Improve the world 🙌",
 
+    review_reward_msg_very_happy="😻 You've got 2 new stars!",
+    review_reward_msg="😺 You've got a new star!",
     review_command_success_text="<i>Formula</i> has been reviewed 🎉\n"
                                 "\n"
-                                "<b>You've got 1 star!</b>\n"
+                                "<b>{reward_msg}</b>\n"
                                 "\n"
-                                "🌟Total stars: {score}\n"
-                                "⏳Play time: {time}\n"
+                                "🌟 Total stars: {score}\n"
+                                "⏳ Play time: {time}\n"
                                 "\n"
                                 "Next review before {next_review}\n"
                                 "\n"
@@ -389,6 +363,25 @@ en = Lang(
     data_delete_button="DELETE ALL DATA",
     data_deleted="All your data has been deleted. Please clear the chat history to remove the data from Telegram chat.",
 
+    reminder_text="Don't forget to review your <i>Formula</i>! ⏰\n"
+                  "\n"
+                  "The due time is in 15 minutes, hurry up!",
+
+    penalty_msg_no_penalty_for_level = "😼 No penalty (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">\"{difficulty}\" level</a>)",
+    penalty_msg_no_penalty_first_time = "😼 No penalty (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">\"{difficulty}\" level, first miss</a> 😬)",
+    penalty_msg_first_time = "😿 You've lost {penalty} stars (first miss)❗\n"
+                             "\n"
+                             "🌟 Remaining stars: {score}",
+    penalty_msg_generic_small = "😿 You've lost {penalty} stars ❗\n"
+                                "\n"
+                                "🌟 Remaining stars: {score}",
+    penalty_msg_generic_full = "🙀 You've lost {penalty} stars ❗\n"
+                               "\n"
+                               "🌟 Remaining stars: {score}",
+    penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
+                    "\n"   
+                    "{penalty_msg}"
+
 )
 
 
@@ -415,34 +408,6 @@ ru = Lang(
 
     help_command_start_playing_button="Написать \"Формулу\" и начать игру!",
 
-    review_prompt_command_text_penalty_first="Повторите свою <i>Формулу</i> ⏰\n"
-                                "\n"
-                                "<b>😿Вы потеряли {penalty} звезды❗</b>\n"
-                                "\n"
-                                "🌟Осталось звезд: {score}\n"
-                                "\n"
-                                "/pause - игру на паузу",
-
-    review_prompt_command_text_penalty_next="Повторите свою <i>Формулу</i> ⏰\n"
-                                     "\n"
-                                     "<b>🙀Вы потеряли {penalty} звезд❗</b>\n"
-                                     "\n"
-                                     "🌟Осталось звезд: {score}\n"
-                                     "\n"
-                                     "/pause - игру на паузу",
-
-    review_prompt_command_text_no_penalty_beginner="Повторите свою <i>Формулу</i> ⏰\n"
-                                "\n"
-                                "😌 Без штрафа (<a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">уровень \"Новичок\"</a>)\n"
-                                "\n"
-                                "/pause - игру на паузу",
-
-    review_prompt_command_text_no_penalty_easy="Повторите свою <i>Формулу</i> ⏰\n"
-                                "\n"
-                                "😌 Без штрафа (<a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">уровень \"Легко\", первый пропуск</a> 😬)\n"
-                                "\n"
-                                "/pause - игру на паузу",
-
     review_command_text="Просмотрите свою <i>Формулу</i> 💫\n"
                         "\n"
                         "Нажмите любую кнопку ниже, чтобы просмотреть свою <i>Формулу</i>.",
@@ -450,12 +415,14 @@ ru = Lang(
     review_command_button_yourself="Улучшить себя 💪",
     review_command_button_world="Улучшить мир 🙌",
 
+    review_reward_msg_very_happy="😻 Вы получили 2 новые звезды!",
+    review_reward_msg="😺 Вы получили новую звезду!",
     review_command_success_text="<i>Формула</i> просмотрена 🎉\n"
                                 "\n"
-                                "<b>Вы получили 1 звезду!</b>\n"
+                                "<b>{reward_msg}</b>\n"
                                 "\n"
-                                "🌟Всего звезд: {score}\n"
-                                "⏳Время игры: {time}\n"
+                                "🌟 Всего звезд: {score}\n"
+                                "⏳ Время игры: {time}\n"
                                 "\n"
                                 "Следующий просмотр не позже {next_review}\n"
                                 "\n"
@@ -551,6 +518,25 @@ ru = Lang(
     data_view_localstorage_button="Посмотреть данные localStorage",
     data_delete_button="УДАЛИТЬ ВСЕ ДАННЫЕ",
     data_deleted="Все ваши данные удалены. Пожалуйста, удалите историю чата, чтобы удалить данные из Telegram-а.",
+
+    reminder_text="Не забудьте просмотреть свою <i>Формулу</i>! ⏰\n"
+                  "\n"
+                  "Время истекает через 15 минут, поторопитесь!",
+
+    penalty_msg_no_penalty_for_level = "😼 Без штрафа (уровень <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">\"{difficulty}\"</a>)",
+    penalty_msg_no_penalty_first_time = "😼 Без штрафа (уровень <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">\"{difficulty}\", первый пропуск</a> 😬)",
+    penalty_msg_first_time = "😿 Вы потеряли {penalty} звезды (первый пропуск)❗\n"
+                             "\n"
+                             "🌟 Осталось звезд: {score}",
+    penalty_msg_generic_small = "😿 Вы потеряли {penalty} звезды ❗\n"
+                                "\n"
+                                "🌟 Осталось звезд: {score}",
+    penalty_msg_generic_full = "🙀 Вы потеряли {penalty} звезд ❗\n"
+                               "\n"
+                               "🌟 Осталось звезд: {score}",
+    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n"
+                   "\n"
+                   "{penalty_msg}"
 )
 
 class LangProvider:

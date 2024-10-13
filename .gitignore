@@ -1,3 +1,6 @@
 .idea
+venv
 /mindwarrior.db
 /mindwarrior_bot_launcher.test.sh
+/scp.sh
+/ssh.sh

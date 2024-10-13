@@ -30,6 +30,8 @@ class User(TypedDict):
 
     shared_key_uuid: str
 
+    next_prompt_type: str
+
 class UsersOrm:
 
     def __del__(self) -> None:
@@ -63,10 +65,20 @@ class UsersOrm:
                 
                 shared_key_uuid TEXT NOT NULL DEFAULT "",
                 
+                next_prompt_type TEXT NOT NULL DEFAULT "",
+                
                 PRIMARY KEY (user_id)
             )
         ''')
         self.conn.commit()
+
+        try:
+            self.conn.execute('ALTER TABLE users ADD COLUMN next_prompt_type TEXT NOT NULL DEFAULT ""');
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            print(f"Error adding column 'next_prompt_type': {e}")
+
+        self.conn.execute("UPDATE users SET next_prompt_type = 'penalty' WHERE next_prompt_type =''")
 
         self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_prompt_time ON users (difficulty, active_game_counter_state_is_null, paused_counter_state_is_null, next_prompt_time)')
         self.conn.commit()
@@ -75,6 +87,10 @@ class UsersOrm:
         self.conn.commit()
 
     def get_user_by_id(self, user_id: int) -> User:
+        """
+
+        :rtype: object
+        """
         self.cursor.execute('SELECT * FROM users WHERE user_id = ?', (user_id,))
         return self._to_user_obj(self.cursor.fetchone(), user_id)
 
@@ -119,7 +135,8 @@ class UsersOrm:
                 paused_counter_state=None,
                 rewards=0,
                 counters_history_serialized=None,
-                shared_key_uuid=str(uuid.uuid4())
+                shared_key_uuid=str(uuid.uuid4()),
+                next_prompt_type=""
             )
         return User(
             user_id=param[0],
@@ -132,7 +149,8 @@ class UsersOrm:
             paused_counter_state=param[8],
             rewards=param[10],
             counters_history_serialized=param[11],
-            shared_key_uuid=param[12]
+            shared_key_uuid=param[12],
+            next_prompt_type=param[13]
         )
     def remove_user(self, user_id: int):
         self.cursor.execute('DELETE FROM users WHERE user_id = ?', (user_id,))
@@ -153,8 +171,9 @@ class UsersOrm:
                 paused_counter_state_is_null,
                 rewards,
                 counters_history_serialized,
-                shared_key_uuid
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                shared_key_uuid,
+                next_prompt_type
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 lang_code = excluded.lang_code,
                 difficulty = excluded.difficulty,
@@ -167,7 +186,8 @@ class UsersOrm:
                 paused_counter_state_is_null = excluded.paused_counter_state_is_null,
                 rewards = excluded.rewards,
                 counters_history_serialized = excluded.counters_history_serialized,
-                shared_key_uuid = excluded.shared_key_uuid
+                shared_key_uuid = excluded.shared_key_uuid,
+                next_prompt_type = excluded.next_prompt_type
         ''', (
             user['user_id'],
             user['lang_code'],
@@ -185,7 +205,8 @@ class UsersOrm:
             1 if user['paused_counter_state'] is None else 0,
             user['rewards'],
             user['counters_history_serialized'],
-            user['shared_key_uuid']
+            user['shared_key_uuid'],
+            user['next_prompt_type']
         ))
         self.conn.commit()
 

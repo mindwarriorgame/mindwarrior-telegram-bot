@@ -40,7 +40,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=0,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type=''
         ))
 
     @time_machine.travel("2022-04-21")
@@ -51,6 +52,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(123)
         self.assertGreaterEqual(len(user['shared_key_uuid']), 10)
         user['shared_key_uuid'] = 'abcd'
+        user['next_prompt_type'] = 'qwe'
         self.assertEqual(user, User(
             user_id=123,
             lang_code='ru',
@@ -62,7 +64,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=0,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='qwe'
         ))
 
         user['lang_code'] = 'en'
@@ -74,9 +77,11 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['paused_counter_state'] = 'my_paused_counter_state'
         user['rewards'] = 10
         user['counters_history_serialized'] = 'my_counters_history_serialized'
+        user['shared_key_uuid'] = 'dbca'
+        user['next_prompt_type'] = 'ewq'
         self.users_orm.upsert_user(user)
 
-        self.assertEquals(self.users_orm.get_user_by_id(123), User(
+        self.assertEqual(self.users_orm.get_user_by_id(123), User(
             user_id=123,
             lang_code='en',
             difficulty=2,
@@ -87,7 +92,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state='my_paused_counter_state',
             rewards=10,
             counters_history_serialized='my_counters_history_serialized',
-            shared_key_uuid='abcd'
+            shared_key_uuid='dbca',
+            next_prompt_type='ewq'
         ))
 
     def test_get_some_users_for_prompt_when_no_user(self):
@@ -106,7 +112,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=10,
             counters_history_serialized='my_counters_history_serialized',
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [user])
@@ -124,7 +131,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=10,
             counters_history_serialized='counters_history_serialized',
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -142,7 +150,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=10,
             counters_history_serialized='my_counters_history_serialized',
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 2), [])
@@ -161,7 +170,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=10,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -180,7 +190,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state='my_paused_counter_state',
             rewards=10,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -197,7 +208,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state='my_paused_counter_state',
             rewards=10,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.users_orm.remove_user(124)
@@ -215,7 +227,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=0,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type=''
         ))
 
     def test_count_active_users(self):
@@ -230,7 +243,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=10,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 1)
@@ -251,7 +265,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=10,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 1)
@@ -271,7 +286,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state='paused',
             rewards=10,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)
@@ -290,7 +306,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             paused_counter_state=None,
             rewards=10,
             counters_history_serialized=None,
-            shared_key_uuid='abcd'
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)

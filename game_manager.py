@@ -21,12 +21,23 @@ class Reply(TypedDict):
     menu_commands: list[list[str]]
     image: Optional[str]
 
+REVIEW_INTERVAL_MINS = 15
+
 PROMPT_MINUTES = [60*6, 60*3, 60 + 30, 60, 45]
 
+REWARD_BEFORE_REMINDER = [2, 2, 1, 1, 1, 1]
+REWARD_AFTER_REMINDER = [1, 1, 1, 1, 1, 1]
+HAS_REMINDER = [True, True, True, False, False]
+
+PENALTY_SMALL = 3
+PENALTY_FULL = 6
 PENALTY_FIRST =      [0, 0, 3, 3, 6]
 PENALTY_CONSEQUENT = [0, 3, 6, 6, 6]
 
 NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM  = 'next_review_prompt_minutes=' + ",".join([str(PROMPT_MINUTES[idx]) for idx in range(0, len(PROMPT_MINUTES))])
+
+NEXT_PROMPT_TYPE_REMINDER = "reminder"
+NEXT_PROMPT_TYPE_PENALTY = "penalty"
 
 def now_utc() -> datetime.datetime:
     return datetime.datetime.now(tz=datetime.timezone.utc)
@@ -154,7 +165,8 @@ class GameManager:
     def _restart_user_game(self, user: User):
         user['review_counter_state'] = Counter('').resume().serialize()
         user['last_reward_time'] = None
-        user['next_prompt_time'] = now_utc() + datetime.timedelta(minutes=PROMPT_MINUTES[user['difficulty']])
+
+        self._reset_user_next_prompt(user)
 
         user['active_game_counter_state'] = Counter('').resume().serialize()
         user['paused_counter_state'] = None
@@ -205,25 +217,28 @@ class GameManager:
 
         is_resumed = self._maybe_resume(user, lang)
 
-        scores_added = True
+        new_stars = REWARD_AFTER_REMINDER[user['difficulty']]
+        if user['next_prompt_type'] == NEXT_PROMPT_TYPE_REMINDER:
+            new_stars = REWARD_BEFORE_REMINDER[user['difficulty']]
+
         if user['last_reward_time'] is not None and (now_utc() - user['last_reward_time']).total_seconds() < 5*60:
-            scores_added = False
+            new_stars = 0
         else:
             user['last_reward_time'] = now_utc()
-            user['rewards'] += 1
-            scores_added = True
+            user['rewards'] += new_stars
 
         self._record_counter_time(user, REVIEW_COUNTER_HISTORY_NAME, user['review_counter_state'])
         user['review_counter_state'] = Counter('').resume().serialize()
 
-        user['next_prompt_time'] = now_utc() + datetime.timedelta(minutes=PROMPT_MINUTES[user['difficulty']])
+        self._reset_user_next_prompt(user)
+
         self.users_orm.upsert_user(user)
 
-        if scores_added:
+        if new_stars > 0:
             return self._render_review_command_success(user['rewards'], next_review,
                                                 time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
                                                 lang=lang,
-                                                chat_id=user['user_id'], is_resumed=is_resumed)
+                                                chat_id=user['user_id'], is_resumed=is_resumed, new_stars=new_stars)
         else:
             return self._render_review_command_success_no_rewards(user['rewards'], next_review,
                                                 time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
@@ -298,7 +313,7 @@ class GameManager:
 
             return self._render_on_pause(lang, user['user_id'])
         else:
-            return self._render_already_on_pause(chat_id)
+            return self._render_already_on_pause(lang, chat_id)
 
     def on_stats_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
@@ -349,31 +364,30 @@ class GameManager:
     def process_tick(self) -> list[Reply]:
         replies: list[Reply] = []
         for difficulty in range(0, 5):
-            prompt_minutes = PROMPT_MINUTES[difficulty]
             users = self.users_orm.get_some_users_for_prompt(20, difficulty)
             for user in users:
-                user['next_prompt_time'] = now_utc() + datetime.timedelta(minutes=prompt_minutes)
-                lang = self._get_user_lang(user['lang_code'])
-                penalty = PENALTY_CONSEQUENT[difficulty]
-                counter = Counter(user['review_counter_state'])
-                if (counter.get_total_seconds() / 60) <= prompt_minutes * 1.5:
-                    penalty = PENALTY_FIRST[difficulty]
-                user['rewards'] -= penalty
-                self.users_orm.upsert_user(user)
-
-                if difficulty == 0:
-                    replies.append(self._render_review_prompt_no_penalty_beginner(lang, user['user_id']))
-
-                elif difficulty == 1 and penalty == 0:
-                    replies.append(self._render_review_prompt_no_penalty_easy(lang, user['user_id']))
-
-                elif penalty == PENALTY_CONSEQUENT[1]:
-                    replies.append(self._render_review_prompt_penalty_first(str(user['rewards']), penalty, lang, user['user_id']))
-
-                elif penalty == PENALTY_CONSEQUENT[len(PENALTY_CONSEQUENT) - 1]:
-                    replies.append(self._render_review_prompt_penalty_next(str(user['rewards']), penalty, lang, user['user_id']))
+                if user['next_prompt_type'] == NEXT_PROMPT_TYPE_PENALTY:
+                    replies += [self._process_penalty_prompt(user)]
+                else:
+                    replies += [self._process_reminder_prompt(user)]
 
         return replies
+
+    def _process_penalty_prompt(self, user: User) -> Reply:
+        difficulty = user['difficulty']
+        penalty_minutes = PROMPT_MINUTES[difficulty]
+
+        self._reset_user_next_prompt(user)
+
+        lang = self._get_user_lang(user['lang_code'])
+
+        review_counter = Counter(user['review_counter_state'])
+        is_first_penalty = (review_counter.get_total_seconds() / 60) <= penalty_minutes * 1.5
+
+        user['rewards'] -= self._calculate_penalty(difficulty, is_first_penalty)
+        self.users_orm.upsert_user(user)
+
+        return self._render_penalty(lang, user['user_id'], user['difficulty'], user['rewards'], is_first_penalty)
 
     def _record_counter_time(self, user: User, counter_name: str, serialized_counter: str):
         counter = Counter(serialized_counter)
@@ -400,8 +414,11 @@ class GameManager:
             'image': None
         }
 
-    def _render_review_command_success(self, score: int, next_review: str, time: str, lang: Lang, chat_id: int, is_resumed: bool) -> Reply:
-        message = lang.review_command_success_text.format(score=score, next_review=next_review, time=time)
+    def _render_review_command_success(self, score: int, next_review: str, time: str, lang: Lang, chat_id: int, is_resumed: bool, new_stars: int) -> Reply:
+        if new_stars != 1 and new_stars != 2:
+            raise Exception("Invalid new_stars value")
+        message = lang.review_command_success_text.format(score=score, next_review=next_review, time=time,
+                                                          reward_msg=lang.review_reward_msg if new_stars == 1 else lang.review_reward_msg_very_happy)
         if is_resumed:
             message = lang.resumed + "\n" + message
         return {
@@ -424,41 +441,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_review_prompt_penalty_first(self, score: str, penalty: int, lang: Lang, chat_id: int) -> Reply:
-        return {
-            'to_chat_id': chat_id,
-            'message': lang.review_prompt_command_text_penalty_first.format(score=score, penalty=penalty),
-            'buttons': [self._render_review_button(lang)],
-            'menu_commands': [],
-            'image': None
-        }
 
-    def _render_review_prompt_penalty_next(self, score: str, penalty: int, lang: Lang, chat_id: int) -> Reply:
-        return {
-            'to_chat_id': chat_id,
-            'message': lang.review_prompt_command_text_penalty_next.format(score=score, penalty=penalty),
-            'buttons': [self._render_review_button(lang)],
-            'menu_commands': [],
-            'image': None
-        }
-
-    def _render_review_prompt_no_penalty_beginner(self, lang: Lang, chat_id: int) -> Reply:
-        return {
-            'to_chat_id': chat_id,
-            'message': lang.review_prompt_command_text_no_penalty_beginner,
-            'buttons': [self._render_review_button(lang)],
-            'menu_commands': [],
-            'image': None
-        }
-
-    def _render_review_prompt_no_penalty_easy(self, lang: Lang, chat_id: int) -> Reply:
-        return {
-            'to_chat_id': chat_id,
-            'message': lang.review_prompt_command_text_no_penalty_easy,
-            'buttons': [self._render_review_button(lang)],
-            'menu_commands': [],
-            'image': None
-        }
 
     def on_render_screen(self, chat_id, user_message) -> list[Reply]:
         langs = LangProvider.get_available_languages()
@@ -476,7 +459,8 @@ class GameManager:
             ret = []
             for is_resumed in [True, False]:
                 for lang_code, lang in langs.items():
-                    ret = ret + [self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed)]
+                    ret = ret + [self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed, 1)]
+                    ret = ret + [self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed, 2)]
             return ret
 
         if user_message == "render_screen_3":
@@ -489,21 +473,24 @@ class GameManager:
         if user_message == "render_screen_4":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_review_prompt_penalty_first("5", 3, lang, chat_id)]
-                ret = ret + [self._render_review_prompt_penalty_next("5", 6, lang, chat_id)]
+                ret = ret + [self._render_penalty(lang, chat_id, 0, 10, True)]
+                ret = ret + [self._render_penalty(lang, chat_id, 4, 10, True)]
             return ret
 
         if user_message == "render_screen_5":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_review_prompt_no_penalty_beginner(lang, chat_id)]
+                ret = ret + [self._render_penalty(lang, chat_id, 1, 10, True)]
+                ret = ret + [self._render_penalty(lang, chat_id, 1, 10, False)]
             return ret
 
         if user_message == "render_screen_6":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_review_prompt_no_penalty_easy(lang, chat_id)]
+                ret = ret + [self._render_penalty(lang, chat_id, 2, 10, True)]
+                ret = ret + [self._render_penalty(lang, chat_id, 2, 10, False)]
             return ret
+
 
         if user_message == "render_screen_7":
             ret = []
@@ -568,7 +555,11 @@ class GameManager:
                 ret = ret + [self._render_single_message(chat_id, lang.formula_changed)]
             return ret
 
-
+        if user_message == "render_screen_17":
+            ret = []
+            for lang_code, lang in langs.items():
+                ret = ret + [self._render_reminder_prompt(lang, chat_id)]
+            return ret
         return []
 
     def _maybe_resume(self, user: User, lang: Lang) -> bool:
@@ -728,6 +719,72 @@ class GameManager:
             'menu_commands': [],
             'image': None
         }
+
+    def _render_penalty(self, lang: Lang, chat_id: int, difficulty: int, scores: int, is_first_penalty: bool) -> Reply:
+        penalty_msg = ""
+        penalty = self._calculate_penalty(difficulty, is_first_penalty)
+
+        if PENALTY_CONSEQUENT[difficulty] == 0:
+            penalty_msg = lang.penalty_msg_no_penalty_for_level.format(difficulty=lang.difficulties[difficulty])
+
+        elif is_first_penalty and PENALTY_FIRST[difficulty] == 0:
+            penalty_msg = lang.penalty_msg_no_penalty_first_time.format(difficulty=lang.difficulties[difficulty])
+
+        elif is_first_penalty and PENALTY_FIRST[difficulty] < PENALTY_CONSEQUENT[difficulty]:
+            penalty_msg = lang.penalty_msg_first_time.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
+
+        elif penalty == PENALTY_SMALL:
+            penalty_msg = lang.penalty_msg_generic_small.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
+
+        elif penalty == PENALTY_FULL:
+            penalty_msg = lang.penalty_msg_generic_full.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
+
+        if penalty_msg == "":
+            raise Exception("Unknown penalty message")
+
+        return {
+            'to_chat_id': chat_id,
+            'message': lang.penalty_text.format(penalty_msg=penalty_msg),
+            'buttons': [self._render_review_button(lang)],
+            'menu_commands': [],
+            'image': None
+        }
+
+    def _process_reminder_prompt(self, user: User):
+        lang = self._get_user_lang(user['lang_code'])
+
+        user['next_prompt_type'] = NEXT_PROMPT_TYPE_PENALTY
+        user['next_prompt_time'] = now_utc() + datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
+        self.users_orm.upsert_user(user)
+
+        return self._render_reminder_prompt(lang, user['user_id'])
+
+    def _reset_user_next_prompt(self, user: User):
+        difficulty = user['difficulty']
+        penalty_minutes = PROMPT_MINUTES[difficulty]
+
+        user['next_prompt_time'] = now_utc() + datetime.timedelta(minutes=penalty_minutes)
+        user['next_prompt_type'] = NEXT_PROMPT_TYPE_PENALTY
+        if HAS_REMINDER[difficulty]:
+            user['next_prompt_time'] -= datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
+            user['next_prompt_type'] = NEXT_PROMPT_TYPE_REMINDER
+
+    def _calculate_penalty(self, difficulty, is_first_penalty):
+        return PENALTY_FIRST[difficulty] if is_first_penalty else PENALTY_CONSEQUENT[difficulty]
+
+    def _render_reminder_prompt(self, lang, chat_id):
+        return {
+            'to_chat_id': chat_id,
+            'message': lang.reminder_text,
+            'buttons': [self._render_review_button(lang)],
+            'menu_commands': [],
+            'image': None
+        }
+
+
+
+
+
 
 
 
