@@ -21,7 +21,9 @@ $telegramApiUrl = "https://api.telegram.org/bot$botToken/answerWebAppQuery";
 $lang = [
     'en' => 'Submitting data... ',
     'ru' => 'Отправляем... ',
-    'es' => 'Enviando datos... '
+    'es' => 'Enviando datos... ',
+    'fr' => 'Soumission des données... ',
+    'hi' => 'डेटा जमा कर रहा है... '
 ];
 
 function checkStringFormat($str) {
