@@ -584,7 +584,8 @@ class GameManager:
 
     def _render_list_of_langs(self, chat_id, languages: dict[str, Lang]) -> Reply:
         message = ""
-        for lang_code, lang in languages.items():
+        for lang_code in sorted(languages):
+            lang = languages[lang_code]
             message += "/" + lang_code + " - " + lang.lang_name + "\n\n"
         return self._render_single_message(chat_id, message)
 
