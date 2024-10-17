@@ -23,8 +23,9 @@ $lang = [
     'ru' => 'Отправляем... ',
     'es' => 'Enviando datos... ',
     'fr' => 'Soumission des données... ',
-    'hi' => 'डेटा जमा कर रहा है... '
+    'de' => 'Daten werden übermittelt... ',
 ];
+
 
 function checkStringFormat($str) {
     // Patterns for each shape

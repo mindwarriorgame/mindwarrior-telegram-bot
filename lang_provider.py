@@ -543,6 +543,158 @@ en = Lang(
 
 )
 
+de = Lang(
+    lang_code='de',
+    lang_name='Deutsch',
+    help_command_text=f"""Hey, Fremder! 👋 Willkommen beim <a href="https://mindwarriorgame.org/faq.de.html">MindWarrior-Spiel</a> Bot! 🥷  
+
+🧪 Erstelle deine "<a href="https://mindwarriorgame.org/faq.de.html#formula">Formel des festen Entschlusses</a>", eine inspirierende Nachricht an dich selbst.
+
+💫 <a href="https://mindwarriorgame.org/faq.de.html#review">Überprüfe sie</a> im Laufe deines Tages, um motiviert zu bleiben, und verdiene Belohnungen! <a href="https://mindwarriorgame.org/faq.de.html#forgot">Was, wenn ich es vergesse?</a>
+
+ ‣ <a href="https://mindwarriorgame.org/quick-start.de.html">Schnellstart-Anleitung</a>
+ ‣ <a href="https://mindwarriorgame.org/faq.de.html">FAQs</a>
+ ‣ <a href="https://mindwarriorgame.org/privacy-policy.de.html">Datenschutzrichtlinie</a>""",
+
+    menu_review="💫️Formel überprüfen",
+    menu_pause="⏸️ Spiel pausieren",
+    menu_stats="🌟 Spielstand anzeigen",
+    menu_formula="️🧪Formel aktualisieren",
+    menu_difficulty="💪Schwierigkeitsgrad ändern",
+    menu_data = "🗂 Deine Rohdaten anzeigen",
+
+    help_command_start_playing_button="Schreibe \"Formel\" und starte das Spiel!",
+
+    review_command_text="Überprüfe deine <i>Formel</i> 💫\n"
+                        "\n"
+                        "Drücke einen der untenstehenden Knöpfe, um deine <i>Formel</i> zu überprüfen.",
+
+    review_command_button_yourself="Verbessere dich selbst 💪",
+    review_command_button_world="Verbessere die Welt 🙌",
+
+    review_reward_msg_very_happy="😻 Du hast 2 neue Sterne bekommen!",
+    review_reward_msg="😺 Du hast einen neuen Stern bekommen!",
+    review_command_success_text="<i>Formel</i> wurde überprüft 🎉\n"
+                                "\n"
+                                "<b>{reward_msg}</b>\n"
+                                "\n"
+                                "🌟 Gesamtzahl der Sterne: {score}\n"
+                                "⏳ Spielzeit: {time}\n"
+                                "\n"
+                                "Nächste Überprüfung vor {next_review}\n"
+                                "\n"
+                                "/pause - Spiel pausieren",
+
+    review_command_success_no_rewards_text="<i>Formel</i> wurde überprüft 🎉\n"
+                                           "\n"
+                                           "Keine Belohnung (<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlungsregel</a>)\n"
+                                           "\n"
+                                           "🌟 Gesamtzahl der Sterne: {score}\n"
+                                           "⏳ Spielzeit: {time}\n"
+                                           "\n"
+                                           "Nächste Überprüfung vor {next_review}\n"
+                                           "\n"
+                                           "/pause - Spiel pausieren",
+
+    review_since_last_time="Zeit seit der letzten Überprüfung: {duration}",
+
+    days_short="t",
+    hours_short="h",
+    minutes_short="m",
+    seconds_short="s",
+
+    difficulty_level_changed="Der Schwierigkeitsgrad wurde geändert 💪\n"
+                             "Das Spiel wurde aufgrund der Änderung des Schwierigkeitsgrads neu gestartet.\n"
+                             "\n"
+                             "<b>{old} -> {new}</b>\n"
+                             "\n"
+                             "🌟 Gesamtzahl der Sterne: 0\n"
+                             "⏳ Spielzeit: 0t 0h 0m\n"
+                             "\n"
+                             "Nächste Überprüfung vor {next_review}\n",
+
+    formula_changed="Die <i>Formel</i> wurde aktualisiert!",
+
+    difficulties=["Anfänger", "Leicht", "Mittel", "Schwer", "Experte"],
+
+    paused_command="Das Spiel ist pausiert ⏸️\n"
+                   "\n"
+                   "Du wirst keine Erinnerungen an deine <i>Formel</i> erhalten, "
+                   "und der aktive Spielzeitzähler <a href=\"https://mindwarriorgame.org/faq.de#pause\">ist eingefroren</a>.\n"
+                   "\n"
+                   "Um das Spiel fortzusetzen, "
+                   "überprüfe einfach deine <i>Formel</i> mit dem untenstehenden Knopf.",
+
+    stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.de.html#review\">Erworbene Sterne</a>: {score}\n"
+                   "⌛ Aktive Spielzeit: {time}\n"
+                   "💪 <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty} ({difficulty_details})\n"
+                   "⏸️ <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">Pausiert?</a> {paused}\n"
+                   "❄️ <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlungszeit</a> bis zur nächsten Belohnung: {cooldown}\n"
+                   "⏰ Zeit bis zur nächsten<a href=\"https://mindwarriorgame.org/faq.de.html#forgot\">Erinnerung</a>: {punishment}"),
+
+    resumed="Das Spiel wurde fortgesetzt.",
+    already_paused="Das Spiel ist bereits pausiert ⏸️\n"
+                   "\n"
+                   "Um das Spiel fortzusetzen, überprüfe einfach deine <i>Formel</i> mit dem untenstehenden Knopf.",
+    game_started="Das Spiel hat begonnen 🏁\n"
+                 "\n"
+                 "💪<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty}\n"
+                 "\n"
+                 "Überprüfe deine <i>Formel</i> vor {next_review}\n"
+                 "\n"
+                 "/difficulty - Schwierigkeitsgrad ändern\n"
+                 "/pause - Spiel pausieren",
+
+    review_btn="Überprüfe deine \"Formel\"",
+
+    difficulty_command_text="Ändere den Schwierigkeitsgrad 💪\n"
+                            "\n"
+                            "Wähle einen neuen <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a> mit den untenstehenden Knöpfen aus.\n"
+                            "\n"
+                            "<b>⚠️ Dies setzt deinen Spielfortschritt zurück!</b>\n",
+
+    current_difficulty="aktuelles Level",
+
+    formula_command_text="Aktualisiere deine <i>Formel</i> 🧪\n"
+                         "\n"
+                         "Nutze den untenstehenden Knopf, um deine <i><a href=\"https://mindwarriorgame.org/faq.de.html#formula\">Formel</a></i> zu aktualisieren.",
+    formula_command_button="Formel aktualisieren",
+    review_command_timeout="Zeitüberschreitung, bitte versuche es erneut.🤷",
+    graph_header="Intervalle zwischen den Überprüfungen (Minuten)",
+    graph_penalty_threshold="Strafschwelle: {difficulty_threshold_mins} Minuten (Schwierigkeitsgrad={difficulty_str})",
+    graph_mean_threshold="Median: {mean_mins} Minuten",
+    graph_xlabel="Zeit",
+    graph_ylabel="Intervall zwischen den Überprüfungen (Minuten)",
+    graph_xmax='Jetzt',
+    graph_xmin='Vor 6 Tagen',
+    graph_paused="Pausiert",
+
+    data_view="Deine Rohdaten:",
+    data_view_localstorage_button="Anzeigen der localStorage-Daten",
+    data_delete_button="ALLE DATEN LÖSCHEN",
+    data_deleted="Alle deine Daten wurden gelöscht. Bitte lösche den Chatverlauf, um die Daten aus dem Telegram-Chat zu entfernen.",
+
+    reminder_text="Vergiss nicht, deine <i>Formel</i> zu überprüfen! ⏰\n"
+                  "\n"
+                  "Die Frist endet in 15 Minuten, beeile dich!",
+
+    penalty_msg_no_penalty_for_level = "😼 Keine Strafe (<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad \"{difficulty}\"</a>)",
+    penalty_msg_no_penalty_first_time = "😼 Keine Strafe (<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad \"{difficulty}\", erstes Versäumnis</a> 😬)",
+    penalty_msg_first_time = "😿 Du hast {penalty} Sterne verloren (erstes Versäumnis)❗\n"
+                             "\n"
+                             "🌟 Verbleibende Sterne: {score}",
+    penalty_msg_generic_small = "😿 Du hast {penalty} Sterne verloren ❗\n"
+                                "\n"
+                                "🌟 Verbleibende Sterne: {score}",
+    penalty_msg_generic_full = "🙀 Du hast {penalty} Sterne verloren ❗\n"
+                               "\n"
+                               "🌟 Verbleibende Sterne: {score}",
+    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥\n"
+                   "\n"
+                   "{penalty_msg}"
+)
+
+
 
 ru = Lang(
     lang_code='ru',
@@ -698,157 +850,6 @@ ru = Lang(
                    "{penalty_msg}"
 )
 
-hi = Lang(
-    lang_code='hi',
-    lang_name='हिन्दी',
-    help_command_text=f"""नमस्ते, अजनबी! 👋 <a href="https://mindwarriorgame.org/faq.hi.html">MindWarrior खेल</a> में आपका स्वागत है! 🥷  
-
-🧪 अपनी "<a href="https://mindwarriorgame.org/faq.hi.html#formula">दृढ़ संकल्प का सूत्र</a>" बनाएं, एक प्रेरणादायक संदेश जो आप खुद को भेजते हैं।
-
-💫 इसे दिनभर <a href="https://mindwarriorgame.org/faq.hi.html#review">देखें</a> ताकि आप प्रेरित बने रहें और पुरस्कार कमाएं! <a href="https://mindwarriorgame.org/faq.hi.html#forgot">अगर मैं भूल गया तो?</a>
-
- ‣ <a href="https://mindwarriorgame.org/quick-start.hi.html">त्वरित शुरुआत मार्गदर्शिका</a>
- ‣ <a href="https://mindwarriorgame.org/faq.hi.html">अक्सर पूछे जाने वाले प्रश्न</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.hi.html">गोपनीयता नीति</a>""",
-
-    menu_review="💫️सूत्र की समीक्षा करें",
-    menu_pause="⏸️ खेल को रोकें",
-    menu_stats="🌟 खेल की प्रगति देखें",
-    menu_formula="🧪 सूत्र को अपडेट करें",
-    menu_difficulty="💪 कठिनाई बदलें",
-    menu_data="🗂 अपने कच्चे डेटा को देखें",
-
-    help_command_start_playing_button="\"सूत्र\" लिखें और खेल शुरू करें!",
-
-    review_command_text="अपनी <i>सूत्र</i> की समीक्षा करें 💫\n"
-                        "\n"
-                        "अपनी <i>सूत्र</i> की समीक्षा करने के लिए नीचे किसी भी बटन पर क्लिक करें।",
-
-    review_command_button_yourself="खुद को सुधारें 💪",
-    review_command_button_world="दुनिया को सुधारें 🙌",
-
-    review_reward_msg_very_happy="😻 आपको 2 नए तारे मिले हैं!",
-    review_reward_msg="😺 आपको एक नया तारा मिला है!",
-    review_command_success_text="<i>सूत्र</i> की समीक्षा की गई 🎉\n"
-                                "\n"
-                                "<b>{reward_msg}</b>\n"
-                                "\n"
-                                "🌟 कुल तारे: {score}\n"
-                                "⏳ खेलने का समय: {time}\n"
-                                "\n"
-                                "अगली समीक्षा {next_review} से पहले करें\n"
-                                "\n"
-                                "/pause - खेल रोकें",
-
-    review_command_success_no_rewards_text="<i>सूत्र</i> की समीक्षा की गई 🎉\n"
-                                           "\n"
-                                           "कोई पुरस्कार नहीं (<a href=\"https://mindwarriorgame.org/faq.hi.html#difficulty\">शांत समय नियम</a>)\n"
-                                           "\n"
-                                           "🌟 कुल तारे: {score}\n"
-                                           "⏳ खेलने का समय: {time}\n"
-                                           "\n"
-                                           "अगली समीक्षा {next_review} से पहले करें\n"
-                                           "\n"
-                                           "/pause - खेल रोकें",
-
-    review_since_last_time="अंतिम समीक्षा के बाद का समय: {duration}",
-
-    days_short="द",
-    hours_short="घ",
-    minutes_short="मि",
-    seconds_short="से",
-
-    difficulty_level_changed="कठिनाई स्तर बदल दिया गया है 💪\n"
-                             "कठिनाई स्तर में परिवर्तन के कारण खेल पुनः शुरू किया गया है।\n"
-                             "\n"
-                             "<b>{old} -> {new}</b>\n"
-                             "\n"
-                             "🌟 कुल तारे: 0\n"
-                             "⏳ खेलने का समय: 0d 0h 0m\n"
-                             "\n"
-                             "अगली समीक्षा {next_review} से पहले करें\n",
-
-    formula_changed="सूत्र को अपडेट कर दिया गया है!",
-
-    difficulties=["शुरुआती", "आसान", "मध्यम", "कठिन", "विशेषज्ञ"],
-
-    paused_command="खेल को रोक दिया गया है ⏸️\n"
-                   "\n"
-                   "आपको <i>सूत्र</i> के बारे में याद दिलाया नहीं जाएगा, "
-                   "और सक्रिय खेल समय काउंटर <a href=\"https://mindwarriorgame.org/faq.hi.html#pause\">रोक दिए गए हैं</a>.\n"
-                   "\n"
-                   "खेल फिर से शुरू करने के लिए, "
-                   "नीचे दिए गए बटन का उपयोग करके अपनी <i>सूत्र</i> की समीक्षा करें।",
-
-    stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.hi.html#review\">कुल तारे</a>: {score}\n"
-                   "⌛ सक्रिय खेल का समय: {time}\n"
-                   "💪 <a href=\"https://mindwarriorgame.org/faq.hi.html#difficulty\">कठिनाई स्तर</a>: {difficulty} ({difficulty_details})\n"
-                   "⏸️ <a href=\"https://mindwarriorgame.org/faq.hi.html#pause\">रोकें?</a> {paused}\n"
-                   "❄️ <a href=\"https://mindwarriorgame.org/faq.hi.html#cooldown\">अगले पुरस्कार से पहले का समय</a>: {cooldown}\n"
-                   "⏰ <a href=\"https://mindwarriorgame.org/faq.hi.html#punishment\">अगले अनुस्मारक का समय</a>: {punishment}"),
-
-    resumed="खेल फिर से शुरू कर दिया गया है।",
-    already_paused="खेल पहले ही रुका हुआ है ⏸️\n"
-                   "\n"
-                   "खेल फिर से शुरू करने के लिए, नीचे दिए गए बटन का उपयोग करके अपनी <i>सूत्र</i> की समीक्षा करें।",
-    game_started="खेल शुरू हो गया है 🏁\n"
-                 "\n"
-                 "💪<a href=\"https://mindwarriorgame.org/faq.hi.html#difficulty\">कठिनाई स्तर</a>: {difficulty}\n"
-                 "\n"
-                 "अगली समीक्षा {next_review} से पहले करें\n"
-                 "\n"
-                 "/difficulty - कठिनाई बदलें\n"
-                 "/pause - खेल रोकें",
-
-    review_btn="\"सूत्र\" की समीक्षा करें",
-
-    difficulty_command_text="कठिनाई स्तर बदलें 💪\n"
-                            "\n"
-                            "नीचे दिए गए बटनों का उपयोग करके एक नया <a href=\"https://mindwarriorgame.org/faq.hi.html#difficulty\">कठिनाई स्तर</a> चुनें।\n"
-                            "\n"
-                            "<b>⚠️इससे आपका खेल प्रगति रीसेट हो जाएगा!</b>\n",
-
-    current_difficulty="वर्तमान स्तर",
-
-    formula_command_text="अपनी <i>सूत्र</i> अपडेट करें 🧪\n"
-                         "\n"
-                         "अपनी <i><a href=\"https://mindwarriorgame.org/faq.hi.html#formula\">सूत्र</a></i> को अपडेट करने के लिए नीचे दिए गए बटन का उपयोग करें।",
-    formula_command_button="सूत्र को अपडेट करें",
-    review_command_timeout="समय समाप्त, कृपया पुनः प्रयास करें।🤷",
-    graph_header="समीक्षा के बीच के अंतराल (मिनटों में)",
-    graph_penalty_threshold="दंड सीमा: {difficulty_threshold_mins} मिनट (कठिनाई={difficulty_str})",
-    graph_mean_threshold="माध्यिका: {mean_mins} मिनट",
-    graph_xlabel="समय",
-    graph_ylabel="समीक्षाओं के बीच का अंतराल (मिनटों में)",
-    graph_xmax='अब',
-    graph_xmin='6 दिन पहले',
-    graph_paused="रुका हुआ",
-
-    data_view="आपका कच्चा डेटा:",
-    data_view_localstorage_button="localStorage डेटा देखें",
-    data_delete_button="सभी डेटा हटाएं",
-    data_deleted="आपका सारा डेटा हटा दिया गया है। कृपया चैट इतिहास हटाएं ताकि डेटा Telegram चैट से हट जाए।",
-
-    reminder_text="अपनी <i>सूत्र</i> की समीक्षा करना न भूलें! ⏰\n"
-                  "\n"
-                  "समीक्षा का समय 15 मिनट में है, जल्दी करें!",
-
-    penalty_msg_no_penalty_for_level = "😼 कोई दंड नहीं (स्तर <a href=\"https://mindwarriorgame.org/faq.hi.html#difficulty\">\"{difficulty}\"</a>)",
-    penalty_msg_no_penalty_first_time = "😼 कोई दंड नहीं (स्तर <a href=\"https://mindwarriorgame.org/faq.hi.html#difficulty\">\"{difficulty}\", पहली चूक</a> 😬)",
-    penalty_msg_first_time = "😿 आपने {penalty} तारे खो दिए हैं (पहली चूक)❗\n"
-                             "\n"
-                             "🌟 शेष तारे: {score}",
-    penalty_msg_generic_small = "😿 आपने {penalty} तारे खो दिए हैं ❗\n"
-                                "\n"
-                                "🌟 शेष तारे: {score}",
-    penalty_msg_generic_full = "🙀 आपने {penalty} तारे खो दिए हैं ❗\n"
-                               "\n"
-                               "🌟 शेष तारे: {score}",
-    penalty_text = "आपने समय पर अपनी <i>सूत्र</i> की समीक्षा करना भूल गए हैं 🟥\n"
-                   "\n"
-                   "{penalty_msg}"
-
-)
 
 class LangProvider:
 
@@ -858,7 +859,7 @@ class LangProvider:
             en.lang_code: en,
             ru.lang_code: ru,
             fr.lang_code: fr,
-            hi.lang_code: hi,
+            de.lang_code: de,
             es.lang_code: es
         }
 
