@@ -48,14 +48,14 @@ class GameManager:
         self.env = env
         self.frontend_base_url = frontend_base_url
 
-    def on_start_command(self, chat_id) -> Reply:
+    def on_start_command(self, chat_id: int) -> Reply:
         languages = LangProvider.get_available_languages()
         return self._render_list_of_langs(chat_id, languages)
 
     def on_help_command(self, chat_id: int) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
-            return self.on_start_command(self)
+            return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
         return self._render_start_game_button(lang, user)
@@ -178,7 +178,7 @@ class GameManager:
     def on_review_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
-            return self.on_start_command(self)
+            return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
         if user['active_game_counter_state'] is None:
@@ -276,7 +276,7 @@ class GameManager:
     def on_data_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
-            return self.on_start_command(self)
+            return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
         data = [" - shared_key_uuid: " + user['shared_key_uuid']]
@@ -292,7 +292,7 @@ class GameManager:
     def on_pause_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
-            return self.on_start_command(self)
+            return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
         if user['active_game_counter_state'] is None:
@@ -320,7 +320,7 @@ class GameManager:
     def on_stats_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
-            return self.on_start_command(self)
+            return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
         if user['active_game_counter_state'] is None:
@@ -350,7 +350,7 @@ class GameManager:
     def on_difficulty_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
-            return self.on_start_command(self)
+            return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
         return self._render_difficulty_buttons(lang, user['user_id'], user['difficulty'])
@@ -358,7 +358,7 @@ class GameManager:
     def on_formula_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
-            return self.on_start_command(self)
+            return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
         return self._render_edit_formula(lang, user["shared_key_uuid"], user['user_id'])
@@ -586,7 +586,11 @@ class GameManager:
         message = ""
         for lang_code in sorted(languages):
             lang = languages[lang_code]
-            message += "/" + lang_code + " - " + lang.lang_name + "\n\n"
+            new_lang_msg = "/" + lang_code + " - " + lang.lang_name
+            if (lang_code == "en"):
+                message = new_lang_msg + "\n\n" + message
+            else:
+                message += new_lang_msg + "\n\n"
         return self._render_single_message(chat_id, message)
 
     def _render_single_message(self, chat_id, msg) -> Reply:

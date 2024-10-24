@@ -1,7 +1,6 @@
 import datetime
 import os
 import unittest
-from zoneinfo import ZoneInfo
 
 import time_machine
 import time
@@ -98,6 +97,24 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             user = self.users_orm.get_user_by_id(1)
             self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 6, 5).astimezone(datetime.timezone.utc))
             self.assertEqual(user['next_prompt_type'], 'penalty')
+
+    def test_on_start_command(self):
+        data = self.game_manager.on_review_command(1)
+        self.assertEqual(data, {'buttons': [],
+                                'image': None,
+                                'menu_commands': [],
+                                'message': '/en - English\n'
+                                           '\n'
+                                           '/de - Deutsch\n'
+                                           '\n'
+                                           '/es - Español\n'
+                                           '\n'
+                                           '/fr - Français\n'
+                                           '\n'
+                                           '/ru - Русский\n'
+                                           '\n',
+                                'to_chat_id': 1})
+
 
     @time_machine.travel("2022-04-21", tick=False)
     def test_process_tick_does_not_reduce_score_for_beginner(self):
