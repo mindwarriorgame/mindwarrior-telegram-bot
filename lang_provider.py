@@ -90,7 +90,9 @@ fr = Lang(
 
  ‣ <a href="https://mindwarriorgame.org/quick-start.fr.html">Guide de démarrage rapide</a>
  ‣ <a href="https://mindwarriorgame.org/faq.fr.html">FAQ</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.fr.html">Politique de confidentialité</a>""",
+ ‣ <a href="https://mindwarriorgame.org/privacy-policy.fr.html">Politique de confidentialité</a>
+
+Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
 
     menu_review="💫️réviser la Formule",
     menu_pause="⏸️ mettre le jeu en pause",
@@ -249,7 +251,9 @@ es = Lang(
 
  ‣ <a href="https://mindwarriorgame.org/quick-start.es.html">Guía de inicio rápido</a>
  ‣ <a href="https://mindwarriorgame.org/faq.es.html">Preguntas frecuentes</a> 
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.es.html">Política de privacidad</a>""",
+ ‣ <a href="https://mindwarriorgame.org/privacy-policy.es.html">Política de privacidad</a>
+
+Presiona el botón de abajo para iniciar el juego.""",
 
     menu_review="💫️revisar Fórmula",
     menu_pause="⏸️ pausar el juego",
@@ -402,7 +406,9 @@ en = Lang(
 
  ‣ <a href="https://mindwarriorgame.org/quick-start.en.html">Quick-start guide</a>
  ‣ <a href="https://mindwarriorgame.org/faq.en.html">FAQs</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.en.html">Privacy policy</a>""",
+ ‣ <a href="https://mindwarriorgame.org/privacy-policy.en.html">Privacy policy</a>
+
+Press the button below to start the game.""",
 
     menu_review="💫️review Formula",
     menu_pause="⏸️ pause the game",
@@ -478,7 +484,7 @@ en = Lang(
                    "💪 <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.en.html#pause\">Paused?</a> {paused}\n"
                    "❄️ <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Cool-down</a> time before next reward: {cooldown}\n"
-                   "⏰ Time before next<a href=\"https://mindwarriorgame.org/faq.en.html#forgot\">reminder</a>: {punishment}"),
+                   "⏰ Time before next <a href=\"https://mindwarriorgame.org/faq.en.html#forgot\">reminder</a>: {punishment}"),
 
     resumed="The game is resumed.",
     already_paused="The game is already paused ⏸️\n"
@@ -554,7 +560,9 @@ de = Lang(
 
  ‣ <a href="https://mindwarriorgame.org/quick-start.de.html">Schnellstart-Anleitung</a>
  ‣ <a href="https://mindwarriorgame.org/faq.de.html">FAQs</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.de.html">Datenschutzrichtlinie</a>""",
+ ‣ <a href="https://mindwarriorgame.org/privacy-policy.de.html">Datenschutzrichtlinie</a>
+
+Drücken Sie die Taste unten, um das Spiel zu starten.""",
 
     menu_review="💫️Formel überprüfen",
     menu_pause="⏸️ Spiel pausieren",
@@ -630,7 +638,7 @@ de = Lang(
                    "💪 <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">Pausiert?</a> {paused}\n"
                    "❄️ <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlungszeit</a> bis zur nächsten Belohnung: {cooldown}\n"
-                   "⏰ Zeit bis zur nächsten<a href=\"https://mindwarriorgame.org/faq.de.html#forgot\">Erinnerung</a>: {punishment}"),
+                   "⏰ Zeit bis zur nächsten <a href=\"https://mindwarriorgame.org/faq.de.html#forgot\">Erinnerung</a>: {punishment}"),
 
     resumed="Das Spiel wurde fortgesetzt.",
     already_paused="Das Spiel ist bereits pausiert ⏸️\n"
@@ -707,7 +715,9 @@ ru = Lang(
 
  ‣ <a href="https://mindwarriorgame.org/quick-start.ru.html">Краткое руководство</a>
  ‣ <a href="https://mindwarriorgame.org/faq.ru.html">Вопросы и ответы</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.ru.html">Политика конфиденциальности</a>""",
+ ‣ <a href="https://mindwarriorgame.org/privacy-policy.ru.html">Политика конфиденциальности</a>
+
+Нажмите кнопку ниже, чтобы начать игру.""",
 
     menu_review="💫️просмотреть Формулу",
     menu_pause="⏸️ поставить игру на паузу",
