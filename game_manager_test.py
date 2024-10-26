@@ -10,7 +10,7 @@ from game_manager import GameManager
 from users_orm import UsersOrm
 
 
-class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
+class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
     users_orm: UsersOrm
 
@@ -446,6 +446,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['rewards'] = 5
         user['active_game_counter_state'] = counter.serialize()
         user['last_reward_time'] = datetime.datetime(2022, 4, 21)
+        user['next_prompt_time'] = datetime.datetime(2022, 4, 22, 1, 45).astimezone(datetime.timezone.utc)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
@@ -468,7 +469,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
                                            'time before next reward: 0m 0s\n'
                                            '⏰ Time before next<a '
                                            'href="https://mindwarriorgame.org/faq.en.html#forgot">reminder</a>: '
-                                           '0m 0s',
+                                           '1h 45m',
                                 'to_chat_id': 1})
 
 

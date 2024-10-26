@@ -114,7 +114,8 @@ class GameManager:
             ret.append(f"{days}{lang.days_short}")
         if hours > 0 or not skip_zeros:
             ret.append(f"{hours}{lang.hours_short}")
-        if minutes > 0 or not skip_zeros:
+
+        if len(ret) == 0 or minutes > 0:
             ret.append(f"{minutes}{lang.minutes_short}")
 
         return " ".join(ret)
@@ -644,7 +645,7 @@ class GameManager:
                 time=self._format_time_minutes(lang, active_play_time_seconds),
                 paused="⚪" if is_paused is None else "🟢",
                 cooldown=self._format_time_seconds(lang, 5*60 - since_last_reward_secs if since_last_reward_secs < 5*60 else 0),
-                punishment=self._format_time_seconds(lang, till_next_prompt_time)
+                punishment=self._format_time_minutes(lang, till_next_prompt_time, skip_zeros=True)
             ),
             'buttons': [],
             'menu_commands': [],
