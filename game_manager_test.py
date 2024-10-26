@@ -467,7 +467,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '❄️ <a '
                                            'href="https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).">Cool-down</a> '
                                            'time before next reward: 0m 0s\n'
-                                           '⏰ Time before next<a '
+                                           '⏰ Time before next <a '
                                            'href="https://mindwarriorgame.org/faq.en.html#forgot">reminder</a>: '
                                            '1h 45m',
                                 'to_chat_id': 1})

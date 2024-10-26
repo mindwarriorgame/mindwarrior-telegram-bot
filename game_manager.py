@@ -192,7 +192,9 @@ class GameManager:
         if abs(counter_active_game.get_total_seconds() - counter_review_state.get_total_seconds()) > 60:
             since_last_review_secs = int(Counter(user['review_counter_state']).get_total_seconds())
 
-        return self._render_review_screen(lang, user['user_id'], since_last_review_secs)
+        is_paused = user['paused_counter_state'] is not None
+
+        return self._render_review_screen(lang, user['user_id'], is_paused, since_last_review_secs)
 
 
     def _on_reviewed(self, lang: Lang, user: User, user_message: str):
@@ -524,8 +526,9 @@ class GameManager:
         if user_message == "render_screen_11":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_review_screen(lang, chat_id, None)]
-                ret = ret + [self._render_review_screen(lang, chat_id, 123321)]
+                ret = ret + [self._render_review_screen(lang, chat_id, True, None)]
+                ret = ret + [self._render_review_screen(lang, chat_id, False, None)]
+                ret = ret + [self._render_review_screen(lang, chat_id, False, 123321)]
             return ret
 
         if user_message == "render_screen_12":
@@ -666,9 +669,11 @@ class GameManager:
             'image': None
         }
 
-    def _render_review_screen(self, lang, chat_id, since_last_review_secs):
+    def _render_review_screen(self, lang, chat_id, is_paused: bool, since_last_review_secs):
         message = []
-        if since_last_review_secs is not None:
+        if is_paused:
+            message.append(lang.review_paused_text)
+        elif since_last_review_secs is not None:
             message.append(lang.review_since_last_time.format(duration=self._format_time_minutes(lang, since_last_review_secs)))
 
         message.append(lang.review_command_text)
@@ -788,6 +793,9 @@ class GameManager:
             'menu_commands': [],
             'image': None
         }
+
+
+
 
 
 

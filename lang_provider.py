@@ -21,6 +21,7 @@ class Lang:
     review_command_button_yourself: str
     review_command_button_world: str
     review_since_last_time: str
+    review_paused_text: str
     days_short: str
     hours_short: str
     minutes_short: str
@@ -154,6 +155,8 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
     formula_changed="La <i>Formule</i> a été mise à jour !",
 
     difficulties=["Débutant", "Facile", "Moyen", "Difficile", "Expert"],
+
+    review_paused_text="Le jeu est en pause",
 
     paused_command="Le jeu est en pause ⏸️\n"
                    "\n"
@@ -316,6 +319,8 @@ Presiona el botón de abajo para iniciar el juego.""",
 
     difficulties=["Principiante", "Fácil", "Medio", "Difícil", "Experto"],
 
+    review_paused_text="El juego está pausado",
+
     paused_command="El juego está pausado ⏸️\n"
                     "\n"    
                     "No recibirás recordatorios sobre tu <i>Fórmula</i>, "
@@ -471,6 +476,8 @@ Press the button below to start the game.""",
 
     difficulties=["Beginner", "Easy", "Medium", "Hard", "Expert"],
 
+    review_paused_text="The game is paused",
+
     paused_command="The game is paused ⏸️\n"
                    "\n"
                    "You will not be receiving reminders about your <i>Formula</i>, "
@@ -624,6 +631,8 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
     formula_changed="Die <i>Formel</i> wurde aktualisiert!",
 
     difficulties=["Anfänger", "Leicht", "Mittel", "Schwer", "Experte"],
+
+    review_paused_text="Das Spiel ist pausiert",
 
     paused_command="Das Spiel ist pausiert ⏸️\n"
                    "\n"
@@ -782,6 +791,8 @@ ru = Lang(
     formula_changed="<i>Формула</i> обновлена!",
 
     difficulties=["Новичок", "Легко", "Средне", "Сложно", "Эксперт"],
+
+    review_paused_text="Игра на паузе",
 
     paused_command="Игра на паузе ⏸️\n"
                    "\n"
