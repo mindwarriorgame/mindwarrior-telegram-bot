@@ -41,7 +41,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=0,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type=''
+            next_prompt_type='',
+            badges_serialized=''
         ))
 
     @time_machine.travel("2022-04-21")
@@ -65,7 +66,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=0,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type='qwe'
+            next_prompt_type='qwe',
+            badges_serialized=''
         ))
 
         user['lang_code'] = 'en'
@@ -79,6 +81,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['counters_history_serialized'] = 'my_counters_history_serialized'
         user['shared_key_uuid'] = 'dbca'
         user['next_prompt_type'] = 'ewq'
+        user['badges_serialized'] = 'badges_serialized'
         self.users_orm.upsert_user(user)
 
         self.assertEqual(self.users_orm.get_user_by_id(123), User(
@@ -93,7 +96,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized='my_counters_history_serialized',
             shared_key_uuid='dbca',
-            next_prompt_type='ewq'
+            next_prompt_type='ewq',
+            badges_serialized='badges_serialized'
         ))
 
     def test_get_some_users_for_prompt_when_no_user(self):
@@ -113,7 +117,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized='my_counters_history_serialized',
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [user])
@@ -132,7 +137,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized='counters_history_serialized',
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -151,7 +157,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized='my_counters_history_serialized',
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 2), [])
@@ -171,7 +178,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -191,7 +199,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -209,7 +218,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.users_orm.remove_user(124)
@@ -228,7 +238,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=0,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type=''
+            next_prompt_type='',
+            badges_serialized=''
         ))
 
     def test_count_active_users(self):
@@ -244,7 +255,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 1)
@@ -266,7 +278,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 1)
@@ -287,7 +300,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)
@@ -307,7 +321,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
-            next_prompt_type='prompt_type'
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)

@@ -773,5 +773,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '\n'
                                            ' - counters_history_serialized: None\n'
                                            '\n'
-                                           ' - next_prompt_type: reminder',
+                                           ' - next_prompt_type: reminder\n'
+                                           '\n'
+                                           ' - badges_serialized: ',
                                 'to_chat_id': 1})

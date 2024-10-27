@@ -32,6 +32,8 @@ class User(TypedDict):
 
     next_prompt_type: str
 
+    badges_serialized: str
+
 class UsersOrm:
 
     def __del__(self) -> None:
@@ -67,6 +69,8 @@ class UsersOrm:
                 
                 next_prompt_type TEXT NOT NULL DEFAULT "",
                 
+                badges_serialized TEXT NOT NULL DEFAULT "",
+                
                 PRIMARY KEY (user_id)
             )
         ''')
@@ -74,6 +78,12 @@ class UsersOrm:
 
         try:
             self.conn.execute('ALTER TABLE users ADD COLUMN next_prompt_type TEXT NOT NULL DEFAULT ""');
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            print(f"Error adding column 'next_prompt_type': {e}")
+
+        try:
+            self.conn.execute('ALTER TABLE users ADD COLUMN badges_serialized TEXT NOT NULL DEFAULT ""');
             self.conn.commit()
         except sqlite3.OperationalError as e:
             print(f"Error adding column 'next_prompt_type': {e}")
@@ -136,7 +146,8 @@ class UsersOrm:
                 rewards=0,
                 counters_history_serialized=None,
                 shared_key_uuid=str(uuid.uuid4()),
-                next_prompt_type=""
+                next_prompt_type="",
+                badges_serialized=""
             )
         return User(
             user_id=param[0],
@@ -150,7 +161,8 @@ class UsersOrm:
             rewards=param[10],
             counters_history_serialized=param[11],
             shared_key_uuid=param[12],
-            next_prompt_type=param[13]
+            next_prompt_type=param[13],
+            badges_serialized=param[14]
         )
     def remove_user(self, user_id: int):
         self.cursor.execute('DELETE FROM users WHERE user_id = ?', (user_id,))
@@ -172,8 +184,9 @@ class UsersOrm:
                 rewards,
                 counters_history_serialized,
                 shared_key_uuid,
-                next_prompt_type
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                next_prompt_type,
+                badges_serialized
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 lang_code = excluded.lang_code,
                 difficulty = excluded.difficulty,
@@ -187,7 +200,8 @@ class UsersOrm:
                 rewards = excluded.rewards,
                 counters_history_serialized = excluded.counters_history_serialized,
                 shared_key_uuid = excluded.shared_key_uuid,
-                next_prompt_type = excluded.next_prompt_type
+                next_prompt_type = excluded.next_prompt_type,
+                badges_serialized = excluded.badges_serialized
         ''', (
             user['user_id'],
             user['lang_code'],
@@ -206,7 +220,10 @@ class UsersOrm:
             user['rewards'],
             user['counters_history_serialized'],
             user['shared_key_uuid'],
-            user['next_prompt_type']
+            user['next_prompt_type'],
+            user['badges_serialized']
         ))
         self.conn.commit()
+
+        
 
