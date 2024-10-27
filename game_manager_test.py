@@ -133,7 +133,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self.game_manager.process_tick()
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
-                self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
+                self.assertEqual(data, [{'buttons': [],
+                                         'image': './badge-images/cat-unhappy_512.jpg',
+                                         'menu_commands': [],
+                                         'message': "You've got a new achievement! 🌟",
+                                         'to_chat_id': 1},
+                                        {'buttons': [{'text': 'Review your "Formula"',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                          'image': None,
                                          'menu_commands': [],
@@ -159,7 +164,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self.game_manager.process_tick()
             with time_machine.travel("2022-04-21 03:10", tick=False):
                 data = self.game_manager.process_tick()
-                self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
+                self.assertEqual(data, [{'buttons': [],
+                                         'image': './badge-images/cat-unhappy_512.jpg',
+                                         'menu_commands': [],
+                                         'message': "You've got a new achievement! 🌟",
+                                         'to_chat_id': 1},
+                                        {'buttons': [{'text': 'Review your "Formula"',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                          'image': None,
                                          'menu_commands': [],
@@ -190,7 +200,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                     self.game_manager.process_tick() # reminder
                     with time_machine.travel("2022-04-21 06:20", tick=False):
                         data = self.game_manager.process_tick()
-                        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
+                        self.assertEqual(data, [{'buttons': [],
+                                                 'image': './badge-images/cat-unhappy_512.jpg',
+                                                 'menu_commands': [],
+                                                 'message': "You've got a new achievement! 🌟",
+                                                 'to_chat_id': 1},
+                                                {'buttons': [{'text': 'Review your "Formula"',
                                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                                  'image': None,
                                                  'menu_commands': [],

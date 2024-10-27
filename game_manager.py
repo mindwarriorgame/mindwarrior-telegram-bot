@@ -374,13 +374,13 @@ class GameManager:
             users = self.users_orm.get_some_users_for_prompt(20, difficulty)
             for user in users:
                 if user['next_prompt_type'] == NEXT_PROMPT_TYPE_PENALTY:
-                    replies += [self._process_penalty_prompt(user)]
+                    replies += self._process_penalty_prompt(user)
                 else:
-                    replies += [self._process_reminder_prompt(user)]
+                    replies += self._process_reminder_prompt(user)
 
         return replies
 
-    def _process_penalty_prompt(self, user: User) -> Reply:
+    def _process_penalty_prompt(self, user: User) -> [Reply]:
         difficulty = user['difficulty']
         penalty_minutes = PROMPT_MINUTES[difficulty]
 
@@ -394,7 +394,7 @@ class GameManager:
         user['rewards'] -= self._calculate_penalty(difficulty, is_first_penalty)
         self.users_orm.upsert_user(user)
 
-        return self._render_penalty(lang, user['user_id'], user['difficulty'], user['rewards'], is_first_penalty)
+        return self._wrap_with_badge(lang, user, 'on_penalty', self._render_penalty(lang, user['user_id'], user['difficulty'], user['rewards'], is_first_penalty))
 
     def _record_counter_time(self, user: User, counter_name: str, serialized_counter: str):
         counter = Counter(serialized_counter)
@@ -765,14 +765,14 @@ class GameManager:
             'image': None
         }
 
-    def _process_reminder_prompt(self, user: User):
+    def _process_reminder_prompt(self, user: User) -> [Reply]:
         lang = self._get_user_lang(user['lang_code'])
 
         user['next_prompt_type'] = NEXT_PROMPT_TYPE_PENALTY
         user['next_prompt_time'] = now_utc() + datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
         self.users_orm.upsert_user(user)
 
-        return self._render_reminder_prompt(lang, user['user_id'])
+        return self._wrap_with_badge(lang, user, 'on_prompt', self._render_reminder_prompt(lang, user['user_id']))
 
     def _reset_user_next_prompt(self, user: User):
         difficulty = user['difficulty']

@@ -56,6 +56,11 @@ async def send_reply_with_bot(ret: Reply):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await bot.send_message(ret['to_chat_id'], ret['message'], parse_mode='HTML', reply_markup=reply_markup)
 
+    if 'image' in ret and ret['image'] is not None:
+        await bot.send_photo(ret['to_chat_id'], photo=ret['image'])
+        if ret['image'].startswith('tmp_'):
+            os.remove(ret['image'])
+
 
 async def start_command(update, context):
     global game_manager
