@@ -1,5 +1,5 @@
 import json
-from typing import TypedDict
+from typing import TypedDict, Optional
 
 from badge_counters.cat_badge_counter import CatBadgeCounter
 from badge_counters.feather_badge_counter import FeatherBadgeCounter
@@ -20,22 +20,22 @@ class BadgesManager:
             self.data = UserBadgesData(**json.loads(badges_serialized))
 
 
-    def on_game_started(self):
-        return self._chain_badge_counters("on_game_started", 0)
+    def on_game_started(self, active_play_time_secs: int) -> Optional[str]:
+        return self._chain_badge_counters("on_game_started", active_play_time_secs)
 
-    def on_formula_updated(self, active_play_time_secs: int):
+    def on_formula_updated(self, active_play_time_secs: int) -> Optional[str]:
         return self._chain_badge_counters("on_formula_updated", active_play_time_secs)
 
-    def on_prompt(self, active_play_time_secs: int):
+    def on_prompt(self, active_play_time_secs: int) -> Optional[str]:
         return self._chain_badge_counters("on_prompt", active_play_time_secs)
 
-    def on_penalty(self, active_play_time_secs: int):
+    def on_penalty(self, active_play_time_secs: int) -> Optional[str]:
         return self._chain_badge_counters("on_penalty", active_play_time_secs)
 
-    def on_review(self, active_play_time_secs: int):
+    def on_review(self, active_play_time_secs: int) -> Optional[str]:
         return self._chain_badge_counters("on_review", active_play_time_secs)
 
-    def _chain_badge_counters(self, method_name, active_play_time_secs):
+    def _chain_badge_counters(self, method_name, active_play_time_secs) -> Optional[str]:
         counters = [
             CatBadgeCounter(),
             TimeBadgeCounter(),

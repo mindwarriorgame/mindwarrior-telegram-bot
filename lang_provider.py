@@ -80,6 +80,8 @@ class Lang:
 
     penalty_text: str
 
+    new_achievement: str
+
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
@@ -237,7 +239,9 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
         "Vous avez oublié de revoir votre <i>Formule</i> 🟥\n"
         "\n"
         "{penalty_msg}"
-    )
+    ),
+
+    new_achievement = "Vous avez un nouveau succès ! 🌟"
 
 
 )
@@ -395,7 +399,9 @@ Presiona el botón de abajo para iniciar el juego.""",
                                  "🌟 Estrellas restantes: {score}",
     penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥\n"
                    "\n"
-                   "{penalty_msg}"
+                   "{penalty_msg}",
+
+    new_achievement = "¡Tienes un nuevo logro! 🌟"
 )
 
 
@@ -552,7 +558,9 @@ Press the button below to start the game.""",
                                "🌟 Remaining stars: {score}",
     penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
                     "\n"   
-                    "{penalty_msg}"
+                    "{penalty_msg}",
+
+    new_achievement = "You've got a new achievement! 🌟"
 
 )
 
@@ -708,7 +716,9 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                                "🌟 Verbleibende Sterne: {score}",
     penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥\n"
                    "\n"
-                   "{penalty_msg}"
+                   "{penalty_msg}",
+
+    new_achievement = "Du hast einen neuen Erfolg! 🌟"
 )
 
 
@@ -868,7 +878,9 @@ ru = Lang(
                                "🌟 Осталось звезд: {score}",
     penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n"
                    "\n"
-                   "{penalty_msg}"
+                   "{penalty_msg}",
+
+    new_achievement = "У вас новое достижение! 🌟"
 )
 
 

@@ -38,21 +38,26 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
-        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
-                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
-                                 'image': None,
-                                 'menu_commands': [],
-                                 'message': 'The game has started 🏁\n'
-                                            '\n'
-                                            '💪<a '
-                                            'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
-                                            'level</a>: Easy\n'
-                                            '\n'
-                                            'Review your <i>Formula</i> before 11:00\n'
-                                            '\n'
-                                            '/difficulty - change the difficulty\n'
-                                            '/pause - pause the game',
-                                 'to_chat_id': 1}])
+        self.assertEqual(data, [{'buttons': [],
+                                  'image': './badge-images/feather_512.jpg',
+                                  'menu_commands': [],
+                                  'message': "You've got a new achievement! 🌟",
+                                  'to_chat_id': 1},
+                                 {'buttons': [{'text': 'Review your "Formula"',
+                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                  'image': None,
+                                  'menu_commands': [],
+                                  'message': 'The game has started 🏁\n'
+                                             '\n'
+                                             '💪<a '
+                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
+                                             'level</a>: Easy\n'
+                                             '\n'
+                                             'Review your <i>Formula</i> before 11:00\n'
+                                             '\n'
+                                             '/difficulty - change the difficulty\n'
+                                             '/pause - pause the game',
+                                  'to_chat_id': 1}])
 
         user = self.users_orm.get_user_by_id(1)
 
@@ -272,21 +277,26 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
-        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
-                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
-                                 'image': None,
-                                 'menu_commands': [],
-                                 'message': 'The game has started 🏁\n'
-                                            '\n'
-                                            '💪<a '
-                                            'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
-                                            'level</a>: Expert\n'
-                                            '\n'
-                                            'Review your <i>Formula</i> before 14:00\n'
-                                            '\n'
-                                            '/difficulty - change the difficulty\n'
-                                            '/pause - pause the game',
-                                 'to_chat_id': 1}])
+        self.assertEqual(data, [{'buttons': [],
+                                  'image': './badge-images/feather_512.jpg',
+                                  'menu_commands': [],
+                                  'message': "You've got a new achievement! 🌟",
+                                  'to_chat_id': 1},
+                                 {'buttons': [{'text': 'Review your "Formula"',
+                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                  'image': None,
+                                  'menu_commands': [],
+                                  'message': 'The game has started 🏁\n'
+                                             '\n'
+                                             '💪<a '
+                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
+                                             'level</a>: Expert\n'
+                                             '\n'
+                                             'Review your <i>Formula</i> before 14:00\n'
+                                             '\n'
+                                             '/difficulty - change the difficulty\n'
+                                             '/pause - pause the game',
+                                  'to_chat_id': 1}])
 
         user = self.users_orm.get_user_by_id(1)
         self.assertIsNone(user['paused_counter_state'])
@@ -332,6 +342,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['last_reward_time'] = datetime.datetime(2022, 4, 21)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
+        user['badges_serialized'] = 'asd'
         self.users_orm.upsert_user(user)
 
         data = self.game_manager.on_data_provided(1, 'set_difficulty:3;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
@@ -370,6 +381,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(counter.get_total_seconds(), 0)
 
         self.assertIsNone(user['counters_history_serialized'])
+        self.assertEqual(user['badges_serialized'], '')
 
     @time_machine.travel("2022-04-22", tick=False)
     def test_set_difficulty_sets_next_reminder_for_low_levels(self):
@@ -737,6 +749,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.game_manager.on_pause_command(1)
 
         data = self.game_manager.on_data_command(1)
+        user = self.users_orm.get_user_by_id(1)
         self.assertEqual(data, {'buttons': [{'text': 'View localStorage data',
                                              'url': 'http://frontend?env=prod&lang_code=en&view_localstorage=1'},
                                             {'text': 'DELETE ALL DATA',
@@ -775,5 +788,5 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '\n'
                                            ' - next_prompt_type: reminder\n'
                                            '\n'
-                                           ' - badges_serialized: ',
+                                           f" - badges_serialized: {user['badges_serialized']}",
                                 'to_chat_id': 1})

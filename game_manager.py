@@ -3,6 +3,7 @@ import uuid
 from typing import TypedDict, Optional
 import time
 
+from badges_manager import BadgesManager
 from counter import Counter
 from graph_renderer import REVIEW_COUNTER_HISTORY_NAME, PAUSED_COUNTER_HISTORY_NAME, GraphRenderer
 from history import add_timer_rec_to_history, get_timer_recs_from_history
@@ -87,7 +88,7 @@ class GameManager:
         if "render_screen_" in user_message:
             return self.on_render_screen(chat_id, user_message)
         if "start_game" in user_message:
-            return [self._on_start_game(lang, user, user_message)]
+            return self._on_start_game(lang, user, user_message)
         if "formula_updated" in user_message:
             return [self._on_formula_updated(lang, user)]
         if "set_difficulty:" in user_message:
@@ -125,11 +126,11 @@ class GameManager:
         seconds = int(time_secs % 60)
         return f"{minutes}{lang.minutes_short} {seconds}{lang.seconds_short}"
 
-    def _on_start_game(self, lang: Lang, user: User, user_message) -> Reply:
+    def _on_start_game(self, lang: Lang, user: User, user_message) -> [Reply]:
         next_review_prompt_times = user_message.split("start_game;next_review:")[1].split(",,")
         self._restart_user_game(user)
 
-        return self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id'])
+        return self._wrap_with_badge(lang, user, 'on_game_started', self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id']))
 
     def _on_formula_updated(self, lang: Lang, user: User) -> Reply:
         return self._render_single_message(user['user_id'], lang.formula_changed)
@@ -174,6 +175,7 @@ class GameManager:
 
         user['rewards'] = 0
         user['counters_history_serialized'] = None
+        user['badges_serialized'] = ''
         self.users_orm.upsert_user(user)
 
     def on_review_command(self, chat_id) -> Reply:
@@ -793,6 +795,24 @@ class GameManager:
             'menu_commands': [],
             'image': None
         }
+
+    def _wrap_with_badge(self, lang: Lang, user: User, action, reply: Reply) -> [Reply]:
+        badges_manager = BadgesManager(user['badges_serialized'])
+        active_game_counter_secs = Counter(user['active_game_counter_state']).get_total_seconds()
+        badge = getattr(badges_manager, action)(active_game_counter_secs)
+        user['badges_serialized'] = badges_manager.serialize()
+        self.users_orm.upsert_user(user)
+        result = []
+        if badge is not None:
+            result = result + [{
+                'to_chat_id': user['user_id'],
+                'message': lang.new_achievement,
+                'buttons': [],
+                'menu_commands': [],
+                'image': './badge-images/' + badge + '_512.jpg'
+            }]
+        result = result + [reply]
+        return result
 
 
 
