@@ -596,7 +596,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
-        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
+        self.assertEqual(data, [{'buttons': [],
+                                 'image': './badge-images/star-small_512.jpg',
+                                 'menu_commands': [],
+                                 'message': "You've got a new achievement! 🌟",
+                                 'to_chat_id': 1},
+                                {'buttons': [{'text': 'Review your "Formula"',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                  'image': None,
                                  'menu_commands': [],
@@ -640,7 +645,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
-        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
+        self.assertEqual(data, [{'buttons': [],
+                                 'image': './badge-images/star-small_512.jpg',
+                                 'menu_commands': [],
+                                 'message': "You've got a new achievement! 🌟",
+                                 'to_chat_id': 1},
+                                {'buttons': [{'text': 'Review your "Formula"',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                  'image': None,
                                  'menu_commands': [],
@@ -675,7 +685,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am,,12:18 am,,12:19 am')
 
-        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
+        self.assertEqual(data, [{'buttons': [],
+                                 'image': './badge-images/star-small_512.jpg',
+                                 'menu_commands': [],
+                                 'message': "You've got a new achievement! 🌟",
+                                 'to_chat_id': 1},
+                                {'buttons': [{'text': 'Review your "Formula"',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                  'image': None,
                                  'menu_commands': [],

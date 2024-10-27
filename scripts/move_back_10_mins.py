@@ -49,5 +49,5 @@ def _move_time_n_minutes(self, user: User, n_minutes: int):
             new_history = add_timer_rec_to_history(new_history, rec)
         user['counters_history_serialized'] = new_history
 
-_move_time_n_minutes(users_orm, user, 10)
+_move_time_n_minutes(users_orm, user, 60)
 users_orm.upsert_user(user)

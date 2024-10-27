@@ -94,7 +94,7 @@ class GameManager:
         if "set_difficulty:" in user_message:
             return [self._on_set_difficulty(lang, user, user_message)]
         if "reviewed_at:" in user_message:
-            return [self._on_reviewed(lang, user, user_message)]
+            return self._on_reviewed(lang, user, user_message)
         if "regenerate_shared_key_uuid" in user_message:
             user['shared_key_uuid'] = str(uuid.uuid4())
             self.users_orm.upsert_user(user)
@@ -199,7 +199,7 @@ class GameManager:
         return self._render_review_screen(lang, user['user_id'], is_paused, since_last_review_secs)
 
 
-    def _on_reviewed(self, lang: Lang, user: User, user_message: str):
+    def _on_reviewed(self, lang: Lang, user: User, user_message: str) -> [Reply]:
         if user['active_game_counter_state'] is None:
             return self._render_start_game_button(lang, user)
 
@@ -210,15 +210,15 @@ class GameManager:
             user_timestamp = int(user_message.split('reviewed_at:')[1].split(';')[0])
             next_review = user_message.split('next_review:')[1].split(',,')[user['difficulty']]
         except:
-            return self._render_single_message(user['user_id'], "Cannot parse input")
+            return [self._render_single_message(user['user_id'], "Cannot parse input")]
         delta = abs(now_timestamp - user_timestamp)
         if delta > 60:
-            return {
+            return [{
                 'to_chat_id': user['user_id'],
                 'message': lang.review_command_timeout,
                 'buttons': [self._render_review_button(lang)],
                 'menu_commands': []
-            }
+            }]
 
         is_resumed = self._maybe_resume(user, lang)
 
@@ -242,15 +242,15 @@ class GameManager:
         self.users_orm.upsert_user(user)
 
         if new_stars > 0:
-            return self._render_review_command_success(user['rewards'], next_review,
+            return self._wrap_with_badge(lang, user, 'on_review', self._render_review_command_success(user['rewards'], next_review,
                                                 time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
                                                 lang=lang,
-                                                chat_id=user['user_id'], is_resumed=is_resumed, new_stars=new_stars)
+                                                chat_id=user['user_id'], is_resumed=is_resumed, new_stars=new_stars))
         else:
-            return self._render_review_command_success_no_rewards(user['rewards'], next_review,
+            return [self._render_review_command_success_no_rewards(user['rewards'], next_review,
                                                 time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
                                                 lang=lang,
-                                                chat_id=user['user_id'], is_resumed=is_resumed)
+                                                chat_id=user['user_id'], is_resumed=is_resumed)]
 
 
     def _calculate_active_play_time_seconds(self, user: User) -> int:
