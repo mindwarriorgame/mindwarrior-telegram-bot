@@ -809,8 +809,11 @@ class GameManager:
                 'message': lang.new_achievement,
                 'buttons': [],
                 'menu_commands': [],
-                'image': './badge-images/' + badge + '_512.jpg'
+                'image': './badge-images/' + badge + '.jpg'
             }]
+        # stretch the content to align with the badge
+        INVISIBLE_SPACE_EMOJI = "ㅤ"
+        reply['message']  = reply['message'] + ((INVISIBLE_SPACE_EMOJI + " ") * 10)
         result = result + [reply]
         return result
 
