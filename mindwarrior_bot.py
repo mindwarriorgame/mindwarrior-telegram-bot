@@ -28,12 +28,14 @@ async def process_ticks():
 
 
 async def send_reply(message: Message, ret: Reply):
-    if len(ret['buttons']) == 0:
-        await message.reply_text(ret['message'], parse_mode='HTML')
-    else:
-        keyboard = [[InlineKeyboardButton(button['text'], web_app=WebAppInfo(url=button['url']))] for button in ret['buttons']]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await message.reply_text(ret['message'], parse_mode='HTML', reply_markup=reply_markup)
+    if len(ret['message']) > 0:
+        if len(ret['buttons']) == 0:
+            await message.reply_text(ret['message'], parse_mode='HTML')
+        else:
+            keyboard = [[InlineKeyboardButton(button['text'], web_app=WebAppInfo(url=button['url']))] for button in ret['buttons']]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await message.reply_text(ret['message'], parse_mode='HTML', reply_markup=reply_markup)
+
     if len(ret['menu_commands']) > 0:
         await bot.set_my_commands(
             commands=ret['menu_commands'],
@@ -49,12 +51,13 @@ async def send_reply(message: Message, ret: Reply):
 
 async def send_reply_with_bot(ret: Reply):
     global bot
-    if len(ret['buttons']) == 0:
-        await bot.send_message(ret['to_chat_id'], ret['message'], parse_mode='HTML')
-    else:
-        keyboard = [[InlineKeyboardButton(button['text'], web_app=WebAppInfo(url=button['url']))] for button in ret['buttons']]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await bot.send_message(ret['to_chat_id'], ret['message'], parse_mode='HTML', reply_markup=reply_markup)
+    if len(ret['message']) > 0:
+        if len(ret['buttons']) == 0:
+            await bot.send_message(ret['to_chat_id'], ret['message'], parse_mode='HTML')
+        else:
+            keyboard = [[InlineKeyboardButton(button['text'], web_app=WebAppInfo(url=button['url']))] for button in ret['buttons']]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await bot.send_message(ret['to_chat_id'], ret['message'], parse_mode='HTML', reply_markup=reply_markup)
 
     if 'image' in ret and ret['image'] is not None:
         await bot.send_photo(ret['to_chat_id'], photo=ret['image'])

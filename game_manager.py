@@ -736,30 +736,10 @@ class GameManager:
         }
 
     def _render_penalty(self, lang: Lang, chat_id: int, difficulty: int, scores: int, is_first_penalty: bool) -> Reply:
-        penalty_msg = ""
-        penalty = self._calculate_penalty(difficulty, is_first_penalty)
-
-        if PENALTY_CONSEQUENT[difficulty] == 0:
-            penalty_msg = lang.penalty_msg_no_penalty_for_level.format(difficulty=lang.difficulties[difficulty])
-
-        elif is_first_penalty and PENALTY_FIRST[difficulty] == 0:
-            penalty_msg = lang.penalty_msg_no_penalty_first_time.format(difficulty=lang.difficulties[difficulty])
-
-        elif is_first_penalty and PENALTY_FIRST[difficulty] < PENALTY_CONSEQUENT[difficulty]:
-            penalty_msg = lang.penalty_msg_first_time.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
-
-        elif penalty == PENALTY_SMALL:
-            penalty_msg = lang.penalty_msg_generic_small.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
-
-        elif penalty == PENALTY_FULL:
-            penalty_msg = lang.penalty_msg_generic_full.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
-
-        if penalty_msg == "":
-            raise Exception("Unknown penalty message")
 
         return {
             'to_chat_id': chat_id,
-            'message': lang.penalty_text.format(penalty_msg=penalty_msg),
+            'message': lang.penalty_text,
             'buttons': [self._render_review_button(lang)],
             'menu_commands': [],
             'image': None
@@ -806,14 +786,14 @@ class GameManager:
         if badge is not None:
             result = result + [{
                 'to_chat_id': user['user_id'],
-                'message': lang.new_achievement,
+                'message': "" if badge == 'cat-unhappy' else lang.new_achievement,
                 'buttons': [],
                 'menu_commands': [],
                 'image': './badge-images/' + badge + '.jpg'
             }]
-        # stretch the content to align with the badge
-        INVISIBLE_SPACE_EMOJI = "ㅤ"
-        reply['message']  = reply['message'] + ((INVISIBLE_SPACE_EMOJI + " ") * 10)
+            # stretch the content to align with the badge
+            INVISIBLE_SPACE_EMOJI = "ㅤ"
+            reply['message']  = reply['message'] + ((INVISIBLE_SPACE_EMOJI + " ") * 15)
         result = result + [reply]
         return result
 

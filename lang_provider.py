@@ -236,9 +236,7 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                                 "🌟 Il ne vous reste plus que {score} étoiles !",
 
     penalty_text = (
-        "Vous avez oublié de revoir votre <i>Formule</i> 🟥\n"
-        "\n"
-        "{penalty_msg}"
+        "Vous avez oublié de revoir votre <i>Formule</i> 🟥"
     ),
 
     new_achievement = "Vous avez un nouveau succès ! 🌟"
@@ -397,9 +395,7 @@ Presiona el botón de abajo para iniciar el juego.""",
     penalty_msg_generic_full = "🙀 Has perdido {penalty} estrellas ❗\n"
                                "\n"
                                  "🌟 Estrellas restantes: {score}",
-    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥\n"
-                   "\n"
-                   "{penalty_msg}",
+    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥",
 
     new_achievement = "¡Tienes un nuevo logro! 🌟"
 )
@@ -556,9 +552,7 @@ Press the button below to start the game.""",
     penalty_msg_generic_full = "🙀 You've lost {penalty} stars ❗\n"
                                "\n"
                                "🌟 Remaining stars: {score}",
-    penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
-                    "\n"   
-                    "{penalty_msg}",
+    penalty_text = "You forgot to review your <i>Formula</i> 🟥",
 
     new_achievement = "You've got a new achievement! 🌟"
 
@@ -714,9 +708,7 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
     penalty_msg_generic_full = "🙀 Du hast {penalty} Sterne verloren ❗\n"
                                "\n"
                                "🌟 Verbleibende Sterne: {score}",
-    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥\n"
-                   "\n"
-                   "{penalty_msg}",
+    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥",
 
     new_achievement = "Du hast einen neuen Erfolg! 🌟"
 )
@@ -876,9 +868,7 @@ ru = Lang(
     penalty_msg_generic_full = "🙀 Вы потеряли {penalty} звезд ❗\n"
                                "\n"
                                "🌟 Осталось звезд: {score}",
-    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n"
-                   "\n"
-                   "{penalty_msg}",
+    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n",
 
     new_achievement = "У вас новое достижение! 🌟"
 )
