@@ -43,7 +43,8 @@ async def send_reply(message: Message, ret: Reply):
         )
     if 'image' in ret and ret['image'] is not None:
         await message.reply_photo(photo=ret['image'])
-        os.remove(ret['image'])
+        if ret['image'].startswith('tmp_'):
+            os.remove(ret['image'])
 
 
 async def send_reply_with_bot(ret: Reply):

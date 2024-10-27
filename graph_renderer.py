@@ -86,6 +86,6 @@ class GraphRenderer:
 
         plt.tight_layout()
 
-        random_fname = str(np.random.randint(100000, 900000)) + '.png'
+        random_fname = 'tmp_' + str(np.random.randint(100000, 900000)) + '.png'
         plt.savefig(random_fname, dpi=300)
         return random_fname

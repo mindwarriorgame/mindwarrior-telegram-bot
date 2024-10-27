@@ -8,7 +8,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
 
     def test_on_start_game_shows_feather(self):
         mng = BadgesManager("")
-        self.assertEqual(mng.on_game_started(), "feather")
+        self.assertEqual(mng.on_game_started(0), "feather")
         self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'feather': 1},
                                                        'badges_state': {'CatBadgeCounter': 'pending_superhappy,0',
                                                                         'FeatherBadgeCounter': '0',
@@ -73,7 +73,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
 
     def test_on_formula_update_gives_another_feather_every_24_hours(self):
         mng = BadgesManager("")
-        self.assertEqual(mng.on_game_started(), "feather")
+        self.assertEqual(mng.on_game_started(0), "feather")
         self.assertEqual(mng.on_formula_updated(12 * 3600), None)
         self.assertEqual(mng.on_formula_updated(26 * 3600), "feather")
         self.assertEqual(mng.on_formula_updated(36 * 3600), None)

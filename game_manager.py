@@ -90,7 +90,7 @@ class GameManager:
         if "start_game" in user_message:
             return self._on_start_game(lang, user, user_message)
         if "formula_updated" in user_message:
-            return [self._on_formula_updated(lang, user)]
+            return self._on_formula_updated(lang, user)
         if "set_difficulty:" in user_message:
             return [self._on_set_difficulty(lang, user, user_message)]
         if "reviewed_at:" in user_message:
@@ -132,8 +132,8 @@ class GameManager:
 
         return self._wrap_with_badge(lang, user, 'on_game_started', self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id']))
 
-    def _on_formula_updated(self, lang: Lang, user: User) -> Reply:
-        return self._render_single_message(user['user_id'], lang.formula_changed)
+    def _on_formula_updated(self, lang: Lang, user: User) -> [Reply]:
+        return self._wrap_with_badge(lang, user, 'on_formula_updated', self._render_single_message(user['user_id'], lang.formula_changed))
 
     def _on_set_difficulty(self, lang: Lang, user: User, user_message: str) -> Reply:
         if user['active_game_counter_state'] is None:
