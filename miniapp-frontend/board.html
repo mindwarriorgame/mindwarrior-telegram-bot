@@ -1,0 +1,94 @@
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+    <style>
+        body {
+            color: white;
+            background-color: black;
+            text-align: center;
+        }
+        table {
+            margin: 0px auto;
+        }
+        .unhappy-cat-wrapper {
+            border: 1px solid grey;
+            display: table;
+            padding: 0px;
+        }
+        .unhappy-cat-wrapper img {
+            visibility: hidden;
+        }
+        td {
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+<div id="main">
+    <div id="active_board">
+    <h1>You've got a new achievement!</h1>
+    <p>
+        <img src="../badge-images/cat-unhappy_512.jpg" width="128"/>
+    </p>
+    </div>
+
+    <table>
+        <tr>
+            <td>
+                <p><img src="../badge-images/time_512.jpg" width="128" /></p>
+                <p><img src="../badge-images/feather_512.jpg" width="128" /></p>
+                <div class="unhappy-cat-wrapper"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+            </td>
+            <td>
+                <p><img src="../badge-images/star-small_512.jpg" width="128" /></p>
+                <p><img src="../badge-images/star-med_512.jpg" width="128" /></p>
+                <p><img src="../badge-images/star-top_512.jpg" width="128" /></p>
+                <div class="unhappy-cat-wrapper"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+            </td>
+            <td>
+                <p><img src="../badge-images/cat-happy_512.jpg" width="128" /></p>
+                <p><img src="../badge-images/cat-superhappy_512.jpg" width="128" /></p>
+                <div class="unhappy-cat-wrapper"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+            </td>
+            <td>
+                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
+                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
+                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+
+<script>
+    const defaults = {
+        spread: 360,
+        ticks: 50,
+        gravity: 5,
+        decay: 1,
+        startVelocity: 30,
+        shapes: ["star"],
+        colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"],
+    };
+
+    function shoot() {
+        confetti({
+            ...defaults,
+            particleCount: 40,
+            scalar: 1.2,
+            shapes: ["star"],
+        });
+
+        confetti({
+            ...defaults,
+            particleCount: 10,
+            scalar: 0.75,
+            shapes: ["circle"],
+        });
+    }
+
+    setTimeout(shoot, 0);
+    setTimeout(shoot, 100);
+    setTimeout(shoot, 200);
+</script>
+</html>
