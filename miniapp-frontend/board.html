@@ -135,7 +135,7 @@ const proms=images.map(im=>new Promise(res=>
 ))
 
 // list all image widths and heights _after_ the images have loaded:
-console.log('v2');
+console.log('v3');
 Promise.all(proms).then(data=>{
     document.getElementById('loader').classList.toggle('hidden');
     document.getElementById('main').classList.toggle('hidden');
@@ -149,21 +149,25 @@ Promise.all(proms).then(data=>{
         const sourceRect = sourceElt.getBoundingClientRect();
         const sourceX = sourceRect.left + window.scrollX;
         const sourceY = sourceRect.top + window.scrollY;
-        document.getElementById('projectile').attributes.width.value = '128';
-        document.getElementById('projectile').style.left = parseInt(sourceX) + 'px';
-        document.getElementById('projectile').style.top = parseInt(sourceY) + 'px';
-        document.getElementById('projectile').classList.toggle('projectileAnimate');
 
-        document.getElementById('source').style.visibility = 'hidden';
+        const projectileElt = document.getElementById('projectile');
+
+        projectileElt.attributes.width.value = '128';
+        projectileElt.style.left = parseInt(sourceX) + 'px';
+        projectileElt.style.top = parseInt(sourceY) + 'px';
+        projectileElt.classList.toggle('projectileAnimate');
+
+        sourceElt.style.visibility = 'hidden';
 
         setTimeout(() => {
-            document.getElementById('projectile').style.left = parseInt(targetX) + 'px';
-            document.getElementById('projectile').style.top = parseInt(targetY) + 'px';
+            projectileElt.style.left = parseInt(targetX) + 'px';
+            projectileElt.style.top = parseInt(targetY) + 'px';
 
             projectile.addEventListener('transitionend', () => {
-                document.getElementById('projectile').style.display = 'none';
-                document.getElementById('target').parentNode.classList.remove('unhappy-cat-placeholder');
-                document.getElementById('target').parentNode.classList.add('unhappy-cat-active');
+                projectileElt.style.display = 'none';
+
+                targetElt.parentNode.classList.remove('unhappy-cat-placeholder');
+                targetElt.parentNode.classList.add('unhappy-cat-active');
 
                 fireConfetti();
             }, { once: true });
