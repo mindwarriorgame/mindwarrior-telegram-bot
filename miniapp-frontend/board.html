@@ -16,6 +16,7 @@
         table {
             margin: 0px auto;
         }
+
         .unhappy-cat-placeholder {
             border: 1px solid grey;
             display: table;
@@ -24,20 +25,27 @@
         .unhappy-cat-placeholder img {
             visibility: hidden;
         }
-
-        .unhappy-cat-active {
+        .unhappy-cat-placeholder.active {
             border: 1px solid red;
-            display: table;
-            padding: 0px;
         }
+        .unhappy-cat-placeholder.active img {
+            visibility: visible;
+        }
+
         td {
             vertical-align: top;
         }
-        .grayscale {
+        .achievement-placeholder {
             filter: gray;
             -webkit-filter: grayscale(1);
             filter: grayscale(1);
             opacity: 0.5;
+        }
+        .achievement-placeholder.active {
+            filter: none;
+            -webkit-filter: none;
+            filter: none;
+            opacity: 1;
         }
         .hidden {
             visibility: hidden;
@@ -61,28 +69,28 @@
     <div id="active_board">
     <h1>Level 1: You've got a new achievement!</h1>
     <p>
-        <img src="../badge-images/cat-unhappy_512.jpg" width="128" id="source" />
-        <img src="../badge-images/cat-unhappy_512.jpg" width="0" id="projectile" />
+        <img src="../badge-images/cat-superhappy_512.jpg" width="128" id="source" />
+        <img src="../badge-images/cat-superhappy_512.jpg" width="0" id="projectile" />
     </p>
     </div>
 
     <table>
         <tr>
             <td>
-                <p><img src="../badge-images/time_512.jpg" width="128" class="grayscale" /></p>
-                <p><img src="../badge-images/feather_512.jpg" width="128" class="grayscale" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" width="128" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/feather_512.jpg" width="128" /></p>
                 <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
             </td>
             <td>
-                <p><img src="../badge-images/star-small_512.jpg" width="128" /></p>
-                <p><img src="../badge-images/star-med_512.jpg" width="128" class="grayscale" /></p>
-                <p><img src="../badge-images/star-top_512.jpg" width="128" /></p>
+                <p class="achievement-placeholder active"><img src="../badge-images/star-small_512.jpg" width="128" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/star-med_512.jpg" width="128" /></p>
+                <p class="achievement-placeholder active"><img src="../badge-images/star-top_512.jpg" width="128" /></p>
                 <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
             </td>
             <td>
-                <p><img src="../badge-images/cat-happy_512.jpg" width="128" /></p>
-                <p><img src="../badge-images/cat-superhappy_512.jpg" width="128" class="grayscale" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" id="target" /></div>
+                <p class="achievement-placeholder active"><img src="../badge-images/cat-happy_512.jpg" width="128" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/cat-superhappy_512.jpg" width="128" id="target" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
             </td>
             <td>
                 <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
@@ -166,8 +174,7 @@ Promise.all(proms).then(data=>{
             projectile.addEventListener('transitionend', () => {
                 projectileElt.style.display = 'none';
 
-                targetElt.parentNode.classList.remove('unhappy-cat-placeholder');
-                targetElt.parentNode.classList.add('unhappy-cat-active');
+                targetElt.parentNode.classList.add('active');
 
                 fireConfetti();
             }, { once: true });
