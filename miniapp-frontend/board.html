@@ -1,6 +1,10 @@
 <html>
 <head>
     <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+    <script>
+        const INNER_WIDTH = window.innerWidth;
+        console.log(INNER_WIDTH);
+    </script>
     <style>
         body {
             color: white;
@@ -63,13 +67,19 @@
         }
 
         .extras img {
-            visibility: hidden;
+            opacity: 0;
         }
         .extras {
             text-align: center;
         }
         .extras p.active img {
-            visibility: visible;
+            opacity: 1;
+        }
+        .normal {
+            width: 1px;
+        }
+        .small {
+            width: 1px;
         }
     </style>
 </head>
@@ -79,35 +89,45 @@
 </div>
 <div id="main" class="hidden">
     <div id="active_board">
-    <h1>Level 1: You've got a new achievement!</h1>
-    <p>
-        <img src="../badge-images/cat-superhappy_512.jpg" width="128" id="source" />
-        <img src="../badge-images/cat-superhappy_512.jpg" width="0" id="projectile" />
-    </p>
+
+    <table>
+        <tr>
+            <td style="vertical-align: middle">
+                <h1 >Level 1: You've got a new achievement!</h1>
+            </td>
+            <td>
+                <p>
+                    <img src="../badge-images/cat-superhappy_512.jpg" class="normal" id="source" />
+                    <img src="../badge-images/cat-superhappy_512.jpg" width="0" id="projectile" />
+                </p>
+            </td>
+        </tr>
+    </table>
     </div>
 
     <table>
         <tr>
             <td>
-                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" width="128" /></p>
-                <p class="achievement-placeholder"><img src="../badge-images/feather_512.jpg" width="128" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/feather_512.jpg" class="normal" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal" class="unhappy-cat" /></div>
             </td>
             <td>
-                <p class="achievement-placeholder active"><img src="../badge-images/star-small_512.jpg" width="128" /></p>
-                <p class="achievement-placeholder"><img src="../badge-images/star-med_512.jpg" width="128" /></p>
-                <p class="achievement-placeholder active"><img src="../badge-images/star-top_512.jpg" width="128" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+                <p class="achievement-placeholder active"><img src="../badge-images/star-small_512.jpg" class="normal" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/star-med_512.jpg" class="normal" /></p>
+                <p class="achievement-placeholder active"><img src="../badge-images/star-top_512.jpg" class="normal" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal" class="unhappy-cat" /></div>
             </td>
             <td>
-                <p class="achievement-placeholder active"><img src="../badge-images/cat-happy_512.jpg" width="128" /></p>
-                <p class="achievement-placeholder"><img src="../badge-images/cat-superhappy_512.jpg" width="128"  id="target" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+                <p class="achievement-placeholder active"><img src="../badge-images/cat-happy_512.jpg" class="normal" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/cat-superhappy_512.jpg" class="normal"  id="target" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal" class="unhappy-cat" /></div>
             </td>
             <td class="extras">
 <!--                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>-->
-                <p class="active"><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
-                <p class="active"><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
+                <p class="active"><img src="../badge-images/cat-happy_512.jpg" class="small" /> <img src="../badge-images/cat-happy_512.jpg" class="small" /> </p>
+                <p class="active"><img src="../badge-images/cat-happy_512.jpg" class="small" /> <img src="../badge-images/cat-happy_512.jpg" class="small" /> </p>
+                <p><img src="../badge-images/cat-happy_512.jpg" class="small" /> <img src="../badge-images/cat-happy_512.jpg" class="small" /> </p>
             </td>
         </tr>
     </table>
@@ -150,13 +170,25 @@ function fireConfetti() {
 
 const images = [...document.querySelectorAll("img")];
 
-const proms=images.map(im=>new Promise(res=>
-    im.onload=()=>res([im.width,im.height])
+const NORMAL_IMAGE_WIDTH = INNER_WIDTH > 1200 ? Math.floor(INNER_WIDTH / 8) : Math.floor(INNER_WIDTH / 5);
+
+
+const imagesLoadedPromises = images.map(img => new Promise(res=>
+    img.onload = () => {
+        if (img.classList.contains("normal")) {
+            img.style.width = NORMAL_IMAGE_WIDTH + 'px';
+        } else if (img.classList.contains("small")) {
+            img.style.width = Math.floor(NORMAL_IMAGE_WIDTH / 2) + 'px';
+        }
+        img.classList.remove("normal");
+        img.classList.remove("small");
+        res([img.width, img.height]);
+    }
 ))
 
 // list all image widths and heights _after_ the images have loaded:
 console.log('v3');
-Promise.all(proms).then(data=>{
+Promise.all(imagesLoadedPromises).then(data=>{
     document.getElementsByTagName('body')[0].classList.toggle('center');
     document.getElementById('loader').classList.toggle('hidden');
     document.getElementById('main').classList.toggle('hidden');
@@ -173,7 +205,7 @@ Promise.all(proms).then(data=>{
 
         const projectileElt = document.getElementById('projectile');
 
-        projectileElt.style.width = '128px';
+        projectileElt.style.width = NORMAL_IMAGE_WIDTH;
         projectileElt.style.left = parseInt(sourceX) + 'px';
         projectileElt.style.top = parseInt(sourceY) + 'px';
 
@@ -184,9 +216,9 @@ Promise.all(proms).then(data=>{
             projectileElt.style.left = parseInt(targetX) + 'px';
             projectileElt.style.top = parseInt(targetY) + 'px';
             projectileElt.style.width = targetRect.width + 'px';
-            targetElt.scrollIntoView({
-                behavior: 'smooth',
-            });
+            // targetElt.scrollIntoView({
+            //     behavior: 'smooth',
+            // });
 
             projectile.addEventListener('transitionend', () => {
                 projectileElt.style.display = 'none';
