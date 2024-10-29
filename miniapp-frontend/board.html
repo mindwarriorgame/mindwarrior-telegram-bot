@@ -59,7 +59,17 @@
             position: absolute;
         }
         .projectileAnimate {
-            transition: left 1s ease, top 1s ease;
+            transition: left 1s ease, top 1s ease, width 1s ease, height 1s ease;
+        }
+
+        .extras img {
+            visibility: hidden;
+        }
+        .extras {
+            text-align: center;
+        }
+        .extras p.active img {
+            visibility: visible;
         }
     </style>
 </head>
@@ -91,13 +101,13 @@
             </td>
             <td>
                 <p class="achievement-placeholder active"><img src="../badge-images/cat-happy_512.jpg" width="128" /></p>
-                <p class="achievement-placeholder"><img src="../badge-images/cat-superhappy_512.jpg" width="128" id="target" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/cat-superhappy_512.jpg" width="128"  id="target" /></p>
                 <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
             </td>
-            <td>
-                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
-                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
-                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
+            <td class="extras">
+<!--                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>-->
+                <p class="active"><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
+                <p class="active"><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
             </td>
         </tr>
     </table>
@@ -163,16 +173,17 @@ Promise.all(proms).then(data=>{
 
         const projectileElt = document.getElementById('projectile');
 
-        projectileElt.attributes.width.value = '128';
+        projectileElt.style.width = '128px';
         projectileElt.style.left = parseInt(sourceX) + 'px';
         projectileElt.style.top = parseInt(sourceY) + 'px';
-        projectileElt.classList.toggle('projectileAnimate');
 
         sourceElt.style.visibility = 'hidden';
 
         setTimeout(() => {
+            projectileElt.classList.toggle('projectileAnimate');
             projectileElt.style.left = parseInt(targetX) + 'px';
             projectileElt.style.top = parseInt(targetY) + 'px';
+            projectileElt.style.width = targetRect.width + 'px';
             targetElt.scrollIntoView({
                 behavior: 'smooth',
             });
