@@ -135,6 +135,7 @@ const proms=images.map(im=>new Promise(res=>
 ))
 
 // list all image widths and heights _after_ the images have loaded:
+console.log('v1');
 Promise.all(proms).then(data=>{
     document.getElementById('loader').classList.toggle('hidden');
     document.getElementById('main').classList.toggle('hidden');
@@ -166,7 +167,7 @@ Promise.all(proms).then(data=>{
 
                 fireConfetti();
             }, { once: true });
-        }, 0);
+        }, 100);
     }, 100);
 })
 
