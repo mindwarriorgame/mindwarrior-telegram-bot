@@ -6,49 +6,83 @@
             color: white;
             background-color: black;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
         table {
             margin: 0px auto;
         }
-        .unhappy-cat-wrapper {
+        .unhappy-cat-placeholder {
             border: 1px solid grey;
             display: table;
             padding: 0px;
         }
-        .unhappy-cat-wrapper img {
+        .unhappy-cat-placeholder img {
             visibility: hidden;
+        }
+
+        .unhappy-cat-active {
+            border: 1px solid red;
+            display: table;
+            padding: 0px;
         }
         td {
             vertical-align: top;
         }
+        .grayscale {
+            filter: gray;
+            -webkit-filter: grayscale(1);
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+        .hidden {
+            visibility: hidden;
+        }
+        #loader {
+            margin: 0 auto;
+        }
+        #projectile {
+            position: absolute;
+        }
+        .projectileAnimate {
+            transition: left 1s ease, top 1s ease;
+        }
     </style>
 </head>
 <body>
-<div id="main">
+<div id="loader">
+    Loading...
+</div>
+<div id="main" class="hidden">
     <div id="active_board">
-    <h1>You've got a new achievement!</h1>
+    <h1>Level 1: You've got a new achievement!</h1>
     <p>
-        <img src="../badge-images/cat-unhappy_512.jpg" width="128"/>
+        <img src="../badge-images/cat-unhappy_512.jpg" width="128" id="source" />
+        <img src="../badge-images/cat-unhappy_512.jpg" width="0" id="projectile" />
     </p>
     </div>
 
     <table>
         <tr>
             <td>
-                <p><img src="../badge-images/time_512.jpg" width="128" /></p>
-                <p><img src="../badge-images/feather_512.jpg" width="128" /></p>
-                <div class="unhappy-cat-wrapper"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+                <p><img src="../badge-images/time_512.jpg" width="128" class="grayscale" /></p>
+                <p><img src="../badge-images/feather_512.jpg" width="128" class="grayscale" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
             </td>
             <td>
                 <p><img src="../badge-images/star-small_512.jpg" width="128" /></p>
-                <p><img src="../badge-images/star-med_512.jpg" width="128" /></p>
+                <p><img src="../badge-images/star-med_512.jpg" width="128" class="grayscale" /></p>
                 <p><img src="../badge-images/star-top_512.jpg" width="128" /></p>
-                <div class="unhappy-cat-wrapper"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
             </td>
             <td>
                 <p><img src="../badge-images/cat-happy_512.jpg" width="128" /></p>
-                <p><img src="../badge-images/cat-superhappy_512.jpg" width="128" /></p>
-                <div class="unhappy-cat-wrapper"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" /></div>
+                <p><img src="../badge-images/cat-superhappy_512.jpg" width="128" class="grayscale" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" width="128" class="unhappy-cat" id="target" /></div>
             </td>
             <td>
                 <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> <img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>
@@ -61,6 +95,8 @@
 </body>
 
 <script>
+
+function fireConfetti() {
     const defaults = {
         spread: 360,
         ticks: 50,
@@ -90,5 +126,49 @@
     setTimeout(shoot, 0);
     setTimeout(shoot, 100);
     setTimeout(shoot, 200);
+}
+
+const images = [...document.querySelectorAll("img")];
+
+const proms=images.map(im=>new Promise(res=>
+    im.onload=()=>res([im.width,im.height])
+))
+
+// list all image widths and heights _after_ the images have loaded:
+Promise.all(proms).then(data=>{
+    document.getElementById('loader').classList.toggle('hidden');
+    document.getElementById('main').classList.toggle('hidden');
+    setTimeout(() => {
+        const targetElt = document.getElementById('target');
+        const targetRect = targetElt.getBoundingClientRect();
+        const targetX = targetRect.left + window.scrollX;
+        const targetY = targetRect.top + window.scrollY;
+
+        const sourceElt = document.getElementById('source');
+        const sourceRect = sourceElt.getBoundingClientRect();
+        const sourceX = sourceRect.left + window.scrollX;
+        const sourceY = sourceRect.top + window.scrollY;
+        document.getElementById('projectile').attributes.width.value = '128';
+        document.getElementById('projectile').style.left = parseInt(sourceX) + 'px';
+        document.getElementById('projectile').style.top = parseInt(sourceY) + 'px';
+        document.getElementById('projectile').classList.toggle('projectileAnimate');
+
+        document.getElementById('source').style.visibility = 'hidden';
+
+        setTimeout(() => {
+            document.getElementById('projectile').style.left = parseInt(targetX) + 'px';
+            document.getElementById('projectile').style.top = parseInt(targetY) + 'px';
+
+            projectile.addEventListener('transitionend', () => {
+                document.getElementById('projectile').style.display = 'none';
+                document.getElementById('target').parentNode.classList.remove('unhappy-cat-placeholder');
+                document.getElementById('target').parentNode.classList.add('unhappy-cat-active');
+                fireConfetti();
+            }, { once: true });
+        }, 0);
+    }, 100);
+})
+
+
 </script>
 </html>
