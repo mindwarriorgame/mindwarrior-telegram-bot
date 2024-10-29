@@ -8,7 +8,6 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
@@ -170,6 +169,9 @@ Promise.all(proms).then(data=>{
         setTimeout(() => {
             projectileElt.style.left = parseInt(targetX) + 'px';
             projectileElt.style.top = parseInt(targetY) + 'px';
+            targetElt.scrollIntoView({
+                behavior: 'smooth',
+            });
 
             projectile.addEventListener('transitionend', () => {
                 projectileElt.style.display = 'none';
