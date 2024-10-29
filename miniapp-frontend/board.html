@@ -163,6 +163,7 @@ Promise.all(proms).then(data=>{
                 document.getElementById('projectile').style.display = 'none';
                 document.getElementById('target').parentNode.classList.remove('unhappy-cat-placeholder');
                 document.getElementById('target').parentNode.classList.add('unhappy-cat-active');
+
                 fireConfetti();
             }, { once: true });
         }, 0);
