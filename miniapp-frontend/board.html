@@ -16,6 +16,9 @@
             height: 100vh;
             margin: 0;
         }
+        a {
+            color: white;
+        }
         .center {
             justify-content: center;
         }
@@ -42,16 +45,29 @@
             vertical-align: top;
         }
         .achievement-placeholder {
+            position: relative;
+        }
+        .achievement-placeholder img {
             filter: gray;
             -webkit-filter: grayscale(1);
             filter: grayscale(1);
             opacity: 0.5;
         }
-        .achievement-placeholder.active {
+        .achievement-placeholder.active img {
             filter: none;
             -webkit-filter: none;
             filter: none;
             opacity: 1;
+        }
+        .achievement-placeholder a {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            align-items: center;
+            display: flex;
+            justify-content: center;
         }
         .hidden {
             visibility: hidden;
@@ -102,7 +118,7 @@
     <table>
         <tr>
             <td>
-                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal blurred" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal blurred" /><a href="javascript:alert(1)">How to earn me?</a></p>
                 <p class="achievement-placeholder"><img src="../badge-images/feather_512.jpg" class="normal blurred" /></p>
                 <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal blurred" class="unhappy-cat" /></div>
             </td>
@@ -125,6 +141,7 @@
             </td>
         </tr>
     </table>
+
 </div>
 </body>
 
