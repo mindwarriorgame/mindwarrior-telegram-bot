@@ -54,10 +54,19 @@
             filter: grayscale(1);
             opacity: 0.5;
         }
+        .moving .achievement-placeholder img {
+            opacity: 0.3;
+        }
         .achievement-placeholder.active img {
             filter: none;
             -webkit-filter: none;
             filter: none;
+            opacity: 1;
+        }
+        .moving .achievement-placeholder.active img {
+            opacity: 0.5;
+        }
+        .moving .achievement-placeholder.active img.target {
             opacity: 1;
         }
         .achievement-placeholder a {
@@ -70,9 +79,6 @@
             display: flex;
             justify-content: center;
             font-size: 1.3em;
-        }
-        .hidden {
-            visibility: hidden;
         }
         #loader {
             margin: 0 auto;
@@ -93,14 +99,23 @@
         .extras p.active img {
             opacity: 1;
         }
+        .moving .extras p.active img {
+            opacity: 0.5;
+        }
+        .moving .extras p.active img.target {
+            opacity: 1;
+        }
         .normal {
             width: 1px;
         }
         .small {
             width: 1px;
         }
-        img.blurred {
-            opacity: 0.3 !important;
+        .moving .achievement-placeholder a {
+            visibility: hidden;
+        }
+        #projectile {
+            z-index: 1000;
         }
     </style>
 </head>
@@ -108,35 +123,35 @@
 <div id="loader">
     Loading...
 </div>
-<div id="main" class="hidden">
+<div id="main" class="hidden moving">
 
                 <h1 >Level 1: You've got a new achievement!</h1>
-                    <img src="../badge-images/cat-superhappy_512.jpg" class="normal blurred" id="source" />
+                    <img src="../badge-images/cat-superhappy_512.jpg" class="normal" id="source" />
                     <img src="../badge-images/cat-superhappy_512.jpg" width="0" id="projectile" />
 
     <table>
         <tr>
             <td>
-                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal blurred" /><a href="javascript:alert(1)" style="visibility: hidden">How to earn me?</a></p>
-                <p class="achievement-placeholder"><img src="../badge-images/feather_512.jpg" class="normal blurred" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal blurred" class="unhappy-cat" /></div>
+                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal" /><a href="javascript:alert(1)">How to earn me?</a></p>
+                <p class="achievement-placeholder"><img src="../badge-images/feather_512.jpg" class="normal" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal" class="unhappy-cat" /></div>
             </td>
             <td>
-                <p class="achievement-placeholder active"><img src="../badge-images/star-small_512.jpg" class="normal blurred" /></p>
-                <p class="achievement-placeholder"><img src="../badge-images/star-med_512.jpg" class="normal blurred" /></p>
-                <p class="achievement-placeholder active"><img src="../badge-images/star-top_512.jpg" class="normal blurred" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal blurred" class="unhappy-cat" /></div>
+                <p class="achievement-placeholder active"><img src="../badge-images/star-small_512.jpg" class="normal" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/star-med_512.jpg" class="normal" /></p>
+                <p class="achievement-placeholder active"><img src="../badge-images/star-top_512.jpg" class="normal" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal" class="unhappy-cat" /></div>
             </td>
             <td>
-                <p class="achievement-placeholder active"><img src="../badge-images/cat-happy_512.jpg" class="normal blurred" /></p>
-                <p class="achievement-placeholder"><img src="../badge-images/cat-superhappy_512.jpg" class="normal blurred"  id="target" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal blurred" class="unhappy-cat" /></div>
+                <p class="achievement-placeholder active"><img src="../badge-images/cat-happy_512.jpg" class="normal" /></p>
+                <p class="achievement-placeholder"><img src="../badge-images/cat-superhappy_512.jpg" class="normal" id="target" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal" class="unhappy-cat" /></div>
             </td>
             <td class="extras">
-<!--                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>-->
-                <p class="active"><img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> <img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> </p>
-                <p class="active"><img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> <img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> </p>
-                <p style="visibility:hidden"><img src="../badge-images/cat-happy_512.jpg" class="small" /> <img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> </p>
+                <p><img src="../badge-images/cat-superhappy_512.jpg" class="small" /> </p>
+                <p class="active"><img src="../badge-images/cat-happy_512.jpg" class="small" /> <img src="../badge-images/cat-happy_512.jpg" class="small" /> </p>
+                <p class="active"><img src="../badge-images/cat-happy_512.jpg" class="small" /> <img src="../badge-images/cat-happy_512.jpg" class="small" /> </p>
+                <p style="visibility:hidden"><img src="../badge-images/cat-happy_512.jpg" class="small" /> <img src="../badge-images/cat-happy_512.jpg" class="small" /> </p>
             </td>
         </tr>
     </table>
@@ -181,7 +196,6 @@ function fireConfetti() {
 }
 
 const images = [...document.querySelectorAll("img")];
-const links = [...document.querySelectorAll("a")];
 
 const NORMAL_IMAGE_WIDTH = INNER_WIDTH > 1200 ? Math.floor(INNER_WIDTH / 8) : Math.floor(INNER_WIDTH / 5);
 
@@ -238,17 +252,14 @@ Promise.all(imagesLoadedPromises).then(data=>{
                 projectileElt.style.display = 'none';
 
                 targetElt.parentNode.classList.add('active');
-                targetElt.classList.remove('blurred');
+                targetElt.classList.add('target');
 
                 fireConfetti();
 
                 sourceElt.style.width = '0px';
 
                 setTimeout(() => {
-                    images.forEach(img => img.classList.remove('blurred'));
-                    links.forEach(link => {
-                        link.style.visibility = 'visible';
-                    });
+                    document.getElementById('main').classList.remove('moving');
                 }, 1500);
             }, { once: true });
         }, 250);
