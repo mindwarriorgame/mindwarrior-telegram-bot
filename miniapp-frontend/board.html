@@ -88,22 +88,10 @@
     Loading...
 </div>
 <div id="main" class="hidden">
-    <div id="active_board">
 
-    <table>
-        <tr>
-            <td style="vertical-align: middle">
                 <h1 >Level 1: You've got a new achievement!</h1>
-            </td>
-            <td>
-                <p>
                     <img src="../badge-images/cat-superhappy_512.jpg" class="normal" id="source" />
                     <img src="../badge-images/cat-superhappy_512.jpg" width="0" id="projectile" />
-                </p>
-            </td>
-        </tr>
-    </table>
-    </div>
 
     <table>
         <tr>
@@ -203,6 +191,7 @@ Promise.all(imagesLoadedPromises).then(data=>{
         const sourceX = sourceRect.left + window.scrollX;
         const sourceY = sourceRect.top + window.scrollY;
 
+
         const projectileElt = document.getElementById('projectile');
 
         projectileElt.style.width = NORMAL_IMAGE_WIDTH;
@@ -210,6 +199,7 @@ Promise.all(imagesLoadedPromises).then(data=>{
         projectileElt.style.top = parseInt(sourceY) + 'px';
 
         sourceElt.style.visibility = 'hidden';
+        sourceElt.classList.add('projectileAnimate');
 
         setTimeout(() => {
             projectileElt.classList.toggle('projectileAnimate');
@@ -220,12 +210,14 @@ Promise.all(imagesLoadedPromises).then(data=>{
             //     behavior: 'smooth',
             // });
 
-            projectile.addEventListener('transitionend', () => {
+            window.addEventListener('transitionend', () => {
                 projectileElt.style.display = 'none';
 
                 targetElt.parentNode.classList.add('active');
 
                 fireConfetti();
+
+                sourceElt.style.width = '0px';
             }, { once: true });
         }, 250);
     }, 100);
