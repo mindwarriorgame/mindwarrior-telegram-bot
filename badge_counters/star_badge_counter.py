@@ -21,9 +21,11 @@ class StarBadgeCounter:
 
         cnt = int(state)
         cnt += 1
-        if cnt == 1:
-            return "star-small", str(cnt)
-        if cnt == 2:
-            return "star-med", str(cnt)
+        if cnt == 3:
+            return "s0", str(cnt)
+        if cnt == 6:
+            return "s1", str(cnt)
+        if (cnt % 9) == 0:
+            return "s2", str(cnt)
 
-        return "star-top", str(cnt)
+        return None, str(cnt)

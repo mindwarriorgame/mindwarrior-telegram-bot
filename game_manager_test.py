@@ -39,7 +39,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         data = self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
         self.assertEqual(data, [{'buttons': [],
-                                 'image': './badge-images/feather.jpg',
+                                 'image': './badge-images/f0.jpg',
                                  'menu_commands': [],
                                  'message': "You've got a new achievement! 🌟",
                                  'to_chat_id': 1},
@@ -134,7 +134,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
                 self.assertEqual(data, [{'buttons': [],
-                                         'image': './badge-images/cat-unhappy.jpg',
+                                         'image': './badge-images/c0.jpg',
                                          'menu_commands': [],
                                          'message': '',
                                          'to_chat_id': 1},
@@ -223,7 +223,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         data = self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
         self.assertEqual(data, [{'buttons': [],
-                                 'image': './badge-images/feather.jpg',
+                                 'image': './badge-images/f0.jpg',
                                  'menu_commands': [],
                                  'message': "You've got a new achievement! 🌟",
                                  'to_chat_id': 1},
@@ -526,12 +526,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
-        self.assertEqual(data, [{'buttons': [],
-                                 'image': './badge-images/star-small.jpg',
-                                 'menu_commands': [],
-                                 'message': "You've got a new achievement! 🌟",
-                                 'to_chat_id': 1},
-                                {'buttons': [{'text': 'Review your "Formula"',
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                  'image': None,
                                  'menu_commands': [],
@@ -545,7 +540,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'
-                                            '/pause - pause the gameㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ',
+                                            '/pause - pause the game',
                                  'to_chat_id': 1}])
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['counters_history_serialized'], '['
@@ -575,12 +570,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
-        self.assertEqual(data, [{'buttons': [],
-                                 'image': './badge-images/star-small.jpg',
-                                 'menu_commands': [],
-                                 'message': "You've got a new achievement! 🌟",
-                                 'to_chat_id': 1},
-                                {'buttons': [{'text': 'Review your "Formula"',
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                  'image': None,
                                  'menu_commands': [],
@@ -594,7 +584,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:15 am\n'
                                             '\n'
-                                            '/pause - pause the gameㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ',
+                                            '/pause - pause the game',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -615,12 +605,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am,,12:18 am,,12:19 am')
 
-        self.assertEqual(data, [{'buttons': [],
-                                 'image': './badge-images/star-small.jpg',
-                                 'menu_commands': [],
-                                 'message': "You've got a new achievement! 🌟",
-                                 'to_chat_id': 1},
-                                {'buttons': [{'text': 'Review your "Formula"',
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                  'image': None,
                                  'menu_commands': [],
@@ -634,7 +619,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:18 am\n'
                                             '\n'
-                                            '/pause - pause the gameㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ',
+                                            '/pause - pause the game',
                                  'to_chat_id': 1}])
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['counters_history_serialized'], '['

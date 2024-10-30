@@ -786,7 +786,7 @@ class GameManager:
         if badge is not None:
             result = result + [{
                 'to_chat_id': user['user_id'],
-                'message': "" if badge == 'cat-unhappy' else lang.new_achievement,
+                'message': "" if badge == 'c0' else lang.new_achievement,
                 'buttons': [],
                 'menu_commands': [],
                 'image': './badge-images/' + badge + '.jpg'

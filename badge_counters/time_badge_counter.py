@@ -21,5 +21,5 @@ class TimeBadgeCounter:
 
         last_time_at = int(state)
         if active_play_time_secs - last_time_at > 25 * 3600:
-            return "time", str(active_play_time_secs)
+            return "t0", str(active_play_time_secs)
         return None, state

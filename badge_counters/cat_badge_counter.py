@@ -20,7 +20,7 @@ class CatBadgeCounter:
         return None, state
 
     def on_penalty(self, active_play_time_secs: int, state: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
-        return "cat-unhappy", None
+        return "c0", None
 
     def on_review(self, active_play_time_secs: int, state: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
         if state is None:
@@ -30,9 +30,9 @@ class CatBadgeCounter:
         time_passed = active_play_time_secs - int(split[1])
 
         if state.startswith("pending_happy") and time_passed > 16 * 3600:
-            return "cat-happy", "pending_superhappy," + str(active_play_time_secs)
+            return "c1", "pending_superhappy," + str(active_play_time_secs)
 
         if state.startswith("pending_superhappy") and time_passed > 16 * 3600:
-            return "cat-superhappy", "pending_superhappy," + str(active_play_time_secs)
+            return "c2", "pending_superhappy," + str(active_play_time_secs)
 
         return None, state

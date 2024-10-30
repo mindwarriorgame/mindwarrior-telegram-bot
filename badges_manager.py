@@ -33,9 +33,9 @@ class BadgesManager:
         return self._chain_badge_counters("on_penalty", int(active_play_time_secs))
 
     def on_review(self, active_play_time_secs: float) -> Optional[str]:
-        return self._chain_badge_counters("on_review", int(active_play_time_secs))
+        return self._chain_badge_counters("on_review", int(active_play_time_secs), True)
 
-    def _chain_badge_counters(self, method_name, active_play_time_secs: int) -> Optional[str]:
+    def _chain_badge_counters(self, method_name, active_play_time_secs: int, terminate_if_found = False) -> Optional[str]:
         counters = [
             CatBadgeCounter(),
             TimeBadgeCounter(),
@@ -51,12 +51,14 @@ class BadgesManager:
 
             method = getattr(counter, method_name)
             badge, new_state = method(active_play_time_secs, state)
+            self.data["badges_state"][counter.__class__.__name__] = new_state
 
             if badge is not None and badge_to_return is None:
                 self.data["badges_counter"][badge] = self.data["badges_counter"].get(badge, 0) + 1
                 badge_to_return = badge
+                if terminate_if_found:
+                    return badge_to_return
 
-            self.data["badges_state"][counter.__class__.__name__] = new_state
         return badge_to_return
 
     def serialize(self) -> str:
