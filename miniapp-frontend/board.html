@@ -27,6 +27,10 @@
             margin: 0px auto;
         }
 
+        .hidden {
+            visibility: hidden;
+        }
+
         .unhappy-cat-placeholder {
             border: 1px solid grey;
             display: table;
@@ -222,6 +226,52 @@ function waitImagesLoadedPromise() {
     });
 }
 
+function triggerMovement() {
+    const targetElt = document.getElementById('target');
+    const targetRect = targetElt.getBoundingClientRect();
+    const targetX = targetRect.left + window.scrollX;
+    const targetY = targetRect.top + window.scrollY;
+
+    const sourceElt = document.getElementById('source');
+    const sourceRect = sourceElt.getBoundingClientRect();
+    const sourceX = sourceRect.left + window.scrollX;
+    const sourceY = sourceRect.top + window.scrollY;
+
+    const projectileElt = document.getElementById('projectile');
+
+    projectileElt.style.width = NORMAL_IMAGE_WIDTH;
+    projectileElt.style.left = parseInt(sourceX) + 'px';
+    projectileElt.style.top = parseInt(sourceY) + 'px';
+
+    sourceElt.style.visibility = 'hidden';
+    sourceElt.classList.add('projectileAnimate');
+
+    setTimeout(() => {
+        projectileElt.classList.toggle('projectileAnimate');
+        projectileElt.style.left = parseInt(targetX) + 'px';
+        projectileElt.style.top = parseInt(targetY) + 'px';
+        projectileElt.style.width = targetRect.width + 'px';
+        // targetElt.scrollIntoView({
+        //     behavior: 'smooth',
+        // });
+
+        window.addEventListener('transitionend', () => {
+            projectileElt.style.display = 'none';
+
+            targetElt.parentNode.classList.add('active');
+            targetElt.classList.add('target');
+
+            fireConfetti();
+
+            sourceElt.style.width = '0px';
+
+            setTimeout(() => {
+                document.getElementById('main').classList.remove('moving');
+            }, 1500);
+        }, { once: true });
+    }, 250);
+}
+
 // list all image widths and heights _after_ the images have loaded:
 console.log('v4');
 waitImagesLoadedPromise().then(() => {
@@ -231,51 +281,7 @@ waitImagesLoadedPromise().then(() => {
     document.getElementById('loader').classList.add('hidden');
     document.getElementById('main').classList.remove('hidden');
 
-    setTimeout(() => {
-        const targetElt = document.getElementById('target');
-        const targetRect = targetElt.getBoundingClientRect();
-        const targetX = targetRect.left + window.scrollX;
-        const targetY = targetRect.top + window.scrollY;
-
-        const sourceElt = document.getElementById('source');
-        const sourceRect = sourceElt.getBoundingClientRect();
-        const sourceX = sourceRect.left + window.scrollX;
-        const sourceY = sourceRect.top + window.scrollY;
-
-        const projectileElt = document.getElementById('projectile');
-
-        projectileElt.style.width = NORMAL_IMAGE_WIDTH;
-        projectileElt.style.left = parseInt(sourceX) + 'px';
-        projectileElt.style.top = parseInt(sourceY) + 'px';
-
-        sourceElt.style.visibility = 'hidden';
-        sourceElt.classList.add('projectileAnimate');
-
-        setTimeout(() => {
-            projectileElt.classList.toggle('projectileAnimate');
-            projectileElt.style.left = parseInt(targetX) + 'px';
-            projectileElt.style.top = parseInt(targetY) + 'px';
-            projectileElt.style.width = targetRect.width + 'px';
-            // targetElt.scrollIntoView({
-            //     behavior: 'smooth',
-            // });
-
-            window.addEventListener('transitionend', () => {
-                projectileElt.style.display = 'none';
-
-                targetElt.parentNode.classList.add('active');
-                targetElt.classList.add('target');
-
-                fireConfetti();
-
-                sourceElt.style.width = '0px';
-
-                setTimeout(() => {
-                    document.getElementById('main').classList.remove('moving');
-                }, 1500);
-            }, { once: true });
-        }, 250);
-    }, 100);
+    setTimeout(triggerMovement, 100);
 })
 
 
