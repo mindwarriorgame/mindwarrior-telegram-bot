@@ -1,6 +1,7 @@
 <html>
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+<!--    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tsparticles-confetti/2.12.0/tsparticles.confetti.bundle.min.js"></script>
     <script>
         const INNER_WIDTH = window.innerWidth;
         console.log(INNER_WIDTH);
@@ -91,17 +92,14 @@
         .extras p.active img {
             opacity: 1;
         }
-        .extras p.active img.blurred {
-            opacity: 0.5;
-        }
         .normal {
             width: 1px;
         }
         .small {
             width: 1px;
         }
-        .blurred {
-            opacity: 0.5
+        img.blurred {
+            opacity: 0.3 !important;
         }
     </style>
 </head>
@@ -118,7 +116,7 @@
     <table>
         <tr>
             <td>
-                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal blurred" /><a href="javascript:alert(1)">How to earn me?</a></p>
+                <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal blurred" /><a href="javascript:alert(1)" style="visibility: hidden">How to earn me?</a></p>
                 <p class="achievement-placeholder"><img src="../badge-images/feather_512.jpg" class="normal blurred" /></p>
                 <div class="unhappy-cat-placeholder"><img src="../badge-images/cat-unhappy_512.jpg" class="normal blurred" class="unhappy-cat" /></div>
             </td>
@@ -137,7 +135,7 @@
 <!--                <p><img src="../badge-images/cat-happy_512.jpg" width="64" /> </p>-->
                 <p class="active"><img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> <img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> </p>
                 <p class="active"><img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> <img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> </p>
-                <p><img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> <img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> </p>
+                <p style="visibility:hidden"><img src="../badge-images/cat-happy_512.jpg" class="small" /> <img src="../badge-images/cat-happy_512.jpg" class="small blurred" /> </p>
             </td>
         </tr>
     </table>
@@ -148,6 +146,7 @@
 <script>
 
 function fireConfetti() {
+    console.log('fire start');
     const defaults = {
         spread: 360,
         ticks: 50,
@@ -177,9 +176,11 @@ function fireConfetti() {
     setTimeout(shoot, 0);
     setTimeout(shoot, 100);
     setTimeout(shoot, 200);
+    console.log('fire end');
 }
 
 const images = [...document.querySelectorAll("img")];
+const links = [...document.querySelectorAll("a")];
 
 const NORMAL_IMAGE_WIDTH = INNER_WIDTH > 1200 ? Math.floor(INNER_WIDTH / 8) : Math.floor(INNER_WIDTH / 5);
 
@@ -214,7 +215,6 @@ Promise.all(imagesLoadedPromises).then(data=>{
         const sourceX = sourceRect.left + window.scrollX;
         const sourceY = sourceRect.top + window.scrollY;
 
-
         const projectileElt = document.getElementById('projectile');
 
         projectileElt.style.width = NORMAL_IMAGE_WIDTH;
@@ -245,6 +245,9 @@ Promise.all(imagesLoadedPromises).then(data=>{
 
                 setTimeout(() => {
                     images.forEach(img => img.classList.remove('blurred'));
+                    links.forEach(link => {
+                        link.style.visibility = 'visible';
+                    });
                 }, 1500);
             }, { once: true });
         }, 250);
