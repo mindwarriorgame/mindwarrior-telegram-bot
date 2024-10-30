@@ -20,7 +20,7 @@
         a {
             color: white;
         }
-        .center {
+        .vertical-align-center {
             justify-content: center;
         }
         table {
@@ -119,7 +119,7 @@
         }
     </style>
 </head>
-<body class="center">
+<body class="vertical-align-center">
 <div id="loader">
     Loading...
 </div>
@@ -196,29 +196,41 @@ function fireConfetti() {
 }
 
 const images = [...document.querySelectorAll("img")];
-
 const NORMAL_IMAGE_WIDTH = INNER_WIDTH > 1200 ? Math.floor(INNER_WIDTH / 8) : Math.floor(INNER_WIDTH / 5);
 
-
-const imagesLoadedPromises = images.map(img => new Promise(res=>
-    img.onload = () => {
+function adjustImagesWidths() {
+    images.forEach(img => {
         if (img.classList.contains("normal")) {
             img.style.width = NORMAL_IMAGE_WIDTH + 'px';
         } else if (img.classList.contains("small")) {
             img.style.width = Math.floor(NORMAL_IMAGE_WIDTH / 2) + 'px';
         }
-        img.classList.remove("normal");
-        img.classList.remove("small");
-        res([img.width, img.height]);
-    }
-))
+    });
+}
+
+
+function waitImagesLoadedPromise() {
+    return new Promise(allDoneRes => {
+        const imagesLoadedPromises = images.map(img => new Promise(imageLoadedRes=>
+            img.onload = () => {
+                imageLoadedRes();
+            }
+        ))
+        Promise.all(imagesLoadedPromises).then(() => {
+            allDoneRes();
+        })
+    });
+}
 
 // list all image widths and heights _after_ the images have loaded:
-console.log('v3');
-Promise.all(imagesLoadedPromises).then(data=>{
-    document.getElementsByTagName('body')[0].classList.toggle('center');
-    document.getElementById('loader').classList.toggle('hidden');
-    document.getElementById('main').classList.toggle('hidden');
+console.log('v4');
+waitImagesLoadedPromise().then(() => {
+    adjustImagesWidths();
+
+    document.getElementsByTagName('body')[0].classList.remove('vertical-align-center');
+    document.getElementById('loader').classList.add('hidden');
+    document.getElementById('main').classList.remove('hidden');
+
     setTimeout(() => {
         const targetElt = document.getElementById('target');
         const targetRect = targetElt.getBoundingClientRect();
