@@ -233,10 +233,12 @@ const board = [
         },
         {
             badge: 'time',
-            target: true
+            projectile: true,
         },
         {
             badge: 'c0',
+            active: true,
+            target: true
         }
     ],
     [
@@ -293,10 +295,12 @@ function buildBoard(board) {
                 itemHtml = inactiveBadge;
             }
             itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
-            if (item.target) {
-                itemHtml = itemHtml.replace("<img ", "<img id='target' ");
+            if (item.projectile) {
                 document.getElementById('source').src = itemHtml.match(/src="([^"]+)"/)[1];
                 document.getElementById('projectile').src = itemHtml.match(/src="([^"]+)"/)[1];
+            }
+            if (item.target) {
+                itemHtml = itemHtml.replace("<img ", "<img id='target' ");
             }
             boardHtml += itemHtml;
         }
@@ -431,10 +435,18 @@ function triggerMovement() {
         window.addEventListener('transitionend', () => {
             projectileElt.style.display = 'none';
 
-            targetElt.parentNode.classList.add('active');
-            targetElt.classList.add('target');
+            if (targetElt.parentNode.classList.contains('unhappy-cat-placeholder')) {
+                targetElt.parentNode.classList.toggle('active');
+            } else {
+                targetElt.parentNode.classList.add('active');
+                targetElt.classList.add('target');
+            }
 
-            fireConfetti();
+            if (targetElt.parentNode.classList.contains('unhappy-cat-placeholder') && targetElt.parentNode.classList.contains('active')) {
+
+            } else {
+                fireConfetti();
+            }
 
             sourceElt.style.width = '0px';
 
