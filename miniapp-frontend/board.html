@@ -37,6 +37,12 @@
             padding: 0px;
             position: relative;
         }
+        .unhappy-cat-placeholder a {
+            visibility: hidden;
+        }
+        .unhappy-cat-placeholder.active a {
+            visibility: visible;
+        }
         .unhappy-cat-placeholder img {
             visibility: hidden;
         }
@@ -52,6 +58,7 @@
         }
         .achievement-placeholder {
             position: relative;
+            border: 1px solid black;
         }
         .achievement-placeholder img {
             filter: gray;
@@ -84,6 +91,7 @@
             display: flex;
             justify-content: center;
             font-size: 1.3em;
+            text-align: center;
         }
         .unhappy-cat-placeholder a {
             justify-content: flex-end;
@@ -189,23 +197,24 @@
         <tr>
             <td>
                 <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal" /><a href="javascript:alert(1)">How to earn me?</a></p>
-                <p class="achievement-placeholder"><img src="../badge-images/f0_512.jpg" class="normal" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /></div>
+                <p class="achievement-placeholder active"><img src="../badge-images/f0_512.jpg" class="normal" /></p>
+                <p class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /><a href="javascript:alert(1)">How to kick me out?</a></p>
+                <p class="unhappy-cat-placeholder active"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /><a href="javascript:alert(1)">How to kick me out?</a></p>
             </td>
             <td>
                 <p class="achievement-placeholder active"><img src="../badge-images/s0_512.jpg" class="normal" /></p>
                 <p class="achievement-placeholder"><img src="../badge-images/s1_512.jpg" class="normal" /></p>
                 <p class="achievement-placeholder active"><img src="../badge-images/s2_512.jpg" class="normal" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /></div>
+                <p class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /></p>
             </td>
             <td>
                 <p class="achievement-placeholder active"><img src="../badge-images/c1_512.jpg" class="normal" /></p>
                 <p class="achievement-placeholder"><img src="../badge-images/c2_512.jpg" class="normal" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" id="target" /><a href="javascript:alert(1)">How to kick me out?</a></div>
+                <p class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" id="target" /><a href="javascript:alert(1)">How to kick me out?</a></p>
             </td>
             <td class="extras">
                 <p><img src="../badge-images/c2_512.jpg" class="small" /> </p>
-                <p class="active"><img src="../badge-images/c1_512.jpg" class="small" /> <img src="../badge-images/c1_512.jpg" class="small" /> </p>
+                <p class="active"><img src="../badge-images/c1_512.jpg" class="small" /> <img src="../badge-images/c2_512.jpg" class="small" /> </p>
                 <p class="active"><img src="../badge-images/c1_512.jpg" class="small" /> <img src="../badge-images/c1_512.jpg" class="small" /> </p>
                 <p style="visibility:hidden"><img src="../badge-images/c1_512.jpg" class="small" /> <img src="../badge-images/c1_512.jpg" class="small" /> </p>
             </td>
@@ -216,6 +225,115 @@
 </body>
 
 <script>
+
+const board = [
+    [
+        {
+            badge: 'f0',
+        },
+        {
+            badge: 'time',
+            target: true
+        },
+        {
+            badge: 'c0',
+        }
+    ],
+    [
+        {
+            badge: 's0',
+        },
+        {
+            badge: 's0'
+        }
+    ],
+    [
+        {
+            badge: 'c1'
+        }
+    ],
+    [
+        {
+            badge: 's1',
+        },
+        {
+            badge: 's2',
+        },
+        {
+            badge: 'c1',
+        }
+    ]
+
+]
+
+function buildBoard(board) {
+    const inactiveBadge = document.getElementsByTagName('td')[0].getElementsByTagName('p')[0].outerHTML.replace("time_512.jpg", "badge.jpg");
+    const activeBadge = document.getElementsByTagName('td')[0].getElementsByTagName('p')[1].outerHTML.replace("f0_512.jpg", "badge.jpg");
+    const inactiveUnhappyCat = document.getElementsByTagName('td')[0].getElementsByTagName('p')[2].outerHTML.replace("c0_512.jpg", "badge.jpg");
+    const activeUnhappyCat = document.getElementsByTagName('td')[0].getElementsByTagName('p')[3].outerHTML.replace("c0_512.jpg", "badge.jpg");
+
+    const extrasTarget = document.getElementsByTagName('td')[3].getElementsByTagName('p')[0].outerHTML.replace("c2_512.jpg", "badge.jpg");
+    const extrasRow = document.getElementsByTagName('td')[3].getElementsByTagName('p')[1].outerHTML
+        .replace("c1_512.jpg", "badge1.jpg").replace("c2_512.jpg", "badge2.jpg");
+    const extrasRowFinal = document.getElementsByTagName('td')[3].getElementsByTagName('p')[3].outerHTML;
+
+    let boardHtml = "<tr>";
+    for (let colIdx = 0; colIdx < 3; colIdx ++) {
+        boardHtml += "<td>";
+        for (let itemIdx = 0; itemIdx < board[colIdx].length; itemIdx++) {
+            const item = board[colIdx][itemIdx];
+            let itemHtml = "";
+            if (item.active && item.badge === 'c0') {
+                itemHtml = activeUnhappyCat;
+            } else if (item.active) {
+                itemHtml = activeBadge;
+            } else if (item.badge === 'c0') {
+                itemHtml = inactiveUnhappyCat;
+            } else {
+                itemHtml = inactiveBadge;
+            }
+            itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
+            if (item.target) {
+                itemHtml = itemHtml.replace("<img ", "<img id='target' ");
+                document.getElementById('source').src = itemHtml.match(/src="([^"]+)"/)[1];
+                document.getElementById('projectile').src = itemHtml.match(/src="([^"]+)"/)[1];
+            }
+            boardHtml += itemHtml;
+        }
+
+        boardHtml += "</td>";
+    }
+
+    boardHtml += "<td class=\"extras\">";
+
+    let extrasBuffer = [];
+    for (let idx = 0; idx < board[3].length; idx++) {
+        extrasItem = board[3][idx];
+        if (idx === 0 && extrasItem.target) {
+            const itemHtml = extrasTarget.replace("badge.jpg", extrasItem.badge + "_512.jpg").replace("<img ", "<img id='target' ");
+            boardHtml += itemHtml;
+            document.getElementById('source').src = itemHtml.match(/src="([^"]+)"/)[1];
+            document.getElementById('projectile').src = itemHtml.match(/src="([^"]+)"/)[1];
+        } else if (extrasBuffer.length < 2) {
+            extrasBuffer.push(extrasItem);
+        } else {
+            boardHtml += extrasRow.replace("badge1.jpg", extrasBuffer[0].badge + "_512.jpg").replace("badge2.jpg", extrasBuffer[1].badge + "_512.jpg");
+            extrasBuffer = [extrasItem];
+        }
+    }
+    if (extrasBuffer.length === 1) {
+        boardHtml += extrasRow.replace("badge1.jpg", extrasBuffer[0].badge + "_512.jpg").replace("badge2.jpg", "empty.png");
+    }
+    if (extrasBuffer.length === 2) {
+        boardHtml += extrasRow.replace("badge1.jpg", extrasBuffer[0].badge + "_512.jpg").replace("badge2.jpg", extrasBuffer[1].badge + "_512.jpg");
+    }
+
+    boardHtml += extrasRowFinal + "</td>";
+
+    document.getElementsByTagName('table')[0].innerHTML = boardHtml;
+}
+
+buildBoard(board);
 
 function fireConfetti() {
     console.log('fire start');
@@ -267,12 +385,15 @@ function adjustImagesWidths() {
 
 function waitImagesLoadedPromise() {
     return new Promise(allDoneRes => {
-        const imagesLoadedPromises = images.map(img => new Promise(imageLoadedRes=>
+        const imagesLoadedPromises = images.map(img => new Promise(imageLoadedRes=> {
             img.onload = () => {
                 imageLoadedRes();
-            }
-        ))
-        Promise.all(imagesLoadedPromises).then(() => {
+            };
+            img.onerror = () => {
+                imageLoadedRes();
+            };
+        }));
+        Promise.allSettled(imagesLoadedPromises).then(() => {
             allDoneRes();
         })
     });
