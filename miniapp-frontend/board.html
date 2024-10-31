@@ -121,6 +121,46 @@
         #projectile {
             z-index: 1000;
         }
+        button.action-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            height: 5vh;
+
+        }
+        .moving button.action-btn {
+            visibility: hidden;
+            width: 10px;
+            white-space: nowrap;
+        }
+
+        table {
+            margin-top: 10px;
+        }
+
+        button.action-btn:hover {
+            background-color: #218838;
+        }
+
+        button.action-btn:active {
+            background-color: #1e7e34;
+            transform: scale(0.98);
+        }
+
+        button.action-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+        }
+
+        button.action-btn:disabled {
+            background-color: #8ba290;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="vertical-align-center">
@@ -130,6 +170,8 @@
 <div id="main" class="hidden moving">
 
                 <h1 >Level 1: You've got a new achievement!</h1>
+
+    <button class="action-btn" id="action" >Return to game</button>
                     <img src="../badge-images/c2_512.jpg" class="normal" id="source" />
                     <img src="../badge-images/c2_512.jpg" width="0" id="projectile" />
 
@@ -138,18 +180,18 @@
             <td>
                 <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal" /><a href="javascript:alert(1)">How to earn me?</a></p>
                 <p class="achievement-placeholder"><img src="../badge-images/f0_512.jpg" class="normal" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal" class="unhappy-cat" /></div>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /></div>
             </td>
             <td>
                 <p class="achievement-placeholder active"><img src="../badge-images/s0_512.jpg" class="normal" /></p>
                 <p class="achievement-placeholder"><img src="../badge-images/s1_512.jpg" class="normal" /></p>
                 <p class="achievement-placeholder active"><img src="../badge-images/s2_512.jpg" class="normal" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal" class="unhappy-cat" /></div>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /></div>
             </td>
             <td>
                 <p class="achievement-placeholder active"><img src="../badge-images/c1_512.jpg" class="normal" /></p>
                 <p class="achievement-placeholder"><img src="../badge-images/c2_512.jpg" class="normal" id="target" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal" class="unhappy-cat" /></div>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /></div>
             </td>
             <td class="extras">
                 <p><img src="../badge-images/c2_512.jpg" class="small" /> </p>
