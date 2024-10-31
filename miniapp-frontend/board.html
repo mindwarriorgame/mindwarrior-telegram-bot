@@ -35,6 +35,7 @@
             border: 1px solid grey;
             display: table;
             padding: 0px;
+            position: relative;
         }
         .unhappy-cat-placeholder img {
             visibility: hidden;
@@ -73,7 +74,7 @@
         .moving .achievement-placeholder.active img.target {
             opacity: 1;
         }
-        .achievement-placeholder a {
+        .achievement-placeholder a, .unhappy-cat-placeholder a {
             position: absolute;
             left: 0;
             right: 0;
@@ -84,6 +85,15 @@
             justify-content: center;
             font-size: 1.3em;
         }
+        .unhappy-cat-placeholder a {
+            justify-content: flex-end;
+            flex-direction: column;
+            padding-bottom: 5px;
+        }
+        .moving .unhappy-cat-placeholder a {
+            visibility: hidden;
+        }
+
         #loader {
             margin: 0 auto;
         }
@@ -190,8 +200,8 @@
             </td>
             <td>
                 <p class="achievement-placeholder active"><img src="../badge-images/c1_512.jpg" class="normal" /></p>
-                <p class="achievement-placeholder"><img src="../badge-images/c2_512.jpg" class="normal" id="target" /></p>
-                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" /></div>
+                <p class="achievement-placeholder"><img src="../badge-images/c2_512.jpg" class="normal" /></p>
+                <div class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat" id="target" /><a href="javascript:alert(1)">How to kick me out?</a></div>
             </td>
             <td class="extras">
                 <p><img src="../badge-images/c2_512.jpg" class="small" /> </p>
