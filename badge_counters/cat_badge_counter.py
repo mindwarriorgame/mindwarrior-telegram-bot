@@ -26,7 +26,7 @@ class CatBadgeCounter:
 
 
     def on_penalty(self, active_play_time_secs: int, state: Optional[str], difficulty) -> Tuple[Optional[str], Optional[str]]:
-        return "c0", None
+        return "c0", "pending_happy," + str(active_play_time_secs + self._calculate_interval_secs(difficulty))
 
     def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty) -> Tuple[Optional[str], Optional[str]]:
         if state is None:

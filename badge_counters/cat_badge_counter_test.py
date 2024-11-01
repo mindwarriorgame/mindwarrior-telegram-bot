@@ -34,7 +34,17 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                     'remaining_time_secs': 52610}],
                                   8))
 
-        result = counter.progress("c1", 500000, state, 2)
+        badge_advice = counter.on_penalty(60000, state, 2)
+        self.assertEqual(badge_advice, ('c0', 'pending_happy,117600'))
+        state = badge_advice[1]
+
+        result = counter.progress("c1", 61000, state, 2)
+        self.assertEqual(result, ([{'badge': 'c1',
+                                    'challenge': 'review_regularly_no_penalty',
+                                    'remaining_time_secs': 56600}],
+                                  1))
+
+        result = counter.progress("c1", 200000, state, 2)
         self.assertEqual(result, ([{'badge': 'c1',
                                     'challenge': 'review_regularly_no_penalty',
                                     'remaining_time_secs': 0}],
