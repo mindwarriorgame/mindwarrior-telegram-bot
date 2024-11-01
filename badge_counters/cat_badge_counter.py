@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
 
-INTERVAL_SECS = 16 * 3600;
+INTERVAL_SECS = 16 * 3600
 
 class CatBadgeCounter:
 
