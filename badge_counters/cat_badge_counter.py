@@ -52,21 +52,24 @@ class CatBadgeCounter:
                 return [{
                     "remaining_time_secs": self._calculate_interval_secs(difficulty),
                     "challenge": "review_regularly_no_penalty",
-                    "badge": "c1"
-                }], 0
+                    "badge": "c1",
+                    "progress_pct": 0
+                }]
             if for_badge == "c2":
                 return [
                     {
                         "remaining_time_secs": self._calculate_interval_secs(difficulty),
                         "challenge": "review_regularly_no_penalty",
                         "badge" : "c1",
+                        "progress_pct": 0
                     },
                     {
                         "remaining_time_secs": self._calculate_interval_secs(difficulty),
                         "challenge": "review_regularly_no_prompt",
-                        "badge": "c2"
+                        "badge": "c2",
+                        "progress_pct": 0
                     }
-                ], 0
+                ]
         if state.startswith("pending_happy"):
             split = state.split(",")
             secs_before_next_badge = max(int(split[1]) - active_play_time_secs, 0)
@@ -75,21 +78,24 @@ class CatBadgeCounter:
                 return [{
                     "remaining_time_secs": secs_before_next_badge,
                     "challenge": "review_regularly_no_penalty",
-                    "badge": "c1"
-                }], 100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty)
+                    "badge": "c1",
+                    "progress_pct": 100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty)
+                }]
             if for_badge == "c2":
                 return [
                     {
                         "remaining_time_secs": secs_before_next_badge,
                         "challenge": "review_regularly_no_penalty",
-                        "badge": "c1"
+                        "badge": "c1",
+                        "progress_pct": 100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty)
                     },
                     {
                         "remaining_time_secs": self._calculate_interval_secs(difficulty),
                         "challenge": "review_regularly_no_prompt",
-                        "badge": "c2"
+                        "badge": "c2",
+                        "progress_pct": 0
                     }
-                ], 100 * secs_since_prev_badge // (2 * self._calculate_interval_secs(difficulty))
+                ]
         if state.startswith("pending_superhappy"):
             split = state.split(",")
 
@@ -101,15 +107,23 @@ class CatBadgeCounter:
                     {
                         "remaining_time_secs": secs_before_next_badge,
                         "challenge": "review_regularly_no_penalty",
-                        "badge": for_badge
+                        "badge": for_badge,
+                        "progress_pct": 100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty)
                     }
-                ], 100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty)
+                ]
 
             if for_badge == "c2":
                 return [
                     {
+                        "remaining_time_secs": 0,
+                        "challenge": "review_regularly_no_penalty",
+                        "badge": "c1",
+                        "progress_pct": 100
+                    },
+                    {
                         "remaining_time_secs": secs_before_next_badge,
                         "challenge": "review_regularly_no_prompt",
-                        "badge": for_badge
+                        "badge": for_badge,
+                        "progress_pct": 100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty)
                     }
-                ], 50 + (100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty))
+                ]

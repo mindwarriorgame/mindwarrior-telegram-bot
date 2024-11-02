@@ -1,7 +1,8 @@
 <html>
 <head>
     <!-- https://stackoverflow.com/questions/37824744/on-mobile-font-size-is-different-depending-on-the-number-of-paragraphs -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
 
     <!--    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tsparticles-confetti/2.12.0/tsparticles.confetti.bundle.min.js"></script>
@@ -128,6 +129,73 @@
             position: absolute;
             z-index: 100;
         }
+
+        button.action-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            height: 5vh;
+        }
+
+
+        /* Overlay Background */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            z-index: 1000;
+
+            opacity: 0;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        /* Popup Box */
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            max-width: 90%;
+            z-index: 1001;
+            color: #000;
+            opacity: 0;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        /* Close Button */
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        #popup.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
     </style>
 
 </head>
@@ -137,6 +205,9 @@
 </div>
 <div id="board1">
     <h1>Congratulations! You've got a new achievement!</h1>
+    <div style="display: table; margin: 0px auto;">
+    <button class="action-btn" style="display: none">Return to game</button>
+    </div>
     <p>
         <img src="../badge-images/time_512.jpg" class="new_achievement projectile" />
         <img src="../badge-images/time_512.jpg" class="new_achievement placeholder" />
@@ -144,12 +215,12 @@
     <div class="boardWrapper">
         <p class="board-cell achievement-cell target"><img src="../badge-images/time_512.jpg" class="badge" />
             <img src="lock.png" width="32" class="lock" />
-            <a href="javascript:alert(1)">How to unlock?</a></p>
+            <a href="javascript:openPopup()">How to unlock?</a></p>
         <p class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge" />
             <img src="lock.png" width="32" class="lock" />
-            <a href="javascript:alert(1)">How to unlock?</a></p>
-        <p class="board-cell unhappy-cat-cell"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge" /><a href="javascript:alert(1)">How to kick me out?</a></p>
-        <p class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge " /><a href="javascript:alert(1)">How to kick me out?</a></p>
+            <a href="javascript:openPopup()">How to unlock?</a></p>
+        <p class="board-cell unhappy-cat-cell"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge" /><a href="javascript:openPopup()">How to kick me out?</a></p>
+        <p class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge " /><a href="javascript:openPopup()">How to kick me out?</a></p>
     </div>
 </div>
 
@@ -164,8 +235,57 @@
     <p>1. <img src="unlock.png" height="64" style="vertical-align: middle;" /> Unlock all locked items on the board above. Press locked cells to see how.</p>
     <p>2. <img src="no-grumpy-cats.jpg" width="64" style="vertical-align: middle;" /> Keep empty slots clear from grumpy cats. Kick them out as soon as they get in!</p>
 </div>
+
+
+<!-- Overlay -->
+<div id="overlay" onclick="closePopup()"></div>
+
+<!-- Popup Content -->
+<div id="popup">
+    <h2>Popup Title</h2>
+    <p>This is the content of the popup. It will adjust based on the content size.</p>
+    <p>
+        <button class="action-btn" onclick="closePopup()">Close</button>
+    </p>
+</div>
+
 </body>
 <script>
+    function showActionButton() {
+        document.querySelector('.action-btn').style.display = 'block';
+    }
+
+    function openPopup(e) {
+        document.getElementById('popup').classList.add('show');
+        document.getElementById('overlay').classList.add('show');
+    }
+
+    function closePopup() {
+        document.getElementById('popup').classList.remove('show');
+        document.getElementById('overlay').classList.remove('show');
+    }
+
+    function waitImagesLoadedPromise() {
+        const images = [...document.querySelectorAll("img")];
+        return new Promise(allDoneRes => {
+            const imagesLoadedPromises = images.map(img => new Promise(imageLoadedRes => {
+                if (img.width > 0) {
+                    imageLoadedRes();
+                    return;
+                }
+                img.onload = () => {
+                    imageLoadedRes();
+                };
+                img.onerror = () => {
+                    imageLoadedRes();
+                };
+            }));
+            Promise.allSettled(imagesLoadedPromises).then(() => {
+                allDoneRes();
+            })
+        });
+    }
+
     function fireConfetti() {
         console.log('fire start');
         const defaults = {
@@ -270,6 +390,7 @@
                 document.querySelector('.placeholder').src = '../badge-images/' + projectile + '_512.jpg';
                 targetFound = true;
             }
+            itemHtml
             boardHtml += itemHtml;
         }
 
@@ -283,31 +404,11 @@
     buildBoard(board);
 
     setTimeout(() => {
-        const images = [...document.querySelectorAll("img")];
-
-        function waitImagesLoadedPromise() {
-            return new Promise(allDoneRes => {
-                const imagesLoadedPromises = images.map(img => new Promise(imageLoadedRes => {
-                    if (img.width > 0) {
-                        imageLoadedRes();
-                        return;
-                    }
-                    img.onload = () => {
-                        imageLoadedRes();
-                    };
-                    img.onerror = () => {
-                        imageLoadedRes();
-                    };
-                }));
-                Promise.allSettled(imagesLoadedPromises).then(() => {
-                    allDoneRes();
-                })
-            });
-        }
 
         waitImagesLoadedPromise().then(() => {
             document.body.classList.remove("loading");
             document.querySelectorAll('.new_achievement').forEach(img => {
+                // Need for animation, otherwise it will just jump straight to the target
                 img.style.width = img.width + "px";
             });
 
@@ -323,6 +424,9 @@
                     const targetElt = document.getElementById('target');
                     if (!targetElt) {
                         fireConfetti();
+                        setTimeout(() => {
+                            showActionButton();
+                        }, 1000);
                         return;
                     }
                     const targetRect = targetElt.getBoundingClientRect();
@@ -350,6 +454,9 @@
                             targetElt.parentElement.classList.toggle('active');
                             projectileElt.style.display = 'none';
                             fireConfetti();
+                            setTimeout(() => {
+                                showActionButton();
+                            }, 1000);
                         }, {once: true});
                     }, 0);
                 }, {once: true});
