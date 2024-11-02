@@ -196,6 +196,46 @@
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
+
+        #popup img {
+            width: 50%;
+            max-width: 196px;
+        }
+        #popup p:last-child {
+            padding-bottom: 0px;
+            margin-bottom: 0px;
+        }
+        .pct100 {
+            opacity: 0.5;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 24px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4caf50; /* Customize this color */
+            width: 0%; /* Set initial width for progress */
+            transition: width 0.3s ease;
+            border-radius: 8px 0 0 8px; /* Optional rounded corners */
+        }
+
+        .progress-text {
+            position: absolute;
+            right: 10px; /* Position text on the right */
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+            color: #333; /* Text color */
+        }
+
+
     </style>
 
 </head>
@@ -242,11 +282,7 @@
 
 <!-- Popup Content -->
 <div id="popup">
-    <h2>Popup Title</h2>
-    <p>This is the content of the popup. It will adjust based on the content size.</p>
-    <p>
-        <button class="action-btn" onclick="closePopup()">Close</button>
-    </p>
+
 </div>
 
 </body>
@@ -255,7 +291,89 @@
         document.querySelector('.action-btn').style.display = 'block';
     }
 
-    function openPopup(e) {
+    const requiredActions = {
+        'c1': [
+            {
+                "remaining_time_secs": 3867,
+                "challenge": "review_regularly_no_penalty",
+                "badge": "c1",
+                "progress_pct": 30
+            }
+        ],
+        'c2': [
+            {
+                "remaining_time_secs": 3867,
+                "challenge": "review_regularly_no_penalty",
+                "badge": "c1",
+                "progress_pct": 100
+            },
+            {
+                "remaining_time_secs": 10000,
+                "challenge": "review_regularly_no_prompt",
+                "badge": "c2",
+                "progress_pct": 10
+            }
+        ]
+    };
+
+    function toTimeInterval(secs) {
+        let hours = Math.floor(secs / 3600);
+        let minutes = Math.floor((secs % 3600) / 60);
+        return `${hours}h ${minutes}m`;
+    }
+
+    function renderProgressBar(pct) {
+        return `<div class="progress-container">
+            <div class="progress-bar" style="width: ${pct}%;"></div>
+            <span class="progress-text">${pct}%</span>
+        </div>`;
+    }
+
+    function renderReviewWithoutMisses(step, inactive, pct, timeSecs, withProgressBar)  {
+        let stepPrefix = '';
+        if (step) {
+            stepPrefix = `${step}. `;
+        }
+        const ret = `<p class="pct${inactive ? 100 : 0}">${pct == 100 ? '✅ ' : ''} ${stepPrefix} Review <i>Formula</i> during next ${toTimeInterval(timeSecs)}
+                    without misses 🚫🟥.</p>`;
+        if (withProgressBar) {
+           return ret + renderProgressBar(pct);
+        }
+        return ret;
+    }
+
+    function renderReviewWithoutReminders(step, inactive, pct, timeSecs, withProgressBar)  {
+        let stepPrefix = '';
+        if (step) {
+            stepPrefix = `${step}. `;
+        }
+        const ret = `<p class="pct${inactive ? 100 : 0}">${pct == 100 ? '✅ ' : ''} ${stepPrefix} Review <i>Formula</i> during next ${toTimeInterval(timeSecs)}
+                    without reminders 🚫⏰.</p>`;
+        if (withProgressBar) {
+           return ret + renderProgressBar(pct);
+        }
+        return ret;
+    }
+
+    function openPopup(badge) {
+        let content = `<img src="../badge-images/${badge}_512.jpg" />`;
+        if (badge === 'c0') {
+            content += `<p>Earn any badge to kick it out!</p>`;
+        } else if (badge === 'c1') {
+            let action = requiredActions[badge][0];
+            content += renderReviewWithoutMisses(null, action.progress_pct == 100, action.progress_pct, action.remaining_time_secs, true);
+        } else if (badge === 'c2') {
+            let action1 = requiredActions[badge][0];
+            content += renderReviewWithoutMisses(1, action1.progress_pct == 100, action1.progress_pct, action1.remaining_time_secs, action1.progress_pct < 100);
+
+            action2 = requiredActions[badge][1];
+            content += renderReviewWithoutReminders(2, action1.progress_pct < 100, action2.progress_pct, action2.remaining_time_secs, action1.progress_pct == 100 && action2.progress_pct < 100);
+        }
+
+        content += "<p><button class='action-btn' onclick='closePopup()'>Close</button></p>";
+
+        document.getElementById('popup').innerHTML = content;
+
         document.getElementById('popup').classList.add('show');
         document.getElementById('overlay').classList.add('show');
     }
@@ -346,6 +464,9 @@
             badge: 'c1'
         },
         {
+            badge: 'c2',
+        },
+        {
             badge: 's1',
         },
         {
@@ -356,6 +477,7 @@
             target: true,
         }
     ];
+
 
     const boardElt = document.querySelector('#board1 .boardWrapper');
     const INACTIVE_BADGE_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[0].outerHTML.replace("time_512.jpg", "badge.jpg");
@@ -390,7 +512,7 @@
                 document.querySelector('.placeholder').src = '../badge-images/' + projectile + '_512.jpg';
                 targetFound = true;
             }
-            itemHtml
+            itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\')');
             boardHtml += itemHtml;
         }
 
