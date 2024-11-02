@@ -232,11 +232,13 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                                 "\n"
                                 "🌟 Étoiles restantes : {score}",
     penalty_msg_generic_full = "😿 Vous avez perdu {penalty} étoiles ❗\n"
-                                "\n"
-                                "🌟 Il ne vous reste plus que {score} étoiles !",
+                               "\n"
+                               "🌟 Il ne vous reste plus que {score} étoiles !",
 
     penalty_text = (
-        "Vous avez oublié de revoir votre <i>Formule</i> 🟥"
+        "Vous avez oublié de revoir votre <i>Formule</i> 🟥\n"
+        "\n"
+        "{penalty_msg}"
     ),
 
     new_achievement = "Vous avez un nouveau succès ! 🌟"
@@ -290,15 +292,15 @@ Presiona el botón de abajo para iniciar el juego.""",
                                 "/pause - pausar el juego",
 
     review_command_success_no_rewards_text="<i>Fórmula</i> revisada 🎉\n"
-                                "\n"
-                                "Sin recompensa (<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=ser%C3%A1%20recompensado%20(-,%22regla%20de%20enfriamiento%22,-).\">regla de enfriamiento</a>)\n" 
-                                "\n"    
-                                "🌟 Estrellas totales: {score}\n"
-                                "⏳ Tiempo de juego: {time}\n"
-                                "\n"
-                                "Próxima revisión antes de {next_review}\n"
-                                "\n"
-                                "/pause - pausar el juego",
+                                           "\n"
+                                           "Sin recompensa (<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=ser%C3%A1%20recompensado%20(-,%22regla%20de%20enfriamiento%22,-).\">regla de enfriamiento</a>)\n"
+                                           "\n"
+                                           "🌟 Estrellas totales: {score}\n"
+                                           "⏳ Tiempo de juego: {time}\n"
+                                           "\n"
+                                           "Próxima revisión antes de {next_review}\n"
+                                           "\n"
+                                           "/pause - pausar el juego",
 
     review_since_last_time="Tiempo desde la última revisión: {duration}",
 
@@ -308,14 +310,14 @@ Presiona el botón de abajo para iniciar el juego.""",
     seconds_short="s",
 
     difficulty_level_changed="La dificultad ha sido cambiada 💪\n"
-                                "El juego se reinició debido al cambio de la dificultad.\n"
-                                "\n"    
-                                "<b>{old} -> {new}</b>\n"   
-                                "\n"
-                                "🌟 Estrellas totales: 0\n"
-                                "⏳ Tiempo de juego: 0d 0h 0m\n"
-                                "\n"
-                                "Próxima revisión antes de {next_review}\n",
+                             "El juego se reinició debido al cambio de la dificultad.\n"
+                             "\n"
+                             "<b>{old} -> {new}</b>\n"
+                             "\n"
+                             "🌟 Estrellas totales: 0\n"
+                             "⏳ Tiempo de juego: 0d 0h 0m\n"
+                             "\n"
+                             "Próxima revisión antes de {next_review}\n",
 
     formula_changed="¡La <i>Fórmula</i> ha sido actualizada!",
 
@@ -324,46 +326,46 @@ Presiona el botón de abajo para iniciar el juego.""",
     review_paused_text="El juego está pausado",
 
     paused_command="El juego está pausado ⏸️\n"
-                    "\n"    
-                    "No recibirás recordatorios sobre tu <i>Fórmula</i>, "
-                    "y el contador de tiempo de juego activo <a href=\"https://mindwarriorgame.org/faq.es#pause\">está congelado</a>.\n"    
-                    "\n"    
-                    "Para reanudar el juego, "
-                    "simplemente revisa tu <i>Fórmula</i> con el botón a continuación.",
+                   "\n"
+                   "No recibirás recordatorios sobre tu <i>Fórmula</i>, "
+                   "y el contador de tiempo de juego activo <a href=\"https://mindwarriorgame.org/faq.es#pause\">está congelado</a>.\n"
+                   "\n"
+                   "Para reanudar el juego, "
+                   "simplemente revisa tu <i>Fórmula</i> con el botón a continuación.",
 
     stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.es.html#review\">Estrellas ganadas</a>: {score}\n"
-                    "⌛ Tiempo de juego activo: {time}\n"
-                    "💪 <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Dificultad</a>: {difficulty} ({difficulty_details})\n"
-                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.es.html#pause\">¿Pausado?</a> {paused}\n"
-                    "❄️ <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=ser%C3%A1%20recompensado%20(-,%22regla%20de%20enfriamiento%22,-).\">Tiempo de enfriamiento</a> antes de la próxima recompensa: {cooldown}\n"
-                    "⏰ Tiempo antes del próximo <a href=\"https://mindwarriorgame.org/faq.es.html#forgot\">recordatorio</a>: {punishment}"),
+                   "⌛ Tiempo de juego activo: {time}\n"
+                   "💪 <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Dificultad</a>: {difficulty} ({difficulty_details})\n"
+                   "⏸️ <a href=\"https://mindwarriorgame.org/faq.es.html#pause\">¿Pausado?</a> {paused}\n"
+                   "❄️ <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=ser%C3%A1%20recompensado%20(-,%22regla%20de%20enfriamiento%22,-).\">Tiempo de enfriamiento</a> antes de la próxima recompensa: {cooldown}\n"
+                   "⏰ Tiempo antes del próximo <a href=\"https://mindwarriorgame.org/faq.es.html#forgot\">recordatorio</a>: {punishment}"),
 
     resumed="El juego ha sido reanudado.",
     already_paused="El juego ya está pausado ⏸️\n"
-                    "\n"
-                    "Para reanudar el juego, simplemente revisa tu <i>Fórmula</i> con el botón a continuación.",
+                   "\n"
+                   "Para reanudar el juego, simplemente revisa tu <i>Fórmula</i> con el botón a continuación.",
     game_started="El juego ha comenzado 🏁\n"
-        "\n"
-        "💪<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Nivel de dificultad</a>: {difficulty}\n"
-        "\n"
-        "Revisa tu <i>Fórmula</i> antes de {next_review}\n"
-        "\n"
-        "/difficulty - cambiar la dificultad\n"
-        "/pause - pausar el juego",
+                 "\n"
+                 "💪<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Nivel de dificultad</a>: {difficulty}\n"
+                 "\n"
+                 "Revisa tu <i>Fórmula</i> antes de {next_review}\n"
+                 "\n"
+                 "/difficulty - cambiar la dificultad\n"
+                 "/pause - pausar el juego",
 
     review_btn="Revisar tu \"Fórmula\"",
 
     difficulty_command_text="Cambiar el nivel de dificultad💪\n"
                             "\n"
                             "Selecciona un nuevo <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel de dificultad</a> usando los botones a continuación.\n"
-                            "\n"    
+                            "\n"
                             "<b>⚠️¡Esto reiniciará tu progreso en el juego!</b>\n",
 
     current_difficulty="nivel actual",
 
     formula_command_text="Actualizar tu <i>Fórmula</i> 🧪\n"
-                            "\n"
-                            "Utiliza el botón a continuación para actualizar tu <i><a href=\"https://mindwarriorgame.org/faq.es.html#formula\">Fórmula</a></i>.",
+                         "\n"
+                         "Utiliza el botón a continuación para actualizar tu <i><a href=\"https://mindwarriorgame.org/faq.es.html#formula\">Fórmula</a></i>.",
     formula_command_button="Actualizar tu Fórmula",
     review_command_timeout="Tiempo agotado, por favor inténtalo de nuevo.🤷",
     graph_header="Intervalos entre revisiones (mins)",
@@ -381,21 +383,23 @@ Presiona el botón de abajo para iniciar el juego.""",
     data_deleted="Todos tus datos han sido eliminados. Por favor, borra el historial del chat para eliminar los datos del chat de Telegram.",
 
     reminder_text="¡No olvides revisar tu <i>Fórmula</i>! ⏰\n"
-                    "\n"
-                    "¡El tiempo límite es en 15 minutos, date prisa!",
+                  "\n"
+                  "¡El tiempo límite es en 15 minutos, date prisa!",
 
     penalty_msg_no_penalty_for_level = "😼 Sin penalización (nivel <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">\"{difficulty}\"</a>)",
     penalty_msg_no_penalty_first_time = "😼 Sin penalización (<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel \"Fácil\", primer fallo</a> 😬)\n",
     penalty_msg_first_time = "😿 Has perdido {penalty} estrellas (primera vez que se pierde) ❗\n"
-                            "\n"
-                            "🌟 Estrellas restantes: {score}",
+                             "\n"
+                             "🌟 Estrellas restantes: {score}",
     penalty_msg_generic_small = "😿 Has perdido {penalty} estrellas ❗\n"
                                 "\n"
                                 "🌟 Estrellas restantes: {score}",
     penalty_msg_generic_full = "🙀 Has perdido {penalty} estrellas ❗\n"
                                "\n"
-                                 "🌟 Estrellas restantes: {score}",
-    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥",
+                               "🌟 Estrellas restantes: {score}",
+    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥\n"
+                   "\n"
+                   "{penalty_msg}",
 
     new_achievement = "¡Tienes un nuevo logro! 🌟"
 )
@@ -447,15 +451,15 @@ Press the button below to start the game.""",
                                 "/pause - pause the game",
 
     review_command_success_no_rewards_text="<i>Formula</i> has been reviewed 🎉\n"
-                                "\n"
-                                "No reward (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">cool-down rule</a>)\n"
-                                "\n"
-                                "🌟 Total stars: {score}\n"
-                                "⏳ Play time: {time}\n"
-                                "\n"
-                                "Next review before {next_review}\n"
-                                "\n"
-                                "/pause - pause the game",
+                                           "\n"
+                                           "No reward (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">cool-down rule</a>)\n"
+                                           "\n"
+                                           "🌟 Total stars: {score}\n"
+                                           "⏳ Play time: {time}\n"
+                                           "\n"
+                                           "Next review before {next_review}\n"
+                                           "\n"
+                                           "/pause - pause the game",
 
     review_since_last_time="Time since the last review: {duration}",
 
@@ -500,13 +504,13 @@ Press the button below to start the game.""",
                    "\n"
                    "To resume the game, simply review your <i>Formula</i> with the button below.",
     game_started="The game has started 🏁\n"
-        "\n"
-        "💪<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty level</a>: {difficulty}\n"
-        "\n"
-        "Review your <i>Formula</i> before {next_review}\n"
-        "\n"
-        "/difficulty - change the difficulty\n"
-        "/pause - pause the game",
+                 "\n"
+                 "💪<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty level</a>: {difficulty}\n"
+                 "\n"
+                 "Review your <i>Formula</i> before {next_review}\n"
+                 "\n"
+                 "/difficulty - change the difficulty\n"
+                 "/pause - pause the game",
 
     review_btn="Review your \"Formula\"",
 
@@ -552,7 +556,9 @@ Press the button below to start the game.""",
     penalty_msg_generic_full = "🙀 You've lost {penalty} stars ❗\n"
                                "\n"
                                "🌟 Remaining stars: {score}",
-    penalty_text = "You forgot to review your <i>Formula</i> 🟥",
+    penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
+                   "\n"
+                   "{penalty_msg}",
 
     new_achievement = "You've got a new achievement! 🌟"
 
@@ -708,7 +714,9 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
     penalty_msg_generic_full = "🙀 Du hast {penalty} Sterne verloren ❗\n"
                                "\n"
                                "🌟 Verbleibende Sterne: {score}",
-    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥",
+    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥\n"
+                   "\n"
+                   "{penalty_msg}",
 
     new_achievement = "Du hast einen neuen Erfolg! 🌟"
 )
@@ -762,15 +770,15 @@ ru = Lang(
 
 
     review_command_success_no_rewards_text="<i>Формула</i> просмотрена 🎉\n"
-                                "\n"
-                                "Без награды (<a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty:~:text=%D0%BC%D0%B5%D0%B6%D0%B4%D1%83%20%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D1%8B%D0%BC%D0%B8%20%D0%BF%D1%80%D0%BE%D1%88%D0%BB%D0%BE%20%D1%85%D0%BE%D1%82%D1%8F%20%D0%B1%D1%8B%205%20%D0%BC%D0%B8%D0%BD%D1%83%D1%82\">слишком частые просмотры</a>)\n"
-                                "\n"
-                                "🌟 Всего звезд: {score}\n"
-                                "⏳ Время игры: {time}\n"
-                                "\n"
-                                "Следующий просмотр не позже {next_review}\n"
-                                "\n"
-                                "/pause - игру на паузу",
+                                           "\n"
+                                           "Без награды (<a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty:~:text=%D0%BC%D0%B5%D0%B6%D0%B4%D1%83%20%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D1%8B%D0%BC%D0%B8%20%D0%BF%D1%80%D0%BE%D1%88%D0%BB%D0%BE%20%D1%85%D0%BE%D1%82%D1%8F%20%D0%B1%D1%8B%205%20%D0%BC%D0%B8%D0%BD%D1%83%D1%82\">слишком частые просмотры</a>)\n"
+                                           "\n"
+                                           "🌟 Всего звезд: {score}\n"
+                                           "⏳ Время игры: {time}\n"
+                                           "\n"
+                                           "Следующий просмотр не позже {next_review}\n"
+                                           "\n"
+                                           "/pause - игру на паузу",
 
 
     review_since_last_time="Прошло с последнего просмотра: {duration}",
@@ -868,7 +876,9 @@ ru = Lang(
     penalty_msg_generic_full = "🙀 Вы потеряли {penalty} звезд ❗\n"
                                "\n"
                                "🌟 Осталось звезд: {score}",
-    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n",
+    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n"
+                   "\n"
+                   "{penalty_msg}",
 
     new_achievement = "У вас новое достижение! 🌟"
 )

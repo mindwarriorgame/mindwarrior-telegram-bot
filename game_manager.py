@@ -3,7 +3,6 @@ import uuid
 from typing import TypedDict, Optional
 import time
 
-from badges_manager import BadgesManager
 from counter import Counter
 from graph_renderer import REVIEW_COUNTER_HISTORY_NAME, PAUSED_COUNTER_HISTORY_NAME, GraphRenderer
 from history import add_timer_rec_to_history, get_timer_recs_from_history
@@ -88,13 +87,13 @@ class GameManager:
         if "render_screen_" in user_message:
             return self.on_render_screen(chat_id, user_message)
         if "start_game" in user_message:
-            return self._on_start_game(lang, user, user_message)
+            return [self._on_start_game(lang, user, user_message)]
         if "formula_updated" in user_message:
-            return self._on_formula_updated(lang, user)
+            return [self._on_formula_updated(lang, user)]
         if "set_difficulty:" in user_message:
             return [self._on_set_difficulty(lang, user, user_message)]
         if "reviewed_at:" in user_message:
-            return self._on_reviewed(lang, user, user_message)
+            return [self._on_reviewed(lang, user, user_message)]
         if "regenerate_shared_key_uuid" in user_message:
             user['shared_key_uuid'] = str(uuid.uuid4())
             self.users_orm.upsert_user(user)
@@ -126,14 +125,14 @@ class GameManager:
         seconds = int(time_secs % 60)
         return f"{minutes}{lang.minutes_short} {seconds}{lang.seconds_short}"
 
-    def _on_start_game(self, lang: Lang, user: User, user_message) -> [Reply]:
+    def _on_start_game(self, lang: Lang, user: User, user_message) -> Reply:
         next_review_prompt_times = user_message.split("start_game;next_review:")[1].split(",,")
         self._restart_user_game(user)
 
-        return self._wrap_with_badge(lang, user, 'on_game_started', self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id']))
+        return self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id'])
 
-    def _on_formula_updated(self, lang: Lang, user: User) -> [Reply]:
-        return self._wrap_with_badge(lang, user, 'on_formula_updated', self._render_single_message(user['user_id'], lang.formula_changed))
+    def _on_formula_updated(self, lang: Lang, user: User) -> Reply:
+        return self._render_single_message(user['user_id'], lang.formula_changed)
 
     def _on_set_difficulty(self, lang: Lang, user: User, user_message: str) -> Reply:
         if user['active_game_counter_state'] is None:
@@ -175,7 +174,6 @@ class GameManager:
 
         user['rewards'] = 0
         user['counters_history_serialized'] = None
-        user['badges_serialized'] = ''
         self.users_orm.upsert_user(user)
 
     def on_review_command(self, chat_id) -> Reply:
@@ -199,7 +197,7 @@ class GameManager:
         return self._render_review_screen(lang, user['user_id'], is_paused, since_last_review_secs)
 
 
-    def _on_reviewed(self, lang: Lang, user: User, user_message: str) -> [Reply]:
+    def _on_reviewed(self, lang: Lang, user: User, user_message: str):
         if user['active_game_counter_state'] is None:
             return self._render_start_game_button(lang, user)
 
@@ -210,15 +208,15 @@ class GameManager:
             user_timestamp = int(user_message.split('reviewed_at:')[1].split(';')[0])
             next_review = user_message.split('next_review:')[1].split(',,')[user['difficulty']]
         except:
-            return [self._render_single_message(user['user_id'], "Cannot parse input")]
+            return self._render_single_message(user['user_id'], "Cannot parse input")
         delta = abs(now_timestamp - user_timestamp)
         if delta > 60:
-            return [{
+            return {
                 'to_chat_id': user['user_id'],
                 'message': lang.review_command_timeout,
                 'buttons': [self._render_review_button(lang)],
                 'menu_commands': []
-            }]
+            }
 
         is_resumed = self._maybe_resume(user, lang)
 
@@ -242,15 +240,15 @@ class GameManager:
         self.users_orm.upsert_user(user)
 
         if new_stars > 0:
-            return self._wrap_with_badge(lang, user, 'on_review', self._render_review_command_success(user['rewards'], next_review,
-                                                time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
-                                                lang=lang,
-                                                chat_id=user['user_id'], is_resumed=is_resumed, new_stars=new_stars))
+            return self._render_review_command_success(user['rewards'], next_review,
+                                                       time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
+                                                       lang=lang,
+                                                       chat_id=user['user_id'], is_resumed=is_resumed, new_stars=new_stars)
         else:
-            return [self._render_review_command_success_no_rewards(user['rewards'], next_review,
-                                                time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
-                                                lang=lang,
-                                                chat_id=user['user_id'], is_resumed=is_resumed)]
+            return self._render_review_command_success_no_rewards(user['rewards'], next_review,
+                                                                  time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
+                                                                  lang=lang,
+                                                                  chat_id=user['user_id'], is_resumed=is_resumed)
 
 
     def _calculate_active_play_time_seconds(self, user: User) -> int:
@@ -374,13 +372,13 @@ class GameManager:
             users = self.users_orm.get_some_users_for_prompt(20, difficulty)
             for user in users:
                 if user['next_prompt_type'] == NEXT_PROMPT_TYPE_PENALTY:
-                    replies += self._process_penalty_prompt(user)
+                    replies += [self._process_penalty_prompt(user)]
                 else:
-                    replies += self._process_reminder_prompt(user)
+                    replies += [self._process_reminder_prompt(user)]
 
         return replies
 
-    def _process_penalty_prompt(self, user: User) -> [Reply]:
+    def _process_penalty_prompt(self, user: User) -> Reply:
         difficulty = user['difficulty']
         penalty_minutes = PROMPT_MINUTES[difficulty]
 
@@ -394,7 +392,7 @@ class GameManager:
         user['rewards'] -= self._calculate_penalty(difficulty, is_first_penalty)
         self.users_orm.upsert_user(user)
 
-        return self._wrap_with_badge(lang, user, 'on_penalty', self._render_penalty(lang, user['user_id'], user['difficulty'], user['rewards'], is_first_penalty))
+        return self._render_penalty(lang, user['user_id'], user['difficulty'], user['rewards'], is_first_penalty)
 
     def _record_counter_time(self, user: User, counter_name: str, serialized_counter: str):
         counter = Counter(serialized_counter)
@@ -736,23 +734,43 @@ class GameManager:
         }
 
     def _render_penalty(self, lang: Lang, chat_id: int, difficulty: int, scores: int, is_first_penalty: bool) -> Reply:
+        penalty_msg = ""
+        penalty = self._calculate_penalty(difficulty, is_first_penalty)
+
+        if PENALTY_CONSEQUENT[difficulty] == 0:
+            penalty_msg = lang.penalty_msg_no_penalty_for_level.format(difficulty=lang.difficulties[difficulty])
+
+        elif is_first_penalty and PENALTY_FIRST[difficulty] == 0:
+            penalty_msg = lang.penalty_msg_no_penalty_first_time.format(difficulty=lang.difficulties[difficulty])
+
+        elif is_first_penalty and PENALTY_FIRST[difficulty] < PENALTY_CONSEQUENT[difficulty]:
+            penalty_msg = lang.penalty_msg_first_time.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
+
+        elif penalty == PENALTY_SMALL:
+            penalty_msg = lang.penalty_msg_generic_small.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
+
+        elif penalty == PENALTY_FULL:
+            penalty_msg = lang.penalty_msg_generic_full.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
+
+        if penalty_msg == "":
+            raise Exception("Unknown penalty message")
 
         return {
             'to_chat_id': chat_id,
-            'message': lang.penalty_text,
+            'message': lang.penalty_text.format(penalty_msg=penalty_msg),
             'buttons': [self._render_review_button(lang)],
             'menu_commands': [],
             'image': None
         }
 
-    def _process_reminder_prompt(self, user: User) -> [Reply]:
+    def _process_reminder_prompt(self, user: User):
         lang = self._get_user_lang(user['lang_code'])
 
         user['next_prompt_type'] = NEXT_PROMPT_TYPE_PENALTY
         user['next_prompt_time'] = now_utc() + datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
         self.users_orm.upsert_user(user)
 
-        return self._wrap_with_badge(lang, user, 'on_prompt', self._render_reminder_prompt(lang, user['user_id']))
+        return self._render_reminder_prompt(lang, user['user_id'])
 
     def _reset_user_next_prompt(self, user: User):
         difficulty = user['difficulty']
@@ -775,27 +793,6 @@ class GameManager:
             'menu_commands': [],
             'image': None
         }
-
-    def _wrap_with_badge(self, lang: Lang, user: User, action, reply: Reply) -> [Reply]:
-        badges_manager = BadgesManager(user['badges_serialized'])
-        active_game_counter_secs = Counter(user['active_game_counter_state']).get_total_seconds()
-        badge = getattr(badges_manager, action)(active_game_counter_secs)
-        user['badges_serialized'] = badges_manager.serialize()
-        self.users_orm.upsert_user(user)
-        result = []
-        if badge is not None:
-            result = result + [{
-                'to_chat_id': user['user_id'],
-                'message': "" if badge == 'c0' else lang.new_achievement,
-                'buttons': [],
-                'menu_commands': [],
-                'image': './badge-images/' + badge + '.jpg'
-            }]
-            # stretch the content to align with the badge
-            INVISIBLE_SPACE_EMOJI = "ㅤ"
-            reply['message']  = reply['message'] + ((INVISIBLE_SPACE_EMOJI + " ") * 15)
-        result = result + [reply]
-        return result
 
 
 
