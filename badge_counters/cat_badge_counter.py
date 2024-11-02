@@ -3,6 +3,10 @@ from typing import Optional, Tuple
 
 INTERVAL_SECS = 16 * 3600
 
+"""
+c2 badge can be used when c2 is needed
+c0 is for penalty only (special case)
+"""
 class CatBadgeCounter:
 
     def _calculate_interval_secs(self, difficulty):
