@@ -244,7 +244,7 @@
     <h1>Loading...</h1>
 </div>
 <div id="board1">
-    <h1>Congratulations! You've got a new achievement!</h1>
+    <h1>Level 1: You've got a new achievement!</h1>
     <div style="display: table; margin: 0px auto;">
     <button class="action-btn" style="display: none">Return to game</button>
     </div>
@@ -313,7 +313,13 @@
                 "badge": "c2",
                 "progress_pct": 10
             }
-        ]
+        ],
+        'f0': [{
+            "remaining_time_secs": 12345,
+            "challenge": "update_formula",
+            "badge": "f0",
+            "progress_pct": 25
+        }]
     };
 
     function toTimeInterval(secs) {
@@ -335,7 +341,7 @@
             stepPrefix = `${step}. `;
         }
         const ret = `<p class="pct${inactive ? 100 : 0}">${pct == 100 ? '✅ ' : ''} ${stepPrefix} Review <i>Formula</i> during next ${toTimeInterval(timeSecs)}
-                    without misses 🚫🟥.</p>`;
+                    without misses 🚫🟥</p>`;
         if (withProgressBar) {
            return ret + renderProgressBar(pct);
         }
@@ -348,7 +354,7 @@
             stepPrefix = `${step}. `;
         }
         const ret = `<p class="pct${inactive ? 100 : 0}">${pct == 100 ? '✅ ' : ''} ${stepPrefix} Review <i>Formula</i> during next ${toTimeInterval(timeSecs)}
-                    without reminders 🚫⏰.</p>`;
+                    without reminders 🚫⏰</p>`;
         if (withProgressBar) {
            return ret + renderProgressBar(pct);
         }
@@ -368,6 +374,10 @@
 
             action2 = requiredActions[badge][1];
             content += renderReviewWithoutReminders(2, action1.progress_pct < 100, action2.progress_pct, action2.remaining_time_secs, action1.progress_pct == 100 && action2.progress_pct < 100);
+        } else if (badge === 'f0') {
+            let action = requiredActions[badge][0];
+            content += `<p>Update the <i>Formula</i> after ${toTimeInterval(action.remaining_time_secs)} 🧪</p>`;
+            content += renderProgressBar(action.progress_pct);
         }
 
         content += "<p><button class='action-btn' onclick='closePopup()'>Close</button></p>";

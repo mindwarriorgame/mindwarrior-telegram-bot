@@ -37,15 +37,17 @@ class FeatherBadgeCounter:
             return [{
                 "remaining_time_secs": self._calculate_interval_secs(difficulty),
                 "challenge": "update_formula",
-                "badge": "f0"
-            }], 0
+                "badge": "f0",
+                "progress_pct": 0
+            }]
 
         time_to_fire = int(state)
 
         time_left = max(time_to_fire - active_play_time_secs, 0)
         time_passed = max(self._calculate_interval_secs(difficulty) - time_left, 0)
-        return ([{
+        return [{
             "remaining_time_secs": time_left,
             "challenge": "update_formula",
-            "badge": "f0"
-        }], 100 * round(time_passed / self._calculate_interval_secs(difficulty)))
+            "badge": "f0",
+            "progress_pct": 100 * time_passed // self._calculate_interval_secs(difficulty)
+        }]
