@@ -1,11 +1,11 @@
 <html>
 <head>
-<!--    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>-->
+    <!-- https://stackoverflow.com/questions/37824744/on-mobile-font-size-is-different-depending-on-the-number-of-paragraphs -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tsparticles-confetti/2.12.0/tsparticles.confetti.bundle.min.js"></script>
-    <script>
-        const INNER_WIDTH = window.innerWidth;
-        console.log(INNER_WIDTH);
-    </script>
+
     <style>
         body {
             color: white;
@@ -20,70 +20,40 @@
         a {
             color: white;
         }
-        .vertical-align-center {
+
+        #loader {
+            display: none;
+        }
+        body.loading #loader {
+            display: block;
+        }
+        body.loading {
             justify-content: center;
         }
-        #board {
+        body.loading #board1, body.loading #board2, body.loading #rules, #board1.hidden, #board2.hidden {
+            visibility: hidden;
+            height: 0px;
+            overflow: hidden;
+        }
+        .boardWrapper {
+            overflow: visible;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
-
-        .hidden {
-            visibility: hidden;
-        }
-
-        .unhappy-cat-placeholder {
-            border: 1px solid grey;
-            display: table;
-            padding: 0px;
-            position: relative;
-        }
-        .unhappy-cat-placeholder a {
-            visibility: hidden;
-        }
-        .unhappy-cat-placeholder.active a {
-            visibility: visible;
-        }
-        .unhappy-cat-placeholder img {
-            visibility: hidden;
-        }
-        .unhappy-cat-placeholder.active {
-            border: 1px solid red;
-        }
-        .unhappy-cat-placeholder.active img {
-            visibility: visible;
-        }
-
-        td {
-            vertical-align: top;
-        }
-        .achievement-placeholder {
+        .board-cell {
             position: relative;
             border: 1px solid black;
+            width: 25%;
+            padding: 0px;
+            margin: 0px;
         }
-        .achievement-placeholder img.badge {
-            filter: gray;
-            -webkit-filter: grayscale(1);
-            filter: grayscale(1);
-            opacity: 0.5;
+        @media (min-width:1024px) {
+            .board-cell {
+                width: 15%;
+            }
         }
-        .moving .achievement-placeholder img {
-            opacity: 0.3;
-        }
-        .achievement-placeholder.active img {
-            filter: none;
-            -webkit-filter: none;
-            filter: none;
-            opacity: 1;
-        }
-        .moving .achievement-placeholder.active img {
-            opacity: 0.5;
-        }
-        .moving .achievement-placeholder.active img.target {
-            opacity: 1;
-        }
-        .achievement-placeholder a, .unhappy-cat-placeholder a {
+        .board-cell a {
             position: absolute;
             left: 0;
             right: 0;
@@ -92,125 +62,146 @@
             align-items: center;
             display: flex;
             justify-content: center;
-            font-size: 1.3em;
             text-align: center;
         }
-        .unhappy-cat-placeholder a {
-            justify-content: flex-end;
-            flex-direction: column;
-            padding-bottom: 5px;
+        .board-cell img.badge {
+            width: 100%;
         }
-        .moving .unhappy-cat-placeholder a {
-            visibility: hidden;
-        }
-
-        img.lock {
+        .board-cell img.lock {
             position: absolute;
             top: 5px;
             left: 5px;
+            width: 20%;
         }
-
-        .moving img.lock {
+        .unhappy-cat-cell {
+            border: 1px solid grey;
+        }
+        .achievement-cell img.badge {
+            filter: gray;
+            -webkit-filter: grayscale(1);
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+        .achievement-cell.active img.badge {
+            filter: none;
+            -webkit-filter: grayscale(0);
+            filter: grayscale(0);
+            opacity: 1;
+        }
+        .achievement-cell.active img.lock {
+            display: none;
+        }
+        .achievement-cell.active a {
             display: none;
         }
 
-        #loader {
-            margin: 0 auto;
+        .unhappy-cat-cell img.badge {
+            opacity: 0;
         }
-        #projectile {
+
+        .unhappy-cat-cell.active {
+            border: 1px solid #a00;
+        }
+        .unhappy-cat-cell.active img.badge {
+            opacity: 1;
+        }
+
+        .unhappy-cat-cell a {
+            display: none;
+        }
+        .unhappy-cat-cell.active a {
+            display: flex;
+            flex-direction: column;
+            top: 0;
+            justify-content: end;
+            padding-bottom: 5px;
+        }
+
+        img {
+            transition: left 1s ease, top 1s ease, width 1s ease, height 1s ease, opacity 1s ease;
+        }
+
+        .new_achievement {
+            max-width: 100%;
+        }
+        .projectile {
             position: absolute;
-        }
-        .projectileAnimate {
-            transition: left 1s ease, top 1s ease, width 1s ease, height 1s ease;
-        }
-
-        .normal {
-            width: 1px;
-        }
-        .moving .achievement-placeholder a {
-            visibility: hidden;
-        }
-        #projectile {
-            z-index: 1000;
-        }
-        button.action-btn {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            height: 5vh;
-
-        }
-        .moving button.action-btn {
-            display:none;
-        }
-
-        table {
-            margin-top: 10px;
-        }
-
-        button.action-btn:hover {
-            background-color: #218838;
-        }
-
-        button.action-btn:active {
-            background-color: #1e7e34;
-            transform: scale(0.98);
-        }
-
-        button.action-btn:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
-        }
-
-        button.action-btn:disabled {
-            background-color: #8ba290;
-            color: #6c757d;
-            cursor: not-allowed;
-        }
-
-        .moving #rules {
-            display: none;
+            z-index: 100;
         }
     </style>
+
 </head>
-<body class="vertical-align-center">
+<body class="loading">
 <div id="loader">
-    Loading...
+    <h1>Loading...</h1>
 </div>
-<div id="main" class="hidden moving">
-
-                <h1 >Level 1: You've got a new achievement!</h1>
-
-    <div style="margin-bottom: 10px;"><button class="action-btn" id="action" >Return to game</button></div>
-                    <img src="../badge-images/c2_512.jpg" class="normal" id="source" />
-                    <img src="../badge-images/c2_512.jpg" width="0" id="projectile" />
-
-    <div id="board">
-        <p class="achievement-placeholder"><img src="../badge-images/time_512.jpg" class="normal badge" />
+<div id="board1">
+    <h1>Congratulations! You've got a new achievement!</h1>
+    <p>
+        <img src="../badge-images/time_512.jpg" class="new_achievement projectile" />
+        <img src="../badge-images/time_512.jpg" class="new_achievement placeholder" />
+    </p>
+    <div class="boardWrapper">
+        <p class="board-cell achievement-cell target"><img src="../badge-images/time_512.jpg" class="badge" />
             <img src="lock.png" width="32" class="lock" />
             <a href="javascript:alert(1)">How to unlock?</a></p>
-        <p class="achievement-placeholder active"><img src="../badge-images/f0_512.jpg" class="normal badge" /></p>
-        <p class="unhappy-cat-placeholder"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat badge" /><a href="javascript:alert(1)">How to kick me out?</a></p>
-        <p class="unhappy-cat-placeholder active"><img src="../badge-images/c0_512.jpg" class="normal unhappy-cat badge" /><a href="javascript:alert(1)">How to kick me out?</a></p>
+        <p class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge" />
+            <img src="lock.png" width="32" class="lock" />
+            <a href="javascript:alert(1)">How to unlock?</a></p>
+        <p class="board-cell unhappy-cat-cell"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge" /><a href="javascript:alert(1)">How to kick me out?</a></p>
+        <p class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge " /><a href="javascript:alert(1)">How to kick me out?</a></p>
     </div>
+</div>
 
-
-    <div id="rules">
-        <h1>Rules:</h1>
-        <p>1. <img src="unlock.png" height="64" style="vertical-align: middle;" /> Unlock all locked items on the board above. Press locked cells to see how.</p>
-        <p>2. <img src="no-grumpy-cats.jpg" width="64" style="vertical-align: middle;" /> Keep empty slots clear from grumpy cats. Kick them out as soon as they get in!</p>
+<div id="board2" class="hidden">
+    <div class="boardWrapper">
+        board 2
     </div>
+</div>
 
+<div id="rules">
+    <h1>Rules:</h1>
+    <p>1. <img src="unlock.png" height="64" style="vertical-align: middle;" /> Unlock all locked items on the board above. Press locked cells to see how.</p>
+    <p>2. <img src="no-grumpy-cats.jpg" width="64" style="vertical-align: middle;" /> Keep empty slots clear from grumpy cats. Kick them out as soon as they get in!</p>
 </div>
 </body>
-
 <script>
+    function fireConfetti() {
+        console.log('fire start');
+        const defaults = {
+            spread: 360,
+            ticks: 50,
+            gravity: 5,
+            decay: 1,
+            startVelocity: 30,
+            shapes: ["star"],
+            colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"],
+        };
 
-const board = [
+        function shoot() {
+            confetti({
+                ...defaults,
+                particleCount: 40,
+                scalar: 1.2,
+                shapes: ["star"],
+            });
+
+            confetti({
+                ...defaults,
+                particleCount: 10,
+                scalar: 0.75,
+                shapes: ["circle"],
+            });
+        }
+
+        setTimeout(shoot, 0);
+        setTimeout(shoot, 100);
+        setTimeout(shoot, 200);
+        console.log('fire end');
+    }
+
+
+    const board = [
 
         {
             badge: 'f0',
@@ -223,7 +214,6 @@ const board = [
             badge: 'c0',
             active: true,
             projectileOverride: 'time',
-            target: true,
         },
         {
             badge: 's0',
@@ -243,191 +233,128 @@ const board = [
         },
         {
             badge: 'c1',
+            target: true,
         }
-];
+    ];
 
-function buildBoard(board) {
-    const boardElt = document.getElementById('board');
-    const inactiveBadge = boardElt.getElementsByTagName('p')[0].outerHTML.replace("time_512.jpg", "badge.jpg");
-    const activeBadge = boardElt.getElementsByTagName('p')[1].outerHTML.replace("f0_512.jpg", "badge.jpg");
-    const inactiveUnhappyCat = boardElt.getElementsByTagName('p')[2].outerHTML.replace("c0_512.jpg", "badge.jpg");
-    const activeUnhappyCat = boardElt.getElementsByTagName('p')[3].outerHTML.replace("c0_512.jpg", "badge.jpg");
+    const boardElt = document.querySelector('#board1 .boardWrapper');
+    const INACTIVE_BADGE_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[0].outerHTML.replace("time_512.jpg", "badge.jpg");
+    const ACTIVE_BADGE_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[1].outerHTML.replace("f0_512.jpg", "badge.jpg");
+    const INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[2].outerHTML.replace("c0_512.jpg", "badge.jpg");
+    const ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[3].outerHTML.replace("c0_512.jpg", "badge.jpg");
 
-    let boardHtml = "";
-    let targetFound = false;
-    for (let itemIdx = 0; itemIdx < board.length; itemIdx++) {
-        const item = board[itemIdx];
-        let itemHtml = "";
-        if (item.active && item.badge === 'c0') {
-            itemHtml = activeUnhappyCat;
-        } else if (item.active) {
-            itemHtml = activeBadge;
-        } else if (item.badge === 'c0') {
-            itemHtml = inactiveUnhappyCat;
-        } else {
-            itemHtml = inactiveBadge;
-        }
-        itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
-        if (item.target) {
-            itemHtml = itemHtml.replace("<img ", "<img id='target' ");
-            let projectile = item.badge;
-            if (item.projectileOverride) {
-                projectile = item.projectileOverride;
+    function buildBoard(board) {
+
+        let boardHtml = "";
+        let targetFound = false;
+        for (let itemIdx = 0; itemIdx < board.length; itemIdx++) {
+            const item = board[itemIdx];
+            let itemHtml = "";
+            if (item.active && item.badge === 'c0') {
+                itemHtml = ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+            } else if (item.active) {
+                itemHtml = ACTIVE_BADGE_TEMPLATE_ELT;
+            } else if (item.badge === 'c0') {
+                itemHtml = INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+            } else {
+                itemHtml = INACTIVE_BADGE_TEMPLATE_ELT;
             }
-            document.getElementById('source').src = '../badge-images/' + projectile + '_512.jpg';
-            document.getElementById('projectile').src = document.getElementById('source').src;
-            targetFound = true;
+            itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
+            if (item.target) {
+                itemHtml = itemHtml.replace("<img ", "<img id='target' ");
+                let projectile = item.badge;
+                if (item.projectileOverride) {
+                    projectile = item.projectileOverride;
+                }
+                document.querySelector('.projectile').src = '../badge-images/' + projectile + '_512.jpg';
+                document.querySelector('.placeholder').src = '../badge-images/' + projectile + '_512.jpg';
+                targetFound = true;
+            }
+            boardHtml += itemHtml;
         }
-        boardHtml += itemHtml;
-    }
 
-    if (!targetFound) {
-        document.getElementById('projectile').classList.add('hidden');
-    }
-
-
-    boardElt.innerHTML = boardHtml;
-}
-
-buildBoard(board);
-
-function fireConfetti() {
-    console.log('fire start');
-    const defaults = {
-        spread: 360,
-        ticks: 50,
-        gravity: 5,
-        decay: 1,
-        startVelocity: 30,
-        shapes: ["star"],
-        colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"],
-    };
-
-    function shoot() {
-        confetti({
-            ...defaults,
-            particleCount: 40,
-            scalar: 1.2,
-            shapes: ["star"],
-        });
-
-        confetti({
-            ...defaults,
-            particleCount: 10,
-            scalar: 0.75,
-            shapes: ["circle"],
-        });
-    }
-
-    setTimeout(shoot, 0);
-    setTimeout(shoot, 100);
-    setTimeout(shoot, 200);
-    console.log('fire end');
-}
-
-const images = [...document.querySelectorAll("img")];
-const NORMAL_IMAGE_WIDTH = INNER_WIDTH > 1200 ? Math.floor(INNER_WIDTH / 8) : Math.floor(INNER_WIDTH / 5);
-
-function adjustImagesWidths() {
-    images.forEach(img => {
-        if (img.classList.contains("normal")) {
-            img.style.width = NORMAL_IMAGE_WIDTH + 'px';
-        } else if (img.classList.contains("small")) {
-            img.style.width = Math.floor(NORMAL_IMAGE_WIDTH / 2) + 'px';
+        if (!targetFound) {
+            document.querySelector('.projectile').classList.add('hidden');
         }
-    });
-}
 
-
-function waitImagesLoadedPromise() {
-    return new Promise(allDoneRes => {
-        const imagesLoadedPromises = images.map(img => new Promise(imageLoadedRes=> {
-            img.onload = () => {
-                imageLoadedRes();
-            };
-            img.onerror = () => {
-                imageLoadedRes();
-            };
-        }));
-        Promise.allSettled(imagesLoadedPromises).then(() => {
-            allDoneRes();
-        })
-    });
-}
-
-function triggerMovement() {
-    const projectileElt = document.getElementById('projectile');
-    if (projectileElt.classList.contains('hidden')) {
-        fireConfetti();
-        setTimeout(() => {
-            document.getElementById('main').classList.remove('moving');
-        }, 1500);
-        return;
+        boardElt.innerHTML = boardHtml;
     }
 
-    const targetElt = document.getElementById('target');
-    const targetRect = targetElt.getBoundingClientRect();
-    const targetX = targetRect.left + window.scrollX;
-    const targetY = targetRect.top + window.scrollY;
-
-    const sourceElt = document.getElementById('source');
-    const sourceRect = sourceElt.getBoundingClientRect();
-    const sourceX = sourceRect.left + window.scrollX;
-    const sourceY = sourceRect.top + window.scrollY;
-
-    projectileElt.style.width = NORMAL_IMAGE_WIDTH;
-    projectileElt.style.left = parseInt(sourceX) + 'px';
-    projectileElt.style.top = parseInt(sourceY) + 'px';
-
-    sourceElt.style.visibility = 'hidden';
-    sourceElt.classList.add('projectileAnimate');
+    buildBoard(board);
 
     setTimeout(() => {
-        projectileElt.classList.toggle('projectileAnimate');
-        projectileElt.style.left = parseInt(targetX) + 'px';
-        projectileElt.style.top = parseInt(targetY) + 'px';
-        projectileElt.style.width = targetRect.width + 'px';
-        // targetElt.scrollIntoView({
-        //     behavior: 'smooth',
-        // });
+        const images = [...document.querySelectorAll("img")];
 
-        window.addEventListener('transitionend', () => {
-            projectileElt.style.display = 'none';
+        function waitImagesLoadedPromise() {
+            return new Promise(allDoneRes => {
+                const imagesLoadedPromises = images.map(img => new Promise(imageLoadedRes => {
+                    if (img.width > 0) {
+                        imageLoadedRes();
+                        return;
+                    }
+                    img.onload = () => {
+                        imageLoadedRes();
+                    };
+                    img.onerror = () => {
+                        imageLoadedRes();
+                    };
+                }));
+                Promise.allSettled(imagesLoadedPromises).then(() => {
+                    allDoneRes();
+                })
+            });
+        }
 
-            if (targetElt.parentNode.classList.contains('unhappy-cat-placeholder')) {
-                targetElt.parentNode.classList.toggle('active');
-            } else {
-                targetElt.parentNode.classList.add('active');
-                targetElt.classList.add('target');
-            }
-
-            if (targetElt.parentNode.classList.contains('unhappy-cat-placeholder') && targetElt.parentNode.classList.contains('active')) {
-
-            } else {
-                fireConfetti();
-            }
-
-            sourceElt.style.width = '0px';
+        waitImagesLoadedPromise().then(() => {
+            document.body.classList.remove("loading");
+            document.querySelectorAll('.new_achievement').forEach(img => {
+                img.style.width = img.width + "px";
+            });
 
             setTimeout(() => {
-                document.getElementById('main').classList.remove('moving');
-            }, 1500);
-        }, { once: true });
-    }, 250);
-}
+                const boardCellImgWidth = document.querySelector('.board-cell img').width;
+                document.querySelectorAll('.new_achievement').forEach(img => {
+                    img.style.width = boardCellImgWidth + "px";
+                });
+                const placeholderElt = document.querySelector('.placeholder');
+                placeholderElt.style.visibility = 'hidden';
 
-// list all image widths and heights _after_ the images have loaded:
-console.log('v4');
-waitImagesLoadedPromise().then(() => {
-    adjustImagesWidths();
+                window.addEventListener('transitionend', () => {
+                    const targetElt = document.getElementById('target');
+                    if (!targetElt) {
+                        fireConfetti();
+                        return;
+                    }
+                    const targetRect = targetElt.getBoundingClientRect();
+                    const targetX = targetRect.left + window.scrollX;
+                    const targetY = targetRect.top + window.scrollY;
 
-    document.getElementsByTagName('body')[0].classList.remove('vertical-align-center');
-    document.getElementById('loader').classList.add('hidden');
-    document.getElementById('main').classList.remove('hidden');
+                    const placeholderRect = placeholderElt.getBoundingClientRect();
+                    const placeholderX = placeholderRect.left + window.scrollX;
+                    const placeholderY = placeholderRect.top + window.scrollY;
 
-    setTimeout(triggerMovement, 100);
-})
+                    const projectileElt = document.querySelector('.projectile');
+                    projectileElt.style.left = placeholderX + 'px';
+                    projectileElt.style.top = placeholderY + 'px';
 
+                    placeholderElt.style.width = '0px';
 
+                    setTimeout(() => {
+                        projectileElt.style.left = targetX + "px";
+                        projectileElt.style.top = (targetY - boardCellImgWidth) + "px";
+
+                        window.addEventListener('transitionend', () => {
+                            if (targetElt.parentElement.classList.contains('achievement-cell')) {
+                                targetElt.style.transition = 'none';
+                            }
+                            targetElt.parentElement.classList.toggle('active');
+                            projectileElt.style.display = 'none';
+                            fireConfetti();
+                        }, {once: true});
+                    }, 0);
+                }, {once: true});
+
+            }, 1000);
+        });
+    }, 0);
 </script>
-</html>
