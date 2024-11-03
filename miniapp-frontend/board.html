@@ -319,7 +319,15 @@
             "challenge": "update_formula",
             "badge": "f0",
             "progress_pct": 25
-        }]
+        }],
+        't0': [
+            {
+                "remaining_time_secs": 1123,
+                "challenge": "play_time",
+                "badge": "t0",
+                "progress_pct": 45
+            }
+        ]
     };
 
     function toTimeInterval(secs) {
@@ -377,6 +385,10 @@
         } else if (badge === 'f0') {
             let action = requiredActions[badge][0];
             content += `<p>Update the <i>Formula</i> after ${toTimeInterval(action.remaining_time_secs)} 🧪</p>`;
+            content += renderProgressBar(action.progress_pct);
+        } else if (badge === 't0') {
+            let action = requiredActions[badge][0];
+            content += `<p>Play the game during next ${toTimeInterval(action.remaining_time_secs)} 🎮</p>`;
             content += renderProgressBar(action.progress_pct);
         }
 
@@ -453,10 +465,11 @@
 
         {
             badge: 'f0',
+            active: true,
         },
         {
             badge: 't0',
-            active: true,
+
         },
         {
             badge: 'c0',
@@ -544,6 +557,8 @@
                 img.style.width = img.width + "px";
             });
 
+            setTimeout(fireConfetti, 250);
+
             setTimeout(() => {
                 const boardCellImgWidth = document.querySelector('.board-cell img').width;
                 document.querySelectorAll('.new_achievement').forEach(img => {
@@ -555,10 +570,9 @@
                 window.addEventListener('transitionend', () => {
                     const targetElt = document.getElementById('target');
                     if (!targetElt) {
-                        fireConfetti();
                         setTimeout(() => {
                             showActionButton();
-                        }, 1000);
+                        }, 250);
                         return;
                     }
                     const targetRect = targetElt.getBoundingClientRect();
@@ -585,15 +599,14 @@
                             }
                             targetElt.parentElement.classList.toggle('active');
                             projectileElt.style.display = 'none';
-                            fireConfetti();
                             setTimeout(() => {
                                 showActionButton();
-                            }, 1000);
+                            }, 250);
                         }, {once: true});
                     }, 0);
                 }, {once: true});
 
-            }, 1000);
+            }, 1500);
         });
     }, 0);
 </script>
