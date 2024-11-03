@@ -249,11 +249,11 @@
     <button class="action-btn" style="display: none">Return to game</button>
     </div>
     <p>
-        <img src="../badge-images/time_512.jpg" class="new_achievement projectile" />
-        <img src="../badge-images/time_512.jpg" class="new_achievement placeholder" />
+        <img src="../badge-images/t0_512.jpg" class="new_achievement projectile" />
+        <img src="../badge-images/t0_512.jpg" class="new_achievement placeholder" />
     </p>
     <div class="boardWrapper">
-        <p class="board-cell achievement-cell target"><img src="../badge-images/time_512.jpg" class="badge" />
+        <p class="board-cell achievement-cell target"><img src="../badge-images/t0_512.jpg" class="badge" />
             <img src="lock.png" width="32" class="lock" />
             <a href="javascript:openPopup()">How to unlock?</a></p>
         <p class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge" />
@@ -455,13 +455,13 @@
             badge: 'f0',
         },
         {
-            badge: 'time',
+            badge: 't0',
             active: true,
         },
         {
             badge: 'c0',
             active: true,
-            projectileOverride: 'time',
+            projectileOverride: 't0',
         },
         {
             badge: 's0',
@@ -490,7 +490,7 @@
 
 
     const boardElt = document.querySelector('#board1 .boardWrapper');
-    const INACTIVE_BADGE_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[0].outerHTML.replace("time_512.jpg", "badge.jpg");
+    const INACTIVE_BADGE_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[0].outerHTML.replace("t0_512.jpg", "badge.jpg");
     const ACTIVE_BADGE_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[1].outerHTML.replace("f0_512.jpg", "badge.jpg");
     const INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[2].outerHTML.replace("c0_512.jpg", "badge.jpg");
     const ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[3].outerHTML.replace("c0_512.jpg", "badge.jpg");
