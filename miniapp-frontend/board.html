@@ -327,6 +327,30 @@
                 "badge": "t0",
                 "progress_pct": 45
             }
+        ],
+        's0': [
+            {
+                "remaining_reviews": 3,
+                "challenge": "review_regularly_no_penalty",
+                "badge": "s0",
+                "progress_pct":0
+            }
+        ],
+        's1': [
+            {
+                "remaining_reviews": 3,
+                "challenge": "review_regularly_no_penalty",
+                "badge": "s1",
+                "progress_pct":30
+            }
+        ],
+        s2: [
+            {
+                "remaining_reviews": 6,
+                "challenge": "review_regularly_no_penalty",
+                "badge": "s2",
+                "progress_pct":50
+            }
         ]
     };
 
@@ -390,6 +414,9 @@
             let action = requiredActions[badge][0];
             content += `<p>Play the game during next ${toTimeInterval(action.remaining_time_secs)} 🎮</p>`;
             content += renderProgressBar(action.progress_pct);
+        } else if (badge === 's0' || badge === 's1' || badge === 's2') {
+            let action = requiredActions[badge][0];
+            content += `<p>Review <i>Formula</i> ${action.remaining_reviews} more time(s) without misses 🚫🟥</p>`;
         }
 
         content += "<p><button class='action-btn' onclick='closePopup()'>Close</button></p>";
@@ -462,10 +489,18 @@
 
 
     const board = [
-
         {
             badge: 'f0',
             active: true,
+        },
+        {
+            badge: 's2',
+        },
+        {
+            badge: 's1',
+        },
+        {
+            badge: 's0',
         },
         {
             badge: 't0',
