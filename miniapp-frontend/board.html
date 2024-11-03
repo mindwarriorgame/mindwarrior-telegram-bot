@@ -235,6 +235,28 @@
             color: #333; /* Text color */
         }
 
+        .cell-progress {
+            display: block;
+            position: absolute;
+            top: 0px;
+            background-color: white;
+            height: 2px;
+            overflow: hidden;
+            width: 50%;
+        }
+        .cell-progress.green {
+            background-color: #4caf50;
+        }
+        .cell-progress.red {
+            background-color: #f44336;
+        }
+        .cell-progress.yellow {
+            background-color: #ffeb3b;
+        }
+        .active .cell-progress {
+            display: none;
+        }
+
 
     </style>
 
@@ -253,12 +275,16 @@
         <img src="../badge-images/t0_512.jpg" class="new_achievement placeholder" />
     </p>
     <div class="boardWrapper">
-        <p class="board-cell achievement-cell target"><img src="../badge-images/t0_512.jpg" class="badge" />
+        <p class="board-cell achievement-cell"><img src="../badge-images/t0_512.jpg" class="badge" />
             <img src="lock.png" width="32" class="lock" />
-            <a href="javascript:openPopup()">How to unlock?</a></p>
+            <a href="javascript:openPopup()">How to unlock?</a>
+            <span class="cell-progress" style="width: 100%"></span>
+        </p>
         <p class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge" />
             <img src="lock.png" width="32" class="lock" />
-            <a href="javascript:openPopup()">How to unlock?</a></p>
+            <a href="javascript:openPopup()">How to unlock3?</a>
+            123
+        </p>
         <p class="board-cell unhappy-cat-cell"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge" /><a href="javascript:openPopup()">How to kick me out?</a></p>
         <p class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge " /><a href="javascript:openPopup()">How to kick me out?</a></p>
     </div>
@@ -333,7 +359,7 @@
                 "remaining_reviews": 3,
                 "challenge": "review_regularly_no_penalty",
                 "badge": "s0",
-                "progress_pct":0
+                "progress_pct":10
             }
         ],
         's1': [
@@ -349,7 +375,7 @@
                 "remaining_reviews": 6,
                 "challenge": "review_regularly_no_penalty",
                 "badge": "s2",
-                "progress_pct":50
+                "progress_pct":75
             }
         ]
     };
@@ -417,6 +443,7 @@
         } else if (badge === 's0' || badge === 's1' || badge === 's2') {
             let action = requiredActions[badge][0];
             content += `<p>Review <i>Formula</i> ${action.remaining_reviews} more time(s) without misses 🚫🟥</p>`;
+            content += renderProgressBar(action.progress_pct);
         }
 
         content += "<p><button class='action-btn' onclick='closePopup()'>Close</button></p>";
@@ -571,6 +598,23 @@
                 targetFound = true;
             }
             itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\')');
+            if (requiredActions[item.badge]) {
+                let pct = 0;
+                const actions = requiredActions[item.badge];
+                for (let actionIdx = 0; actionIdx < actions.length; actionIdx++) {
+                    const action = actions[actionIdx];
+                    pct += action.progress_pct;
+                }
+                pct = Math.floor(pct / actions.length);
+                itemHtml = itemHtml.replace('width: 100%', 'width: ' + pct + '%');
+                if (pct < 33) {
+                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress red');
+                } else if (pct < 66) {
+                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress yellow');
+                } else {
+                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress green');
+                }
+            }
             boardHtml += itemHtml;
         }
 
