@@ -275,18 +275,18 @@
         <img src="../badge-images/t0_512.jpg" class="new_achievement placeholder" />
     </p>
     <div class="boardWrapper">
-        <p class="board-cell achievement-cell"><img src="../badge-images/t0_512.jpg" class="badge" />
+        <p class="board-cell achievement-cell"><img src="../badge-images/t0_512.jpg" class="badge maybeTarget" />
             <img src="lock.png" width="32" class="lock" />
             <a href="javascript:openPopup()">How to unlock?</a>
             <span class="cell-progress" style="width: 100%"></span>
         </p>
-        <p class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge" />
+        <p class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge maybeTarget" />
             <img src="lock.png" width="32" class="lock" />
             <a href="javascript:openPopup()">How to unlock3?</a>
             123
         </p>
-        <p class="board-cell unhappy-cat-cell"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge" /><a href="javascript:openPopup()">How to kick me out?</a></p>
-        <p class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge " /><a href="javascript:openPopup()">How to kick me out?</a></p>
+        <p class="board-cell unhappy-cat-cell"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge maybeTarget" /><a href="javascript:openPopup()">How to kick me out?</a></p>
+        <p class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge maybeTarget" /><a href="javascript:openPopup()">How to kick me out?</a></p>
     </div>
 </div>
 
@@ -313,8 +313,164 @@
 
 </body>
 <script>
-    function showActionButton() {
-        document.querySelector('.action-btn').style.display = 'block';
+
+    document.getElementById('board2').innerHTML = document.getElementById('board1').innerHTML;
+
+    function waitImagesLoadedPromise(images) {
+        return new Promise(allDoneRes => {
+            const imagesLoadedPromises = [...images].map(img => new Promise(imageLoadedRes => {
+                if (img.complete) {
+                    imageLoadedRes();
+                    return;
+                }
+                img.onload = () => {
+                    imageLoadedRes();
+                };
+                img.onerror = () => {
+                    imageLoadedRes();
+                };
+            }));
+            Promise.allSettled(imagesLoadedPromises).then(() => {
+                allDoneRes();
+            })
+        });
+    }
+
+    // https://stackoverflow.com/a/26514148/1432640
+    const Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+
+
+    class Board {
+        constructor(boardElt) {
+            this.boardElt = boardElt;
+            this.boardEltWrapper = boardElt.querySelector('.boardWrapper');
+
+            this.INACTIVE_BADGE_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[0].outerHTML.replace("t0_512.jpg", "badge.jpg");
+            this.ACTIVE_BADGE_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[1].outerHTML.replace("f0_512.jpg", "badge.jpg");
+            this.INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[2].outerHTML.replace("c0_512.jpg", "badge.jpg");
+            this.ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[3].outerHTML.replace("c0_512.jpg", "badge.jpg");
+
+            this.boardEltWrapper.innerHTML = '';
+            this.hasTarget = false;
+
+            this.projectileElt = boardElt.querySelector('.projectile');
+            this.placeholderElt = boardElt.querySelector('.placeholder');
+            this.projectileElt.classList.add('hidden');
+
+            if (!Board.prototype.registry) {
+                Board.prototype.registry = {};
+            }
+        }
+
+        addCell(item, actionsToUnlock) {
+            let itemHtml = "";
+            if (item.active && item.badge === 'c0') {
+                itemHtml = this.ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+            } else if (item.active) {
+                itemHtml = this.ACTIVE_BADGE_TEMPLATE_ELT;
+            } else if (item.badge === 'c0') {
+                itemHtml = this.INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+            } else {
+                itemHtml = this.INACTIVE_BADGE_TEMPLATE_ELT;
+            }
+            itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
+            if (item.target) {
+                itemHtml = itemHtml.replace("maybeTarget", "target");
+                let projectile = item.badge;
+                if (item.projectileOverride) {
+                    projectile = item.projectileOverride;
+                }
+                this.projectileElt.src = '../badge-images/' + projectile + '_512.jpg';
+                this.placeholderElt.src = '../badge-images/' + projectile + '_512.jpg';
+                this.hasTarget = true;
+                this.projectileElt.classList.remove('hidden');
+            }
+            if (actionsToUnlock) {
+                itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\', \'' + Base64.encode(JSON.stringify(actionsToUnlock)) + '\')');
+
+                let pct = 0;
+                for (let actionIdx = 0; actionIdx < actionsToUnlock.length; actionIdx++) {
+                    const action = actionsToUnlock[actionIdx];
+                    pct += action.progress_pct;
+                }
+                pct = Math.floor(pct / actionsToUnlock.length);
+                itemHtml = itemHtml.replace('width: 100%', 'width: ' + pct + '%');
+                if (pct < 33) {
+                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress red');
+                } else if (pct < 66) {
+                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress yellow');
+                } else {
+                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress green');
+                }
+            }
+            this.boardEltWrapper.innerHTML += itemHtml;
+        }
+
+        waitTillReady() {
+            return waitImagesLoadedPromise(this.boardElt.querySelectorAll('img')).then(() => {
+                // Need for animation, otherwise it will just jump straight to size of the cell image
+                this.projectileElt.style.width = this.projectileElt.width + "px";
+                this.placeholderElt.style.width = this.placeholderElt.width + "px";
+            });
+        }
+
+        move(onDone) {
+            const boardCellImgWidth = this.boardElt.querySelector('.board-cell img').width;
+
+            this.projectileElt.style.width = boardCellImgWidth + "px";
+            this.placeholderElt.style.width = boardCellImgWidth + "px";
+
+            this.placeholderElt.style.visibility = 'hidden';
+
+            window.addEventListener('transitionend', () => {
+                if (!this.hasTarget) {
+                    setTimeout(() => {
+                        this._showActionButton();
+                        onDone();
+                    }, 250);
+                    return;
+                }
+                const targetElt = document.querySelector('.target');
+                const targetRect = targetElt.getBoundingClientRect();
+                const targetX = targetRect.left + window.scrollX;
+                const targetY = targetRect.top + window.scrollY;
+
+                const placeholderRect = this.placeholderElt.getBoundingClientRect();
+                const placeholderX = placeholderRect.left + window.scrollX;
+                const placeholderY = placeholderRect.top + window.scrollY;
+
+                this.projectileElt.style.left = placeholderX + 'px';
+                this.projectileElt.style.top = placeholderY + 'px';
+
+                this.placeholderElt.style.width = '0px';
+
+                setTimeout(() => {
+                    this.projectileElt.style.left = targetX + "px";
+                    this.projectileElt.style.top = (targetY - boardCellImgWidth) + "px";
+
+                    window.addEventListener('transitionend', () => {
+                        if (targetElt.parentElement.classList.contains('achievement-cell')) {
+                            targetElt.style.transition = 'none';
+                        }
+                        targetElt.parentElement.classList.toggle('active');
+                        this.projectileElt.style.display = 'none';
+                        setTimeout(() => {
+                            this._showActionButton();
+                            onDone();
+                        }, 250);
+                    }, {once: true});
+                }, 0);
+            }, {once: true});
+        }
+
+        newBoardMode() {
+            this.placeholderElt.style.display = 'none';
+            this.projectileElt.style.display = 'none';
+        }
+
+        _showActionButton() {
+            this.boardElt.querySelector('.action-btn').style.display = 'block';
+        }
     }
 
     const requiredActions = {
@@ -419,29 +575,30 @@
         return ret;
     }
 
-    function openPopup(badge) {
+    function openPopup(badge, actionsBase64) {
+        const actions = JSON.parse(Base64.decode(actionsBase64));
         let content = `<img src="../badge-images/${badge}_512.jpg" />`;
         if (badge === 'c0') {
             content += `<p>Earn any badge to kick it out!</p>`;
         } else if (badge === 'c1') {
-            let action = requiredActions[badge][0];
+            let action = actions[0];
             content += renderReviewWithoutMisses(null, action.progress_pct == 100, action.progress_pct, action.remaining_time_secs, true);
         } else if (badge === 'c2') {
-            let action1 = requiredActions[badge][0];
+            let action1 = actions[0];
             content += renderReviewWithoutMisses(1, action1.progress_pct == 100, action1.progress_pct, action1.remaining_time_secs, action1.progress_pct < 100);
 
-            action2 = requiredActions[badge][1];
+            action2 = actions[1];
             content += renderReviewWithoutReminders(2, action1.progress_pct < 100, action2.progress_pct, action2.remaining_time_secs, action1.progress_pct == 100 && action2.progress_pct < 100);
         } else if (badge === 'f0') {
-            let action = requiredActions[badge][0];
+            let action = actions[0];
             content += `<p>Update the <i>Formula</i> after ${toTimeInterval(action.remaining_time_secs)} 🧪</p>`;
             content += renderProgressBar(action.progress_pct);
         } else if (badge === 't0') {
-            let action = requiredActions[badge][0];
+            let action = actions[0];
             content += `<p>Play the game during next ${toTimeInterval(action.remaining_time_secs)} 🎮</p>`;
             content += renderProgressBar(action.progress_pct);
         } else if (badge === 's0' || badge === 's1' || badge === 's2') {
-            let action = requiredActions[badge][0];
+            let action = actions[0];
             content += `<p>Review <i>Formula</i> ${action.remaining_reviews} more time(s) without misses 🚫🟥</p>`;
             content += renderProgressBar(action.progress_pct);
         }
@@ -457,27 +614,6 @@
     function closePopup() {
         document.getElementById('popup').classList.remove('show');
         document.getElementById('overlay').classList.remove('show');
-    }
-
-    function waitImagesLoadedPromise() {
-        const images = [...document.querySelectorAll("img")];
-        return new Promise(allDoneRes => {
-            const imagesLoadedPromises = images.map(img => new Promise(imageLoadedRes => {
-                if (img.width > 0) {
-                    imageLoadedRes();
-                    return;
-                }
-                img.onload = () => {
-                    imageLoadedRes();
-                };
-                img.onerror = () => {
-                    imageLoadedRes();
-                };
-            }));
-            Promise.allSettled(imagesLoadedPromises).then(() => {
-                allDoneRes();
-            })
-        });
     }
 
     function fireConfetti() {
@@ -515,7 +651,7 @@
     }
 
 
-    const board = [
+    const board1Items = [
         {
             badge: 'f0',
             active: true,
@@ -563,129 +699,53 @@
         }
     ];
 
+    const board2Items = [
+        {
+            badge: 'f0',
+        },
+        {
+            badge: 's2',
+        },
+        {
+            badge: 's1',
+        },
+        {
+            badge: 's0',
+        },
+    ];
 
-    const boardElt = document.querySelector('#board1 .boardWrapper');
-    const INACTIVE_BADGE_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[0].outerHTML.replace("t0_512.jpg", "badge.jpg");
-    const ACTIVE_BADGE_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[1].outerHTML.replace("f0_512.jpg", "badge.jpg");
-    const INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[2].outerHTML.replace("c0_512.jpg", "badge.jpg");
-    const ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = boardElt.getElementsByTagName('p')[3].outerHTML.replace("c0_512.jpg", "badge.jpg");
 
-    function buildBoard(board) {
+    const board = new Board(document.getElementById('board1'));
+    board1Items.forEach(item => {
+        board.addCell(item, requiredActions[item.badge]);
+    });
 
-        let boardHtml = "";
-        let targetFound = false;
-        for (let itemIdx = 0; itemIdx < board.length; itemIdx++) {
-            const item = board[itemIdx];
-            let itemHtml = "";
-            if (item.active && item.badge === 'c0') {
-                itemHtml = ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
-            } else if (item.active) {
-                itemHtml = ACTIVE_BADGE_TEMPLATE_ELT;
-            } else if (item.badge === 'c0') {
-                itemHtml = INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
-            } else {
-                itemHtml = INACTIVE_BADGE_TEMPLATE_ELT;
-            }
-            itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
-            if (item.target) {
-                itemHtml = itemHtml.replace("<img ", "<img id='target' ");
-                let projectile = item.badge;
-                if (item.projectileOverride) {
-                    projectile = item.projectileOverride;
-                }
-                document.querySelector('.projectile').src = '../badge-images/' + projectile + '_512.jpg';
-                document.querySelector('.placeholder').src = '../badge-images/' + projectile + '_512.jpg';
-                targetFound = true;
-            }
-            itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\')');
-            if (requiredActions[item.badge]) {
-                let pct = 0;
-                const actions = requiredActions[item.badge];
-                for (let actionIdx = 0; actionIdx < actions.length; actionIdx++) {
-                    const action = actions[actionIdx];
-                    pct += action.progress_pct;
-                }
-                pct = Math.floor(pct / actions.length);
-                itemHtml = itemHtml.replace('width: 100%', 'width: ' + pct + '%');
-                if (pct < 33) {
-                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress red');
-                } else if (pct < 66) {
-                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress yellow');
-                } else {
-                    itemHtml = itemHtml.replace('cell-progress', 'cell-progress green');
-                }
-            }
-            boardHtml += itemHtml;
-        }
+    const board2 = new Board(document.getElementById('board2'));
+    board2Items.forEach(item => {
+        board2.addCell(item, requiredActions[item.badge].map(action => {
+            action.progress_pct = 0;
+            return action;
+        }));
+    });
+    board2.newBoardMode();
 
-        if (!targetFound) {
-            document.querySelector('.projectile').classList.add('hidden');
-        }
+    Promise.all([board.waitTillReady(), board2.waitTillReady()]).then(() => {
 
-        boardElt.innerHTML = boardHtml;
-    }
+        document.body.classList.remove("loading");
 
-    buildBoard(board);
+        setTimeout(() => {
 
-    setTimeout(() => {
-
-        waitImagesLoadedPromise().then(() => {
-            document.body.classList.remove("loading");
-            document.querySelectorAll('.new_achievement').forEach(img => {
-                // Need for animation, otherwise it will just jump straight to the target
-                img.style.width = img.width + "px";
-            });
-
-            setTimeout(fireConfetti, 250);
+            fireConfetti();
 
             setTimeout(() => {
-                const boardCellImgWidth = document.querySelector('.board-cell img').width;
-                document.querySelectorAll('.new_achievement').forEach(img => {
-                    img.style.width = boardCellImgWidth + "px";
+                board.move(() => {
+
+                    document.getElementById('board1').classList.add('hidden');
+                    document.getElementById('board2').classList.remove('hidden');
+
                 });
-                const placeholderElt = document.querySelector('.placeholder');
-                placeholderElt.style.visibility = 'hidden';
+            }, 1000);
 
-                window.addEventListener('transitionend', () => {
-                    const targetElt = document.getElementById('target');
-                    if (!targetElt) {
-                        setTimeout(() => {
-                            showActionButton();
-                        }, 250);
-                        return;
-                    }
-                    const targetRect = targetElt.getBoundingClientRect();
-                    const targetX = targetRect.left + window.scrollX;
-                    const targetY = targetRect.top + window.scrollY;
-
-                    const placeholderRect = placeholderElt.getBoundingClientRect();
-                    const placeholderX = placeholderRect.left + window.scrollX;
-                    const placeholderY = placeholderRect.top + window.scrollY;
-
-                    const projectileElt = document.querySelector('.projectile');
-                    projectileElt.style.left = placeholderX + 'px';
-                    projectileElt.style.top = placeholderY + 'px';
-
-                    placeholderElt.style.width = '0px';
-
-                    setTimeout(() => {
-                        projectileElt.style.left = targetX + "px";
-                        projectileElt.style.top = (targetY - boardCellImgWidth) + "px";
-
-                        window.addEventListener('transitionend', () => {
-                            if (targetElt.parentElement.classList.contains('achievement-cell')) {
-                                targetElt.style.transition = 'none';
-                            }
-                            targetElt.parentElement.classList.toggle('active');
-                            projectileElt.style.display = 'none';
-                            setTimeout(() => {
-                                showActionButton();
-                            }, 250);
-                        }, {once: true});
-                    }, 0);
-                }, {once: true});
-
-            }, 1500);
-        });
-    }, 0);
+        }, 250);
+    });
 </script>
