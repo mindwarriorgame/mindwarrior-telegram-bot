@@ -318,6 +318,19 @@
 </body>
 <script>
 
+    LANGS = {
+        en: {
+            level_congrats: "Level ###: You've got a new achievement!",
+            level_next_level: "Level ###: completed! 🎉",
+            level_board2: "Level ###"
+        },
+        ru: {
+            level_congrats: "Уровень ###: У вас новое достижение!",
+            level_next_level: "Уровень ###: выполнен! 🎉",
+            level_board2: "Уровень ###"
+        }
+    }
+
     document.getElementById('board2').innerHTML = document.getElementById('board1').innerHTML;
 
     function waitImagesLoadedPromise(images) {
@@ -354,6 +367,10 @@
     // '1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45'
     const boardProgress1 = deserializeProgressMap(urlParams.get('bp1'));
 
+    const level = urlParams.get('l') || 1;
+
+    const lang = LANGS[urlParams.get('lang') || 'en'];
+
 
     const board1 = new Board(document.getElementById('board1'));
     board1Items.forEach(item => {
@@ -362,12 +379,14 @@
 
     let board2;
     if (board2Items) {
+        board1.setHeader(lang.level_next_level.replace('###', level));
         const board2 = new Board(document.getElementById('board2'));
         const boardProgress2 = deserializeProgressMap(urlParams.get('bp2'));
         board2Items.forEach(item => {
             board2.addCell(item, boardProgress2[item.badge]);
         });
         board2.newBoardMode();
+        board2.setHeader(lang.level_board2.replace('###', level + 1));
         board1.setActionButton('Start next level', () => {
             document.getElementById('board1').classList.add('hidden');
             document.getElementById('board2').classList.remove('hidden');
@@ -378,6 +397,7 @@
             alert('TODO');
         });
     } else {
+        board1.setHeader(lang.level_congrats.replace('###', level));
         board1.setActionButton('Return to game', () => {
             alert('TODO');
         });
