@@ -5,7 +5,7 @@ const Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234
 function toTimeInterval(secs) {
     let hours = Math.floor(secs / 3600);
     let minutes = Math.floor((secs % 3600) / 60);
-    return `${hours}h ${minutes}m`;
+    return `${hours}${window.lang.hour_one_letter} ${minutes}${window.lang.minute_one_letter}`;
 }
 
 function renderProgressBar(pct) {
@@ -15,30 +15,24 @@ function renderProgressBar(pct) {
         </div>`;
 }
 
-function renderReviewWithoutMisses(step, inactive, pct, timeSecs, withProgressBar)  {
+function renderReviewWithoutSomething(template, step, inactive, pct, timeSecs, withProgressBar)  {
     let stepPrefix = '';
     if (step) {
         stepPrefix = `${step}. `;
     }
-    const ret = `<p class="pct${inactive ? 100 : 0}">${pct == 100 ? '✅ ' : ''} ${stepPrefix} Review <i>Formula</i> during next ${toTimeInterval(timeSecs)}
-                    without misses 🚫🟥</p>`;
-    if (withProgressBar) {
-        return ret + renderProgressBar(pct);
-    }
-    return ret;
-}
+    const ret = [
+        '<p class="pct' + (inactive ? 100 : 0) + '">',
 
-function renderReviewWithoutReminders(step, inactive, pct, timeSecs, withProgressBar)  {
-    let stepPrefix = '';
-    if (step) {
-        stepPrefix = `${step}. `;
-    }
-    const ret = `<p class="pct${inactive ? 100 : 0}">${pct == 100 ? '✅ ' : ''} ${stepPrefix} Review <i>Formula</i> during next ${toTimeInterval(timeSecs)}
-                    without reminders 🚫⏰</p>`;
+        (pct == 100) ? '✅ ' : '',
+        stepPrefix,
+
+        template.replace('###', toTimeInterval(timeSecs)),
+        '</p>'
+    ];
     if (withProgressBar) {
-        return ret + renderProgressBar(pct);
+        ret.push(renderProgressBar(pct));
     }
-    return ret;
+    return ret.join(' ');
 }
 
 function openPopup(badge, actionsBase64) {
@@ -48,13 +42,13 @@ function openPopup(badge, actionsBase64) {
         content += `<p>Earn any badge to kick it out!</p>`;
     } else if (badge === 'c1') {
         let action = actions[0];
-        content += renderReviewWithoutMisses(null, action.progress_pct == 100, action.progress_pct, action.remaining_time_secs, true);
+        content += renderReviewWithoutSomething(window.lang.review_without_misses_duration, null, action.progress_pct == 100, action.progress_pct, action.remaining_time_secs, true);
     } else if (badge === 'c2') {
         let action1 = actions[0];
-        content += renderReviewWithoutMisses(1, action1.progress_pct == 100, action1.progress_pct, action1.remaining_time_secs, action1.progress_pct < 100);
+        content += renderReviewWithoutSomething(window.lang.review_without_misses_duration, 1, action1.progress_pct == 100, action1.progress_pct, action1.remaining_time_secs, action1.progress_pct < 100);
 
         action2 = actions[1];
-        content += renderReviewWithoutReminders(2, action1.progress_pct < 100, action2.progress_pct, action2.remaining_time_secs, action1.progress_pct == 100 && action2.progress_pct < 100);
+        content += renderReviewWithoutSomething(window.lang.review_without_reminders_duration, 2, action1.progress_pct < 100, action2.progress_pct, action2.remaining_time_secs, action1.progress_pct == 100 && action2.progress_pct < 100);
     } else if (badge === 'f0') {
         let action = actions[0];
         content += `<p>Update the <i>Formula</i> after ${toTimeInterval(action.remaining_time_secs)} 🧪</p>`;

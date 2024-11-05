@@ -327,7 +327,13 @@
             action_button_next_level: 'Start next level',
             rules_h1: "Rules:",
             rules_unlock: "Unlock all locked items on the board above. Press locked cells to see how.",
-            rules_no_grumpy_cats: "Keep empty slots clear from grumpy cats. Kick them out as soon as they get in!"
+            rules_no_grumpy_cats: "Keep empty slots clear from grumpy cats. Kick them out as soon as they get in!",
+            how_to_unlock: "How to unlock?",
+            how_to_kick_out: "How to kick me out?",
+            hour_one_letter: "h",
+            minute_one_letter: "m",
+            review_without_misses_duration: 'Review <i>Formula</i> during next ### without misses 🚫🟥',
+            review_without_reminders_duration: 'Review <i>Formula</i> during next ### without reminders 🚫⏰',
         },
         ru: {
             level_congrats: "Уровень ###: У вас новое достижение!",
@@ -337,9 +343,36 @@
             action_button_next_level: 'Начать следующий уровень',
             rules_h1: "Правила:",
             rules_unlock: "Разблокируйте все ячейки на доске выше. Нажмите на каждую, чтобы получить инструкции.",
-            rules_no_grumpy_cats: "Не пускайте сердитых котов в пустые ячейки. Если залезут - выгоняйте!"
+            rules_no_grumpy_cats: "Не пускайте сердитых котов в пустые ячейки. Если залезут - выгоняйте!",
+            how_to_unlock: "Как получить?",
+            how_to_kick_out: "Как прогнать?",
+            hour_one_letter: "ч",
+            minute_one_letter: "м",
+            review_without_misses_duration: 'Повторяйте <i>Формулу</i> в течение следующих ### без пропусков 🚫🟥',
+            review_without_reminders_duration: 'Повторяйте <i>Формулу</i> в течение следующих ### без напоминаний 🚫⏰',
         }
     }
+
+    // Some test data
+    // http://localhost:63342/mindwarrior-telegram-bot/miniapp-frontend/board.html?_ijt=6j8idd6nhn1blofrji9fk34cvo&board1=f0a_s2t_s1_s0_t0_c0apoT0_s0_s0a_c1_c2_s1_s2_c1&boardProgress1=1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45&board2=f0a_s2t_s1_s0_t0_c0apoT0&boardProgress2=1_3867_0--2_3867_100_10000_0--1_12345_0--1_3_0--1_3_0--1_6_0--1_1123_0
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const level = urlParams.get('l') || 1;
+
+    window.lang = LANGS[urlParams.get('lang') || 'en'];
+    const lang = window.lang;
+
+    document.querySelector('#rules h1').innerHTML = lang.rules_h1;
+    document.querySelectorAll('#rules p')[0].querySelector('span').innerHTML = lang.rules_unlock;
+    document.querySelectorAll('#rules p')[1].querySelector('span').innerHTML = lang.rules_no_grumpy_cats;
+    document.querySelector('#board1').querySelectorAll('a').forEach(a => {
+        if (a.parentElement.classList.contains('unhappy-cat-cell')) {
+            a.innerHTML = lang.how_to_kick_out;
+        } else {
+            a.innerHTML = lang.how_to_unlock;
+        }
+    })
+
 
     document.getElementById('board2').innerHTML = document.getElementById('board1').innerHTML;
 
@@ -363,11 +396,6 @@
         });
     }
 
-
-    // Some test data
-    // http://localhost:63342/mindwarrior-telegram-bot/miniapp-frontend/board.html?_ijt=6j8idd6nhn1blofrji9fk34cvo&board1=f0a_s2t_s1_s0_t0_c0apoT0_s0_s0a_c1_c2_s1_s2_c1&boardProgress1=1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45&board2=f0a_s2t_s1_s0_t0_c0apoT0&boardProgress2=1_3867_0--2_3867_100_10000_0--1_12345_0--1_3_0--1_3_0--1_6_0--1_1123_0
-    const urlParams = new URLSearchParams(window.location.search);
-
     // 'f0a_s2t_s1_s0_t0_c0apoT0_s0_s0a_c1_c2_s1_s2_c1'
     const board1Items = deserializeBoard(urlParams.get('b1'));
 
@@ -376,14 +404,6 @@
 
     // '1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45'
     const boardProgress1 = deserializeProgressMap(urlParams.get('bp1'));
-
-    const level = urlParams.get('l') || 1;
-
-    const lang = LANGS[urlParams.get('lang') || 'en'];
-
-    document.querySelector('#rules h1').innerHTML = lang.rules_h1;
-    document.querySelectorAll('#rules p')[0].querySelector('span').innerHTML = lang.rules_unlock;
-    document.querySelectorAll('#rules p')[1].querySelector('span').innerHTML = lang.rules_no_grumpy_cats;
 
 
     const board1 = new Board(document.getElementById('board1'));
@@ -400,7 +420,7 @@
             board2.addCell(item, boardProgress2[item.badge]);
         });
         board2.newBoardMode();
-        board2.setHeader(lang.level_board2.replace('###', level + 1));
+        board2.setHeader(lang.level_board2.replace('###', "" + (parseInt(level) + 1)));
         board1.setActionButton(lang.action_button_next_level, () => {
             document.getElementById('board1').classList.add('hidden');
             document.getElementById('board2').classList.remove('hidden');
