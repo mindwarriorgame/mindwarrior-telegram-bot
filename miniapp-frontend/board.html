@@ -6,6 +6,7 @@
 
     <!--    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tsparticles-confetti/2.12.0/tsparticles.confetti.bundle.min.js"></script>
+    <script src="board-scripts/serialisers.js"></script>
 
     <style>
         body {
@@ -283,7 +284,6 @@
         <p class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge maybeTarget" />
             <img src="lock.png" width="32" class="lock" />
             <a href="javascript:openPopup()">How to unlock3?</a>
-            123
         </p>
         <p class="board-cell unhappy-cat-cell"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge maybeTarget" /><a href="javascript:openPopup()">How to kick me out?</a></p>
         <p class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge maybeTarget" /><a href="javascript:openPopup()">How to kick me out?</a></p>
@@ -362,7 +362,7 @@
             }
         }
 
-        addCell(item, actionsToUnlock) {
+        addCell(item, progressItems) {
             let itemHtml = "";
             if (item.active && item.badge === 'c0') {
                 itemHtml = this.ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
@@ -385,15 +385,15 @@
                 this.hasTarget = true;
                 this.projectileElt.classList.remove('hidden');
             }
-            if (actionsToUnlock) {
-                itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\', \'' + Base64.encode(JSON.stringify(actionsToUnlock)) + '\')');
+            if (progressItems) {
+                itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\', \'' + Base64.encode(JSON.stringify(progressItems)) + '\')');
 
                 let pct = 0;
-                for (let actionIdx = 0; actionIdx < actionsToUnlock.length; actionIdx++) {
-                    const action = actionsToUnlock[actionIdx];
+                for (let actionIdx = 0; actionIdx < progressItems.length; actionIdx++) {
+                    const action = progressItems[actionIdx];
                     pct += action.progress_pct;
                 }
-                pct = Math.floor(pct / actionsToUnlock.length);
+                pct = Math.floor(pct / progressItems.length);
                 itemHtml = itemHtml.replace('width: 100%', 'width: ' + pct + '%');
                 if (pct < 33) {
                     itemHtml = itemHtml.replace('cell-progress', 'cell-progress red');
@@ -468,73 +468,16 @@
             this.projectileElt.style.display = 'none';
         }
 
+        setActionButton(text, onClick) {
+            this.boardElt.querySelector('.action-btn').textContent = text;
+            this.boardElt.querySelector('.action-btn').onclick = onClick;
+        }
+
         _showActionButton() {
             this.boardElt.querySelector('.action-btn').style.display = 'block';
         }
     }
 
-    const requiredActions = {
-        'c1': [
-            {
-                "remaining_time_secs": 3867,
-                "challenge": "review_regularly_no_penalty",
-                "badge": "c1",
-                "progress_pct": 30
-            }
-        ],
-        'c2': [
-            {
-                "remaining_time_secs": 3867,
-                "challenge": "review_regularly_no_penalty",
-                "badge": "c1",
-                "progress_pct": 100
-            },
-            {
-                "remaining_time_secs": 10000,
-                "challenge": "review_regularly_no_prompt",
-                "badge": "c2",
-                "progress_pct": 10
-            }
-        ],
-        'f0': [{
-            "remaining_time_secs": 12345,
-            "challenge": "update_formula",
-            "badge": "f0",
-            "progress_pct": 25
-        }],
-        't0': [
-            {
-                "remaining_time_secs": 1123,
-                "challenge": "play_time",
-                "badge": "t0",
-                "progress_pct": 45
-            }
-        ],
-        's0': [
-            {
-                "remaining_reviews": 3,
-                "challenge": "review_regularly_no_penalty",
-                "badge": "s0",
-                "progress_pct":10
-            }
-        ],
-        's1': [
-            {
-                "remaining_reviews": 3,
-                "challenge": "review_regularly_no_penalty",
-                "badge": "s1",
-                "progress_pct":30
-            }
-        ],
-        s2: [
-            {
-                "remaining_reviews": 6,
-                "challenge": "review_regularly_no_penalty",
-                "badge": "s2",
-                "progress_pct":75
-            }
-        ]
-    };
 
     function toTimeInterval(secs) {
         let hours = Math.floor(secs / 3600);
@@ -650,100 +593,55 @@
         console.log('fire end');
     }
 
+    // Some test data
+    // http://localhost:63342/mindwarrior-telegram-bot/miniapp-frontend/board.html?_ijt=6j8idd6nhn1blofrji9fk34cvo&board1=f0a_s2t_s1_s0_t0_c0apoT0_s0_s0a_c1_c2_s1_s2_c1&boardProgress1=1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45&board2=f0a_s2t_s1_s0_t0_c0apoT0&boardProgress2=1_3867_0--2_3867_100_10000_0--1_12345_0--1_3_0--1_3_0--1_6_0--1_1123_0
+    const urlParams = new URLSearchParams(window.location.search);
 
-    const board1Items = [
-        {
-            badge: 'f0',
-            active: true,
-        },
-        {
-            badge: 's2',
-        },
-        {
-            badge: 's1',
-        },
-        {
-            badge: 's0',
-        },
-        {
-            badge: 't0',
+    // 'f0a_s2t_s1_s0_t0_c0apoT0_s0_s0a_c1_c2_s1_s2_c1'
+    const board1Items = deserializeBoard(urlParams.get('board1'));
 
-        },
-        {
-            badge: 'c0',
-            active: true,
-            projectileOverride: 't0',
-        },
-        {
-            badge: 's0',
-        },
-        {
-            badge: 's0',
-            active: true,
-        },
-        {
-            badge: 'c1'
-        },
-        {
-            badge: 'c2',
-        },
-        {
-            badge: 's1',
-        },
-        {
-            badge: 's2',
-        },
-        {
-            badge: 'c1',
-            target: true,
-        }
-    ];
+    // 'f0_s2_s1_s0'
+    const board2Items = urlParams.get('board2') ? deserializeBoard(urlParams.get('board2')) : null;
 
-    const board2Items = [
-        {
-            badge: 'f0',
-        },
-        {
-            badge: 's2',
-        },
-        {
-            badge: 's1',
-        },
-        {
-            badge: 's0',
-        },
-    ];
+    // '1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45'
+    const boardProgress1 = deserializeProgressMap(urlParams.get('boardProgress1'));
 
 
-    const board = new Board(document.getElementById('board1'));
+    const board1 = new Board(document.getElementById('board1'));
     board1Items.forEach(item => {
-        board.addCell(item, requiredActions[item.badge]);
+        board1.addCell(item, boardProgress1[item.badge]);
     });
 
-    const board2 = new Board(document.getElementById('board2'));
-    board2Items.forEach(item => {
-        board2.addCell(item, requiredActions[item.badge].map(action => {
-            action.progress_pct = 0;
-            return action;
-        }));
-    });
-    board2.newBoardMode();
+    let board2;
+    if (board2Items) {
+        const board2 = new Board(document.getElementById('board2'));
+        const boardProgress2 = deserializeProgressMap(urlParams.get('boardProgress2'));
+        board2Items.forEach(item => {
+            board2.addCell(item, boardProgress2[item.badge]);
+        });
+        board2.newBoardMode();
+        board1.setActionButton('Go to next level!', () => {
+            document.getElementById('board1').classList.add('hidden');
+            document.getElementById('board2').classList.remove('hidden');
+        });
+        board2.setActionButton('Return to game', () => {
+            alert('TODO');
+        })
+    } else {
+        board1.setActionButton('Return to game', () => {
+            alert('TODO');
+        });
+    }
 
-    Promise.all([board.waitTillReady(), board2.waitTillReady()]).then(() => {
+    Promise.all([board1.waitTillReady(), board2 ? board2.waitTillReady() : Promise.resolve()]).then(() => {
 
         document.body.classList.remove("loading");
 
         setTimeout(() => {
-
             fireConfetti();
 
             setTimeout(() => {
-                board.move(() => {
-
-                    document.getElementById('board1').classList.add('hidden');
-                    document.getElementById('board2').classList.remove('hidden');
-
-                });
+                board1.move(() => { });
             }, 1000);
 
         }, 250);
