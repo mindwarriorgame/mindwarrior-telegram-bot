@@ -302,8 +302,8 @@
 
 <div id="rules">
     <h1>Rules:</h1>
-    <p>1. <img src="unlock.png" height="64" style="vertical-align: middle;" /> Unlock all locked items on the board above. Press locked cells to see how.</p>
-    <p>2. <img src="no-grumpy-cats.jpg" width="64" style="vertical-align: middle;" /> Keep empty slots clear from grumpy cats. Kick them out as soon as they get in!</p>
+    <p>1. <img src="unlock.png" height="64" style="vertical-align: middle;" /> <span>Unlock all locked items on the board above. Press locked cells to see how.</span></p>
+    <p>2. <img src="no-grumpy-cats.jpg" width="64" style="vertical-align: middle;" /> <span>Keep empty slots clear from grumpy cats. Kick them out as soon as they get in!</span></p>
 </div>
 
 
@@ -325,6 +325,9 @@
             level_board2: "Level ###",
             action_button_back_to_game: 'Return to game',
             action_button_next_level: 'Start next level',
+            rules_h1: "Rules:",
+            rules_unlock: "Unlock all locked items on the board above. Press locked cells to see how.",
+            rules_no_grumpy_cats: "Keep empty slots clear from grumpy cats. Kick them out as soon as they get in!"
         },
         ru: {
             level_congrats: "Уровень ###: У вас новое достижение!",
@@ -332,6 +335,9 @@
             level_board2: "Уровень ###",
             action_button_back_to_game: 'Вернуться в игру',
             action_button_next_level: 'Начать следующий уровень',
+            rules_h1: "Правила:",
+            rules_unlock: "Разблокируйте все ячейки на доске выше. Нажмите на каждую, чтобы получить инструкции.",
+            rules_no_grumpy_cats: "Не пускайте сердитых котов в пустые ячейки. Если залезут - выгоняйте!"
         }
     }
 
@@ -374,6 +380,10 @@
     const level = urlParams.get('l') || 1;
 
     const lang = LANGS[urlParams.get('lang') || 'en'];
+
+    document.querySelector('#rules h1').innerHTML = lang.rules_h1;
+    document.querySelectorAll('#rules p')[0].querySelector('span').innerHTML = lang.rules_unlock;
+    document.querySelectorAll('#rules p')[1].querySelector('span').innerHTML = lang.rules_no_grumpy_cats;
 
 
     const board1 = new Board(document.getElementById('board1'));
