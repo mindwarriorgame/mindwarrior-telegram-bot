@@ -20,6 +20,10 @@ class Board {
         }
     }
 
+    setHeader(header) {
+        this.boardElt.querySelector('.h1').innerHTML = header;
+    }
+
     addCell(item, progressItems) {
         let itemHtml = "";
         if (item.active && item.badge === 'c0') {
