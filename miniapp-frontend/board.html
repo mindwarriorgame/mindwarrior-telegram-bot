@@ -322,12 +322,16 @@
         en: {
             level_congrats: "Level ###: You've got a new achievement!",
             level_next_level: "Level ###: completed! 🎉",
-            level_board2: "Level ###"
+            level_board2: "Level ###",
+            action_button_back_to_game: 'Return to game',
+            action_button_next_level: 'Start next level',
         },
         ru: {
             level_congrats: "Уровень ###: У вас новое достижение!",
-            level_next_level: "Уровень ###: выполнен! 🎉",
-            level_board2: "Уровень ###"
+            level_next_level: "Уровень ###: завершен! 🎉",
+            level_board2: "Уровень ###",
+            action_button_back_to_game: 'Вернуться в игру',
+            action_button_next_level: 'Начать следующий уровень',
         }
     }
 
@@ -387,18 +391,18 @@
         });
         board2.newBoardMode();
         board2.setHeader(lang.level_board2.replace('###', level + 1));
-        board1.setActionButton('Start next level', () => {
+        board1.setActionButton(lang.action_button_next_level, () => {
             document.getElementById('board1').classList.add('hidden');
             document.getElementById('board2').classList.remove('hidden');
 
             board2.showActionButton();
         });
-        board2.setActionButton('Return to game', () => {
+        board2.setActionButton(lang.action_button_back_to_game, () => {
             alert('TODO');
         });
     } else {
         board1.setHeader(lang.level_congrats.replace('###', level));
-        board1.setActionButton('Return to game', () => {
+        board1.setActionButton(lang.action_button_back_to_game, () => {
             alert('TODO');
         });
     }
