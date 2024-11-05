@@ -48,10 +48,9 @@ const badgeProgressKey= {
 
 function serializeProgressMap(progressMap) {
     const badges = Object.keys(badgeProgressKey);
-    badges.sort();
     return badges.map((badge) => {
         const progressItems = progressMap[badge];
-        let ret = "" + progressItems.length;
+        let ret = badge + "_" + progressItems.length;
         progressItems.forEach(progressItem => {
             ret += "_" + progressItem[badgeProgressKey[badge]];
             ret += "_" + progressItem['progress_pct'];
@@ -61,13 +60,9 @@ function serializeProgressMap(progressMap) {
 }
 
 function deserializeProgressMap(str) {
-    const badges = Object.keys(badgeProgressKey);
-    badges.sort();
-
     const ret = {};
     str.split("--").forEach((chunk, chunkIdx) =>  {
-        const badge = badges[chunkIdx];
-        const [numItems, ...progressItems] = chunk.split("_");
+        const [badge, numItems, ...progressItems] = chunk.split("_");
         const items = [];
         for (let itemIdx = 0; itemIdx < numItems; itemIdx++) {
             items.push({
