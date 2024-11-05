@@ -39,7 +39,7 @@ function openPopup(badge, actionsBase64) {
     const actions = JSON.parse(Base64.decode(actionsBase64 || Base64.encode('{}')));
     let content = `<img src="../badge-images/${badge}_512.jpg" />`;
     if (badge === 'c0') {
-        content += `<p>Earn any badge to kick it out!</p>`;
+        content += `<p>${window.lang.kick_out}</p>`;
     } else if (badge === 'c1') {
         let action = actions[0];
         content += renderReviewWithoutSomething(window.lang.review_without_misses_duration, null, action.progress_pct == 100, action.progress_pct, action.remaining_time_secs, true);
@@ -51,19 +51,19 @@ function openPopup(badge, actionsBase64) {
         content += renderReviewWithoutSomething(window.lang.review_without_reminders_duration, 2, action1.progress_pct < 100, action2.progress_pct, action2.remaining_time_secs, action1.progress_pct == 100 && action2.progress_pct < 100);
     } else if (badge === 'f0') {
         let action = actions[0];
-        content += `<p>Update the <i>Formula</i> after ${toTimeInterval(action.remaining_time_secs)} 🧪</p>`;
+        content += `<p>${window.lang.update_formula_after.replace('###', toTimeInterval(action.remaining_time_secs))}</p>`;
         content += renderProgressBar(action.progress_pct);
     } else if (badge === 't0') {
         let action = actions[0];
-        content += `<p>Play the game during next ${toTimeInterval(action.remaining_time_secs)} 🎮</p>`;
+        content += `<p>${window.lang.play_game.replace('###', toTimeInterval(action.remaining_time_secs))}</p>`;
         content += renderProgressBar(action.progress_pct);
     } else if (badge === 's0' || badge === 's1' || badge === 's2') {
         let action = actions[0];
-        content += `<p>Review <i>Formula</i> ${action.remaining_reviews} more time(s) without misses 🚫🟥</p>`;
+        content += `<p>${window.lang.review_without_misses_times.replace('###', action.remaining_reviews)}</p>`;
         content += renderProgressBar(action.progress_pct);
     }
 
-    content += "<p><button class='action-btn' onclick='closePopup()'>Close</button></p>";
+    content += `<p><button class='action-btn' onclick='closePopup()'>${window.lang.close}</button></p>`;
 
     document.getElementById('popup').innerHTML = content;
 
