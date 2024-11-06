@@ -375,7 +375,7 @@
     // http://localhost:63342/mindwarrior-telegram-bot/miniapp-frontend/board.html?_ijt=6j8idd6nhn1blofrji9fk34cvo&board1=f0a_s2t_s1_s0_t0_c0apoT0_s0_s0a_c1_c2_s1_s2_c1&boardProgress1=1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45&board2=f0a_s2t_s1_s0_t0_c0apoT0&boardProgress2=1_3867_0--2_3867_100_10000_0--1_12345_0--1_3_0--1_3_0--1_6_0--1_1123_0
     const urlParams = new URLSearchParams(window.location.search);
 
-    const level = urlParams.get('l') || 1;
+    const level = urlParams.get('level') || 1;
 
     window.lang = LANGS[urlParams.get('lang') || 'en'];
     const lang = window.lang;
