@@ -16,6 +16,8 @@
     <script src="board-scripts/fireworks.js"></script>
     <script src="board-scripts/progress-popup.js"></script>
 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
         body {
             color: white;
@@ -440,12 +442,12 @@
             board2.showActionButton();
         });
         board2.setActionButton(lang.action_button_back_to_game, () => {
-            alert('TODO');
+            window?.Telegram?.WebAppapp.close();
         });
     } else {
         board1.setHeader(lang.level_congrats.replace('###', level));
         board1.setActionButton(lang.action_button_back_to_game, () => {
-            alert('TODO');
+            window?.Telegram?.WebAppapp.close();
         });
     }
 

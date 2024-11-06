@@ -352,7 +352,7 @@ class GameManager:
                                              , lang.difficulties[user['difficulty']],
                                              paused_at)
 
-        return self._render_stats(lang, user['user_id'], user['rewards'], user['difficulty'], self._calculate_active_play_time_seconds(user),
+        return self._render_stats(lang, BadgesManager(user['badges_serialized']), user['user_id'], user['rewards'], user['difficulty'], self._calculate_active_play_time_seconds(user),
                                   user['paused_counter_state'] is not None, since_last_reward_secs, till_next_prompt_time, fname)
 
     def on_difficulty_command(self, chat_id) -> Reply:
@@ -520,7 +520,7 @@ class GameManager:
         if user_message == "render_screen_9":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_stats(lang, chat_id, 5, 2, 1000, False, 100, 1000, None)]
+                ret = ret + [self._render_stats(lang, BadgesManager(None), chat_id, 5, 2, 1000, False, 100, 1000, None)]
             return ret
 
         if user_message == "render_screen_10":
@@ -644,7 +644,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_stats(self, lang, chat_id, rewards, difficulty, active_play_time_seconds, is_paused, since_last_reward_secs, till_next_prompt_time, fname) -> Reply:
+    def _render_stats(self, lang, badges_manager, chat_id, rewards, difficulty, active_play_time_seconds, is_paused, since_last_reward_secs, till_next_prompt_time, fname) -> Reply:
         return {
             'to_chat_id': chat_id,
             'message': lang.stats_command.format(
@@ -656,7 +656,10 @@ class GameManager:
                 cooldown=self._format_time_seconds(lang, 5*60 - since_last_reward_secs if since_last_reward_secs < 5*60 else 0),
                 punishment=self._format_time_minutes(lang, till_next_prompt_time, skip_zeros=True)
             ),
-            'buttons': [],
+            'buttons': [{
+                'text': lang.view_badges_button,
+                'url': self._render_board_url(lang, None, badges_manager, active_play_time_seconds, difficulty)
+            }],
             'menu_commands': [],
             'image': fname
         }
@@ -801,6 +804,22 @@ class GameManager:
             'image': None
         }
 
+    def _render_board_url(self, lang: Lang, badge: Optional[str], badges_manager: BadgesManager, active_play_time_secs, difficulty) -> str:
+        button_url = self.frontend_base_url.replace("index.html", "board.html")
+        button_url += '?lang=' + lang.lang_code
+        if badge is not None:
+            button_url += '&new_badge=' + badge
+
+        button_url += "&level=" + str(badges_manager.get_level() + 1)
+        button_url += "&b1=" + serialize_board(badges_manager.get_board())
+        button_url += "&bp1=" + serialize_progress(badges_manager.progress(active_play_time_secs, difficulty))
+
+        if badges_manager.is_level_completed():
+            button_url += "&b2=" + serialize_board(badges_manager.get_next_level_board())
+            button_url += "&bp2=" + serialize_progress(badges_manager.new_level_progress(difficulty))
+
+        return button_url
+
     def _handle_badge_event(self, user, event, message: Reply) -> Reply:
         badges_manager = BadgesManager(user['badges_serialized'])
 
@@ -815,17 +834,7 @@ class GameManager:
 
         lang = self._get_user_lang(user['lang_code'])
 
-        button_url = self.frontend_base_url.replace("index.html", "board.html")
-        button_url += '?lang=' + lang.lang_code
-        button_url += '&new_badge=' + badge
-
-        button_url += "&level=" + str(badges_manager.get_level() + 1)
-        button_url += "&b1=" + serialize_board(badges_manager.get_board())
-        button_url += "&bp1=" + serialize_progress(badges_manager.progress(active_play_time_secs, user['difficulty']))
-
-        if badges_manager.is_level_completed():
-            button_url += "&b2=" + serialize_board(badges_manager.get_next_level_board())
-            button_url += "&bp2=" + serialize_progress(badges_manager.new_level_progress(user['difficulty']))
+        button_url = self._render_board_url(lang, badge, badges_manager, active_play_time_secs, user['difficulty'])
 
         return {
             'to_chat_id': message['to_chat_id'],

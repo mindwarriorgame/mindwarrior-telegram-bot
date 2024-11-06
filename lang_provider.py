@@ -245,7 +245,7 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
 
     badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé à l'intérieur!",
     badge_new = "🏆 Vous avez obtenu un nouveau succès!",
-    view_badges_button = "Voir le plateau de jeu"
+    view_badges_button = "Voir les succès"
 )
 
 
@@ -405,7 +405,7 @@ Presiona el botón de abajo para iniciar el juego.""",
 
     badge_unhappy_cat = "😾 ¡Ups! ¡Se coló un gato gruñón!",
     badge_new = "🏆 ¡Has conseguido un nuevo logro!",
-    view_badges_button = "Ver tablero de juego"
+    view_badges_button = "Ver logros"
 )
 
 
@@ -566,7 +566,7 @@ Press the button below to start the game.""",
 
     badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!",
     badge_new = "🏆 You've got a new achievement!",
-    view_badges_button = "View game board"
+    view_badges_button = "View achievements"
 
 )
 
@@ -726,7 +726,7 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
 
     badge_unhappy_cat = "😾 Ups! Eine mürrische Katze hat sich eingeschlichen!",
     badge_new = "🏆 Du hast eine neue Errungenschaft!",
-    view_badges_button = "Spielbrett ansehen"
+    view_badges_button = "Erfolge ansehen"
 )
 
 
@@ -890,7 +890,7 @@ ru = Lang(
 
     badge_unhappy_cat = "😾 Ой! Похоже, к вам пришел недовольный кот!",
     badge_new = "🏆 Вы получили новое достижение!",
-    view_badges_button = "Посмотреть игорвую доску"
+    view_badges_button = "Посмотреть достижения"
 )
 
 

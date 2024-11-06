@@ -184,7 +184,7 @@ class BadgesManager:
         all_progress = {}
         for counter in counters:
             for badge in badges:
-                maybe_progress = counter.progress(badge, int(active_play_time_secs), self.data["badges_state"][counter.__class__.__name__], difficulty)
+                maybe_progress = counter.progress(badge, int(active_play_time_secs), self.data["badges_state"].get(counter.__class__.__name__), difficulty)
                 if maybe_progress is not None:
                     all_progress[badge] = maybe_progress
 
