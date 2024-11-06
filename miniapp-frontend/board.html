@@ -442,12 +442,12 @@
             board2.showActionButton();
         });
         board2.setActionButton(lang.action_button_back_to_game, () => {
-            window?.Telegram?.WebAppapp.close();
+            window?.Telegram?.WebApp?.close();
         });
     } else {
         board1.setHeader(newBadge ? lang.level_congrats.replace('###', level) : lang.level_board2.replace('###', level));
         board1.setActionButton(lang.action_button_back_to_game, () => {
-            window?.Telegram?.WebAppapp.close();
+            window?.Telegram?.WebApp?.close();
         });
     }
 
@@ -457,12 +457,12 @@
 
     Promise.all([board1.waitTillReady(), board2 ? board2.waitTillReady() : Promise.resolve()]).then(() => {
 
-        window?.Telegram?.WebAppapp.ready();
+        window?.Telegram?.WebApp?.ready();
 
         document.body.classList.remove("loading");
 
         setTimeout(() => {
-            window?.Telegram?.WebAppapp.expand();
+            window?.Telegram?.WebApp?.expand();
 
             if (!board1.isNewGrumpyCat() && newBadge) {
                 fireConfetti();
