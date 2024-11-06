@@ -9,7 +9,7 @@ class Board {
         this.ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[3].outerHTML.replace("c0_512.jpg", "badge.jpg");
 
         this.boardEltWrapper.innerHTML = '';
-        this.hasTarget = false;
+        this.targetBadge = undefined;
 
         this.projectileElt = boardElt.querySelector('.projectile');
         this.placeholderElt = boardElt.querySelector('.placeholder');
@@ -22,6 +22,10 @@ class Board {
 
     setHeader(header) {
         this.boardElt.querySelector('h1').innerHTML = header;
+    }
+
+    isTargetGrumpyCat() {
+        return this.targetBadge === 'c0';
     }
 
     addCell(item, progressItems) {
@@ -44,12 +48,14 @@ class Board {
             }
             this.projectileElt.src = '../badge-images/' + projectile + '_512.jpg';
             this.placeholderElt.src = '../badge-images/' + projectile + '_512.jpg';
-            this.hasTarget = true;
+            this.targetBadge = item.badge;
             this.projectileElt.classList.remove('hidden');
-            itemHtml = itemHtml.replace('<a', '<a style="display:none;" ');
-            itemHtml = itemHtml.replace('width: 100%', 'width: ' + 0 + '%');
+            if (item.badge !== 'c0') {
+                itemHtml = itemHtml.replace('<a', '<a style="display:none;" ');
+                itemHtml = itemHtml.replace('width: 100%', 'width: ' + 0 + '%');
+            }
         } else if (progressItems) {
-            itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\', \'' + Base64.encode(JSON.stringify(progressItems)) + '\')');
+            itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\', \'' + window.Base64.encode(JSON.stringify(progressItems)) + '\')');
 
             let pct = 0;
             for (let actionIdx = 0; actionIdx < progressItems.length; actionIdx++) {
@@ -86,7 +92,7 @@ class Board {
         this.placeholderElt.style.visibility = 'hidden';
 
         window.addEventListener('transitionend', () => {
-            if (!this.hasTarget) {
+            if (!this.targetBadge) {
                 setTimeout(() => {
                     this.showActionButton();
                     onDone();
