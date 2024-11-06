@@ -470,8 +470,8 @@
 
             setTimeout(() => {
                 board1.move(() => { });
-            }, 1000);
+            }, newBadge ? 1000 : 0);
 
-        }, 250);
+        }, newBadge ? 250 : 0);
     });
 </script>

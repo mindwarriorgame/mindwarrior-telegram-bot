@@ -126,7 +126,7 @@ class Board {
 
         this.placeholderElt.style.visibility = 'hidden';
 
-        window.addEventListener('transitionend', () => {
+        const actionCallback = () => {
             if (!this.hasTarget) {
                 // Because projectile has nowhere to go
                 setTimeout(() => {
@@ -165,7 +165,14 @@ class Board {
                     }, 250);
                 }, {once: true});
             }, 0);
-        }, {once: true});
+        };
+
+        if (this.newBadge) {
+            window.addEventListener('transitionend', actionCallback, {once: true});
+        } else {
+            actionCallback();
+        }
+
     }
 
     newBoardMode() {
