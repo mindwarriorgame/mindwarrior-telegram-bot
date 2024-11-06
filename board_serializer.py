@@ -6,9 +6,6 @@ def serialize_cell(cell: BoardCell) -> str:
         ret += "a"
     if cell.get("is_target"):
         ret += "t"
-    if cell.get("projectile_override"):
-        ret += "po" + cell["projectile_override"].upper()
-
     return ret
 
 badgeProgressKey = {

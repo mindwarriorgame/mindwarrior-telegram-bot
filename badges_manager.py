@@ -61,8 +61,7 @@ LEVELS += [
 class BoardCell(TypedDict):
     badge: str
     is_active: NotRequired[bool]
-    is_target: NotRequired[bool]
-    projectile_override: NotRequired[str] # for c0 only
+    is_target: NotRequired[bool] # When evaluated, the cell becomes active (if not c0) or changes state (if not c0)
 
 class UserBadgesData(TypedDict):
     badges_state: dict[str, str]
@@ -222,12 +221,11 @@ class BadgesManager:
                 return True
         return False
 
-    def _expell_grumpy_cat(self, board: [BoardCell], badge):
+    def _expel_grumpy_cat(self, board: [BoardCell], badge):
         settled_board = self.settle_board(board)
         for cell in settled_board:
             if cell["badge"] == "c0" and cell.get("is_active"):
                 cell["is_target"] = True
-                cell["projectile_override"] = badge
                 break
         return settled_board
 
@@ -258,7 +256,7 @@ class BadgesManager:
             return self._put_grumpy_cat_to_board(old_board), badge
 
         if self._has_grump_cats_on_board(old_board):
-            return self._expell_grumpy_cat(old_board, badge), badge
+            return self._expel_grumpy_cat(old_board, badge), badge
 
         if self._has_closed_badge_on_board(old_board, badge):
             return self._open_badge(old_board, badge), badge

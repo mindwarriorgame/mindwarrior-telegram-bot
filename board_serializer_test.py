@@ -61,4 +61,4 @@ class BoardSerializedTest(unittest.IsolatedAsyncioTestCase):
                                        'is_active': True,
                                        'is_target': True,
                                        'projectile_override': 'c1'}])
-        self.assertEqual(serialized, 'f0a_s0_c0atpoC1')
+        self.assertEqual(serialized, 'f0a_s0_c0at')

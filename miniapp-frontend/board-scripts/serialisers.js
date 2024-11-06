@@ -13,24 +13,17 @@ function serializeBoard(board) {
         if (item.target) {
             ret += "t";
         }
-        if (item.projectileOverride) {
-            ret += "po" + item.projectileOverride.toUpperCase();
-        }
         return ret;
     }).join("_");
 }
 
 function deserializeBoard(itemsStr) {
     return itemsStr.split("_").reduce((acc, chunk) => {
-        const item = {
+        acc.push({
             badge: chunk.substring(0, 2),
             active: chunk.substring(2).includes('a'),
             target: chunk.substring(2).includes('t')
-        };
-        if (chunk.substring(2).includes('po')) {
-            item.projectileOverride = chunk.split('po')[1].toLowerCase();
-        }
-        acc.push(item);
+        });
         return acc;
     }, []);
 }

@@ -1,4 +1,4 @@
-import json
+
 import unittest
 
 from badges_manager import BadgesManager, generate_levels
@@ -80,8 +80,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                              {'badge': 's0', 'is_active': None},
                                                                              {'badge': 'c0',
                                                        'is_active': True,
-                                                       'is_target': True,
-                                                       'projectile_override': 'c1'}])
+                                                       'is_target': True}])
 
     def test_senior_badge_overwrite(self):
         board_s0 = '[{"badge": "f0", "is_active": null, "is_target": true}, {"badge": "s0", "is_active": null}, {"badge": "c0", "is_active": null}]'

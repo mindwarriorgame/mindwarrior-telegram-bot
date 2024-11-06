@@ -419,8 +419,9 @@
     // '1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45'
     const boardProgress1 = deserializeProgressMap(urlParams.get('bp1'));
 
+    const newBadge = urlParams.get('new_badge');
 
-    const board1 = new Board(document.getElementById('board1'));
+    const board1 = new Board(document.getElementById('board1'), newBadge);
     board1Items.forEach(item => {
         board1.addCell(item, boardProgress1[item.badge]);
     });
@@ -456,7 +457,7 @@
         document.body.classList.remove("loading");
 
         setTimeout(() => {
-            if (!board1.isNewGrumpyCat()) {
+            if (!board1.isNewGrumpyCat() && newBadge) {
                 fireConfetti();
             }
 

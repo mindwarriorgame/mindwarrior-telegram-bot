@@ -1,7 +1,8 @@
 class Board {
-    constructor(boardElt) {
+    constructor(boardElt, newBadge) {
         this.boardElt = boardElt;
         this.boardEltWrapper = boardElt.querySelector('.boardWrapper');
+        this.newBadge = newBadge;
 
         this.INACTIVE_BADGE_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[0].outerHTML.replace("t0_512.jpg", "badge.jpg");
         this.ACTIVE_BADGE_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[1].outerHTML.replace("f0_512.jpg", "badge.jpg");
@@ -9,12 +10,20 @@ class Board {
         this.ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[3].outerHTML.replace("c0_512.jpg", "badge.jpg");
 
         this.boardEltWrapper.innerHTML = '';
+
         this.targetBadge = undefined;
-        this.targetBadgeActive = false;
 
         this.projectileElt = boardElt.querySelector('.projectile');
         this.placeholderElt = boardElt.querySelector('.placeholder');
         this.projectileElt.classList.add('hidden');
+
+        if (newBadge) {
+            this.projectileElt.src = '../badge-images/' + newBadge + '_512.jpg';
+            this.placeholderElt.src = '../badge-images/' + newBadge + '_512.jpg';
+        } else {
+            this.projectileElt.style.display = 'none';
+            this.placeholderElt.style.display = 'none';
+        }
 
         if (!Board.prototype.registry) {
             Board.prototype.registry = {};
@@ -26,7 +35,11 @@ class Board {
     }
 
     isNewGrumpyCat() {
-        return this.targetBadge === 'c0' && !this.targetBadgeActive;
+        return this.newBadge === 'c0';
+    }
+
+    hasTarget() {
+        return this.hasTarget;
     }
 
     addCell(item, progressItems) {
@@ -42,23 +55,24 @@ class Board {
         }
 
         itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
+
         if (item.target) {
             if (item.active) {
                 this.targetBadgeActive = true;
             }
-            itemHtml = itemHtml.replace("maybeTarget", "target");
-            let projectile = item.badge;
-            if (item.projectileOverride) {
-                projectile = item.projectileOverride;
-            }
-            this.projectileElt.src = '../badge-images/' + projectile + '_512.jpg';
-            this.placeholderElt.src = '../badge-images/' + projectile + '_512.jpg';
             this.targetBadge = item.badge;
+
+            itemHtml = itemHtml.replace("maybeTarget", "target");
+
             this.projectileElt.classList.remove('hidden');
+
             if (item.badge !== 'c0') {
+                // For regular targets, we don't want to show progress bar and "How to achieve?" link, but
+                // for grumpy cat we do
                 itemHtml = itemHtml.replace('<a', '<a style="display:none;" ');
                 itemHtml = itemHtml.replace('width: 100%', 'width: ' + 0 + '%');
             }
+
         } else if (progressItems) {
             itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\', \'' + window.Base64.encode(JSON.stringify(progressItems)) + '\')');
 
@@ -98,6 +112,7 @@ class Board {
 
         window.addEventListener('transitionend', () => {
             if (!this.targetBadge) {
+                // Because projectile has nowhere to go
                 setTimeout(() => {
                     this.showActionButton();
                     onDone();
