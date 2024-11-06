@@ -133,10 +133,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
-                                                      'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                                      'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                     {'text': 'View game board',
+                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=c1_1_28800_0--c2_2_28800_0_28800_0--t0_1_21000_51--s0_1_2_0--s1_1_4_0--s2_1_6_0--f0_1_21000_51'}],
                                          'image': None,
                                          'menu_commands': [],
-                                         'message': 'You forgot to review your <i>Formula</i> 🟥\n'
+                                         'message': '😾 Oops! A grumpy cat sneaked in!\n'
+                                                    '\n'
+                                                    'You forgot to review your <i>Formula</i> 🟥\n'
                                                     '\n'
                                                     '😼 No penalty (<a '
                                                     'href="https://mindwarriorgame.org/faq.en.html#difficulty">"Beginner" '
@@ -159,10 +163,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             with time_machine.travel("2022-04-21 03:10", tick=False):
                 data = self.game_manager.process_tick()
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
-                                                      'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                                      'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                     {'text': 'View game board',
+                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=c1_1_43200_0--c2_2_43200_0_43200_0--t0_1_53400_17--s0_1_2_0--s1_1_4_0--s2_1_6_0--f0_1_53400_17'}],
                                          'image': None,
                                          'menu_commands': [],
-                                         'message': 'You forgot to review your <i>Formula</i> 🟥\n'
+                                         'message': '😾 Oops! A grumpy cat sneaked in!\n'
+                                                    '\n'
+                                                    'You forgot to review your <i>Formula</i> 🟥\n'
                                                     '\n'
                                                     '😼 No penalty (<a '
                                                     'href="https://mindwarriorgame.org/faq.en.html#difficulty">"Easy" '
@@ -190,10 +198,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                     with time_machine.travel("2022-04-21 06:20", tick=False):
                         data = self.game_manager.process_tick()
                         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
-                                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                             {'text': 'View game board',
+                                                              'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0a&bp1=c1_1_31800_26--c2_2_31800_26_43200_0--t0_1_42000_35--s0_1_2_0--s1_1_4_0--s2_1_6_0--f0_1_42000_35'}],
                                                  'image': None,
                                                  'menu_commands': [],
-                                                 'message': 'You forgot to review your <i>Formula</i> 🟥\n'
+                                                 'message': '😾 Oops! A grumpy cat sneaked in!\n'
+                                                            '\n'
+                                                            'You forgot to review your <i>Formula</i> 🟥\n'
                                                             '\n'
                                                             "😿 You've lost 3 stars ❗\n"
                                                             '\n'
@@ -783,5 +795,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '\n'
                                            ' - next_prompt_type: reminder\n'
                                            '\n'
-                                           ' - badges_serialized: ',
+                                           ' - badges_serialized: {"badges_state": {"CatBadgeCounter": '
+                                           '"pending_happy,43200", "TimeBadgeCounter": "64800", '
+                                           '"StarBadgeCounter": "0", "FeatherBadgeCounter": "64800"}, '
+                                           '"board": [{"badge": "f0", "is_active": true, "is_last_modified": '
+                                           'true}, {"badge": "s0", "is_active": null}, {...',
                                 'to_chat_id': 1})

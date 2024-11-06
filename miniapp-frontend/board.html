@@ -343,6 +343,7 @@
             kick_out: 'Earn any badge to kick me out!',
             play_game: 'Play the game during next ### 🎮',
             close: 'Close',
+            oops: 'Oops!',
         },
         ru: {
             level_congrats: "Уровень ###: У вас новое достижение!",
@@ -364,6 +365,7 @@
             kick_out: 'Получите любое достижение, чтобы прогнать меня!',
             play_game: 'Выдается после ### активной игры 🎮',
             close: 'Закрыть',
+            oops: 'Ой!',
         }
     }
 
@@ -445,6 +447,10 @@
         board1.setActionButton(lang.action_button_back_to_game, () => {
             alert('TODO');
         });
+    }
+
+    if (newBadge == "c0") {
+        board1.setHeader(lang.level_board2.replace('###', level) + ': ' + lang.oops);
     }
 
     Promise.all([board1.waitTillReady(), board2 ? board2.waitTillReady() : Promise.resolve()]).then(() => {
