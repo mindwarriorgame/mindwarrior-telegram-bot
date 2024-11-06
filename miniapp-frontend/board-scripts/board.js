@@ -11,7 +11,7 @@ class Board {
 
         this.boardEltWrapper.innerHTML = '';
 
-        this.targetBadge = undefined;
+        this.hasTarget = false;
 
         this.projectileElt = boardElt.querySelector('.projectile');
         this.placeholderElt = boardElt.querySelector('.placeholder');
@@ -38,37 +38,53 @@ class Board {
         return this.newBadge === 'c0';
     }
 
-    hasTarget() {
-        return this.hasTarget;
-    }
-
     addCell(item, progressItems) {
         let itemHtml = "";
-        if (item.active && item.badge === 'c0') {
-            itemHtml = this.ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
-        } else if (item.active) {
-            itemHtml = this.ACTIVE_BADGE_TEMPLATE_ELT;
-        } else if (item.badge === 'c0') {
-            itemHtml = this.INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+        let isTarget = false;
+        if (item.badge === 'c0') {
+            if (item.active) {
+                if (item.last_modified && this.newBadge === 'c0') {
+                    // will become active after movement, but start with inactive
+                    itemHtml = this.INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+                    isTarget = true;
+                } else {
+                    itemHtml = this.ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+                }
+            } else {
+                if (item.last_modified && this.newBadge != 'c0') {
+                    // will be kicked off after movements, but start with active
+                    itemHtml = this.ACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+                    isTarget = true;
+                } else {
+                    itemHtml = this.INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT;
+                }
+            }
         } else {
-            itemHtml = this.INACTIVE_BADGE_TEMPLATE_ELT;
+            if (item.active) {
+                if (item.last_modified && this.newBadge == item.badge) {
+                    // will become active after movement, but start with inactive
+                    itemHtml = this.INACTIVE_BADGE_TEMPLATE_ELT;
+                    isTarget = true;
+                } else {
+                    itemHtml = this.ACTIVE_BADGE_TEMPLATE_ELT;
+                }
+            } else {
+                itemHtml = this.INACTIVE_BADGE_TEMPLATE_ELT;
+            }
         }
 
         itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
 
-        if (item.target) {
-            if (item.active) {
-                this.targetBadgeActive = true;
-            }
-            this.targetBadge = item.badge;
+        if (isTarget) {
+            this.hasTarget = true;
 
             itemHtml = itemHtml.replace("maybeTarget", "target");
 
             this.projectileElt.classList.remove('hidden');
 
             if (item.badge !== 'c0') {
-                // For regular targets, we don't want to show progress bar and "How to achieve?" link, but
-                // for grumpy cat we do
+                // Leave instructions for grumpy cat: it might become active on board and the user would like to
+                // know how to get rid of it
                 itemHtml = itemHtml.replace('<a', '<a style="display:none;" ');
                 itemHtml = itemHtml.replace('width: 100%', 'width: ' + 0 + '%');
             }
@@ -111,7 +127,7 @@ class Board {
         this.placeholderElt.style.visibility = 'hidden';
 
         window.addEventListener('transitionend', () => {
-            if (!this.targetBadge) {
+            if (!this.hasTarget) {
                 // Because projectile has nowhere to go
                 setTimeout(() => {
                     this.showActionButton();

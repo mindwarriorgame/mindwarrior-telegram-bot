@@ -410,13 +410,8 @@
         });
     }
 
-    // 'f0a_s2t_s1_s0_t0_c0apoT0_s0_s0a_c1_c2_s1_s2_c1'
     const board1Items = deserializeBoard(urlParams.get('b1'));
-
-    // 'f0_s2_s1_s0'
     const board2Items = urlParams.get('b2') ? deserializeBoard(urlParams.get('b2')) : null;
-
-    // '1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45'
     const boardProgress1 = deserializeProgressMap(urlParams.get('bp1'));
 
     const newBadge = urlParams.get('new_badge');

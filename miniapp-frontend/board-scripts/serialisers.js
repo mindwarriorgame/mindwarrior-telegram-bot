@@ -10,8 +10,8 @@ function serializeBoard(board) {
         if (item.active) {
             ret += "a";
         }
-        if (item.target) {
-            ret += "t";
+        if (item.last_modified) {
+            ret += "m";
         }
         return ret;
     }).join("_");
@@ -22,7 +22,7 @@ function deserializeBoard(itemsStr) {
         acc.push({
             badge: chunk.substring(0, 2),
             active: chunk.substring(2).includes('a'),
-            target: chunk.substring(2).includes('t')
+            last_modified: chunk.substring(2).includes('m')
         });
         return acc;
     }, []);
