@@ -652,7 +652,7 @@ class GameManager:
                 difficulty=lang.difficulties[difficulty],
                 difficulty_details=str(difficulty + 1) + "/" + str(len(lang.difficulties)),
                 time=self._format_time_minutes(lang, active_play_time_seconds),
-                paused="⚪" if is_paused is None else "🟢",
+                paused="⚪" if not is_paused else "🟢",
                 cooldown=self._format_time_seconds(lang, 5*60 - since_last_reward_secs if since_last_reward_secs < 5*60 else 0),
                 punishment=self._format_time_minutes(lang, till_next_prompt_time, skip_zeros=True)
             ),

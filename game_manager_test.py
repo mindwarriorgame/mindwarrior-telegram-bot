@@ -493,6 +493,23 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '1h 45m',
                                 'to_chat_id': 1})
 
+    @time_machine.travel("2022-04-22", tick=False)
+    def test_on_stats_unpaused(self):
+        user = self.users_orm.get_user_by_id(1)
+        counter = Counter("")
+        counter.resume()
+        counter.move_time_back(15)
+        user['paused_counter_state'] = None
+        user['active_game_counter_state'] = counter.serialize()
+        user['last_reward_time'] = datetime.datetime(2022, 4, 21)
+        user['next_prompt_time'] = datetime.datetime(2022, 4, 22, 1, 45).astimezone(datetime.timezone.utc)
+        user['lang_code'] = 'en'
+        user['review_counter_state'] = counter.serialize()
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_stats_command(1)
+        self.assertIn("⚪", data['message'])
+
 
     def test_difficulty_command_renders_set_difficulty_buttons(self):
         user = self.users_orm.get_user_by_id(1)
