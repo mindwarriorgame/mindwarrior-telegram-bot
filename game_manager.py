@@ -3,6 +3,8 @@ import uuid
 from typing import TypedDict, Optional
 import time
 
+from badges_manager import BadgesManager
+from board_serializer import serialize_board, serialize_progress
 from counter import Counter
 from graph_renderer import REVIEW_COUNTER_HISTORY_NAME, PAUSED_COUNTER_HISTORY_NAME, GraphRenderer
 from history import add_timer_rec_to_history, get_timer_recs_from_history
@@ -129,7 +131,11 @@ class GameManager:
         next_review_prompt_times = user_message.split("start_game;next_review:")[1].split(",,")
         self._restart_user_game(user)
 
-        return self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id'])
+        badge_manager = BadgesManager(user['badges_serialized'])
+        active_play_time_secs = self._calculate_active_play_time_seconds(user)
+        badge = badge_manager.on_game_started(active_play_time_secs, user['difficulty'])
+
+        return self._maybe_wrap_with_badge(lang, badge, badge_manager, active_play_time_secs, user['difficulty'], self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id']))
 
     def _on_formula_updated(self, lang: Lang, user: User) -> Reply:
         return self._render_single_message(user['user_id'], lang.formula_changed)
@@ -174,6 +180,7 @@ class GameManager:
 
         user['rewards'] = 0
         user['counters_history_serialized'] = None
+        user['badges_serialized'] = ""
         self.users_orm.upsert_user(user)
 
     def on_review_command(self, chat_id) -> Reply:
@@ -792,6 +799,33 @@ class GameManager:
             'buttons': [self._render_review_button(lang)],
             'menu_commands': [],
             'image': None
+        }
+
+    def _maybe_wrap_with_badge(self, lang: Lang, badge: Optional[str], badges_manager: BadgesManager, active_play_time_secs, difficulty, message: Reply) -> Reply:
+        if badge is None:
+            return message
+
+        button_url = self.frontend_base_url.replace("index.html", "board.html")
+        button_url += '?lang=' + lang.lang_code
+        button_url += '&new_badge=' + badge
+
+        button_url += "&level=" + str(badges_manager.get_level() + 1)
+        button_url += "&b1=" + serialize_board(badges_manager.get_board())
+        button_url += "&bp1=" + serialize_progress(badges_manager.progress(active_play_time_secs, difficulty))
+
+        if badges_manager.is_level_completed():
+            button_url += "&b2=" + serialize_board(badges_manager.get_next_level_board())
+            button_url += "&bp2=" + serialize_progress(badges_manager.new_level_progress(difficulty))
+
+        return {
+            'to_chat_id': message['to_chat_id'],
+            'message': (lang.badge_unhappy_cat if badge == "c0" else lang.badge_new) + "\n\n" + message['message'],
+            'buttons': message['buttons'] + [{
+                'text': lang.view_badges_button,
+                'url': button_url
+            }],
+            'menu_commands': message['menu_commands'],
+            'image': message['image']
         }
 
 

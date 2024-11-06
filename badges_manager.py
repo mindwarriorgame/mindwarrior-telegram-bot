@@ -190,6 +190,25 @@ class BadgesManager:
 
         return all_progress
 
+    def new_level_progress(self, difficulty):
+        badges = ["f0", "s0", "s1", "s2", "t0", "c1", "c2"]
+
+        counters = [
+            CatBadgeCounter(),
+            TimeBadgeCounter(),
+            StarBadgeCounter(),
+            FeatherBadgeCounter()
+        ]
+
+        all_progress = {}
+        for counter in counters:
+            for badge in badges:
+                maybe_progress = counter.progress(badge, 0, None, difficulty)
+                if maybe_progress is not None:
+                    all_progress[badge] = maybe_progress
+
+        return all_progress
+
 
     def serialize(self) -> str:
         return json.dumps(self.data)
@@ -284,3 +303,5 @@ class BadgesManager:
         if next_level >= len(LEVELS):
             return self._level_to_new_board(random.choice(LEVELS[5:]))
         return self._level_to_new_board(LEVELS[next_level])
+
+

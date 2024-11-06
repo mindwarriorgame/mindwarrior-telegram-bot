@@ -80,7 +80,9 @@ class Lang:
 
     penalty_text: str
 
-    new_achievement: str
+    badge_unhappy_cat: str
+    badge_new: str
+    view_badges_button: str
 
 fr = Lang(
     lang_code='fr',
@@ -241,9 +243,9 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
         "{penalty_msg}"
     ),
 
-    new_achievement = "Vous avez un nouveau succès ! 🌟"
-
-
+    badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé à l'intérieur!",
+    badge_new = "🏆 Vous avez obtenu un nouveau succès!",
+    view_badges_button = "Voir le plateau de jeu"
 )
 
 
@@ -401,7 +403,9 @@ Presiona el botón de abajo para iniciar el juego.""",
                    "\n"
                    "{penalty_msg}",
 
-    new_achievement = "¡Tienes un nuevo logro! 🌟"
+    badge_unhappy_cat = "😾 ¡Ups! ¡Se coló un gato gruñón!",
+    badge_new = "🏆 ¡Has conseguido un nuevo logro!",
+    view_badges_button = "Ver tablero de juego"
 )
 
 
@@ -560,7 +564,9 @@ Press the button below to start the game.""",
                    "\n"
                    "{penalty_msg}",
 
-    new_achievement = "You've got a new achievement! 🌟"
+    badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!",
+    badge_new = "🏆 You've got a new achievement!",
+    view_badges_button = "View game board"
 
 )
 
@@ -718,7 +724,9 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                    "\n"
                    "{penalty_msg}",
 
-    new_achievement = "Du hast einen neuen Erfolg! 🌟"
+    badge_unhappy_cat = "😾 Ups! Eine mürrische Katze hat sich eingeschlichen!",
+    badge_new = "🏆 Du hast eine neue Errungenschaft!",
+    view_badges_button = "Spielbrett ansehen"
 )
 
 
@@ -880,7 +888,9 @@ ru = Lang(
                    "\n"
                    "{penalty_msg}",
 
-    new_achievement = "У вас новое достижение! 🌟"
+    badge_unhappy_cat = "😾 Ой! Похоже, к вам пришел недовольный кот!",
+    badge_new = "🏆 Вы получили новое достижение!",
+    view_badges_button = "Посмотреть игорвую доску"
 )
 
 

@@ -39,10 +39,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         data = self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
-                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                             {'text': 'View game board',
+                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=c1_1_43200_0--c2_2_43200_0_43200_0--t0_1_64800_0--s0_1_2_0--s1_1_4_0--s2_1_6_0--f0_1_64800_0'}],
                                  'image': None,
                                  'menu_commands': [],
-                                 'message': 'The game has started 🏁\n'
+                                 'message': "🏆 You've got a new achievement!\n"
+                                            '\n'
+                                            'The game has started 🏁\n'
                                             '\n'
                                             '💪<a '
                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
@@ -273,10 +277,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         data = self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula"',
-                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                             {'text': 'View game board',
+                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=c1_1_86400_0--c2_2_86400_0_86400_0--t0_1_129600_0--s0_1_4_0--s1_1_8_0--s2_1_12_0--f0_1_129600_0'}],
                                  'image': None,
                                  'menu_commands': [],
-                                 'message': 'The game has started 🏁\n'
+                                 'message': "🏆 You've got a new achievement!\n"
+                                            '\n'
+                                            'The game has started 🏁\n'
                                             '\n'
                                             '💪<a '
                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
