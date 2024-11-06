@@ -10,6 +10,7 @@ class Board {
 
         this.boardEltWrapper.innerHTML = '';
         this.targetBadge = undefined;
+        this.targetBadgeActive = false;
 
         this.projectileElt = boardElt.querySelector('.projectile');
         this.placeholderElt = boardElt.querySelector('.placeholder');
@@ -24,8 +25,8 @@ class Board {
         this.boardElt.querySelector('h1').innerHTML = header;
     }
 
-    isTargetGrumpyCat() {
-        return this.targetBadge === 'c0';
+    isNewGrumpyCat() {
+        return this.targetBadge === 'c0' && !this.targetBadgeActive;
     }
 
     addCell(item, progressItems) {
@@ -39,8 +40,12 @@ class Board {
         } else {
             itemHtml = this.INACTIVE_BADGE_TEMPLATE_ELT;
         }
+
         itemHtml = itemHtml.replace("badge.jpg", item.badge + "_512.jpg");
         if (item.target) {
+            if (item.active) {
+                this.targetBadgeActive = true;
+            }
             itemHtml = itemHtml.replace("maybeTarget", "target");
             let projectile = item.badge;
             if (item.projectileOverride) {
