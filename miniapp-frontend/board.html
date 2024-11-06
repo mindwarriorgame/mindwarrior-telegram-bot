@@ -445,7 +445,7 @@
             window?.Telegram?.WebAppapp.close();
         });
     } else {
-        board1.setHeader(lang.level_congrats.replace('###', level));
+        board1.setHeader(newBadge ? lang.level_congrats.replace('###', level) : lang.level_board2.replace('###', level));
         board1.setActionButton(lang.action_button_back_to_game, () => {
             window?.Telegram?.WebAppapp.close();
         });
@@ -457,9 +457,13 @@
 
     Promise.all([board1.waitTillReady(), board2 ? board2.waitTillReady() : Promise.resolve()]).then(() => {
 
+        window?.Telegram?.WebAppapp.ready();
+
         document.body.classList.remove("loading");
 
         setTimeout(() => {
+            window?.Telegram?.WebAppapp.expand();
+
             if (!board1.isNewGrumpyCat() && newBadge) {
                 fireConfetti();
             }
