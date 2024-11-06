@@ -68,15 +68,30 @@ class UserBadgesData(TypedDict):
     badges_state: dict[str, str]
     last_badge: Optional[str]
     level: int
-    board: list[BoardCell]
+    board_with_last_badge_target: list[BoardCell]
 
 class BadgesManager:
 
     def __init__(self, badges_serialized = None):
         if badges_serialized is None or badges_serialized == "":
-            self.data = UserBadgesData(badges_state={}, board=self._level_to_new_board(LEVELS[0]), level=0)
+            self.data = UserBadgesData(badges_state={}, board_with_last_badge_target=self._level_to_new_board(LEVELS[0]), level=0)
         else:
             self.data = UserBadgesData(**json.loads(badges_serialized))
+
+        if not self.data.get("badges_state"):
+            self.data["badges_state"] = {}
+
+        if not self.data.get("last_badge"):
+            self.data["last_badge"] = None
+
+        if not self.data.get("level"):
+            self.data["level"] = 0
+
+        if not self.data.get("board_with_last_badge_target"):
+            self.data["level"] -= 1
+            self.data["board_with_last_badge_target"] = self.get_next_level_board()
+            self.data["level"] += 1
+
 
     def on_game_started(self, active_play_time_secs: float, difficulty: int) -> Optional[str]:
         return self._chain_badge_counters("on_game_started", int(active_play_time_secs), difficulty)
@@ -96,8 +111,8 @@ class BadgesManager:
     def get_level(self):
         return self.data["level"]
 
-    def get_board(self):
-        return self.data["board"]
+    def get_board_with_last_badge_target(self):
+        return self.data["board_with_last_badge_target"]
 
     def get_last_badge(self):
         return self.data.get("last_badge")
@@ -110,16 +125,16 @@ class BadgesManager:
             FeatherBadgeCounter()
         ]
 
-        if self._is_level_over(self.data["board"]):
+        if self._is_level_over(self.data["board_with_last_badge_target"]):
             self.data["level"] += 1
-            self.data["board"] = self._level_to_new_board(LEVELS[self.data["level"]])
+            self.data["board_with_last_badge_target"] = self._level_to_new_board(LEVELS[self.data["level"]])
             self.data["badges_state"] = {}
             for counter in counters:
                 badge, new_state = counter.on_game_started(active_play_time_secs, None, difficulty)
                 self.data["badges_state"][counter.__class__.__name__] = new_state
 
         badge_to_put_on_board = None
-        has_grumpy_cat = self._has_grump_cats_on_board(self.data["board"])
+        has_grumpy_cat = self._has_grump_cats_on_board(self.data["board_with_last_badge_target"])
         for counter in counters:
             state = None
             if self.data["badges_state"].get(counter.__class__.__name__) is not None:
@@ -143,7 +158,7 @@ class BadgesManager:
                 if terminate_if_found:
                     break
 
-        self.data["board"], self.data["last_badge"] = self._put_badge_to_board(badge_to_put_on_board)
+        self.data["board_with_last_badge_target"], self.data["last_badge"] = self._put_badge_to_board(badge_to_put_on_board)
 
         return self.data["last_badge"]
 
@@ -169,19 +184,20 @@ class BadgesManager:
     def serialize(self) -> str:
         return json.dumps(self.data)
 
-    def _normalize_board(self, board):
-        normalized_board: [BoardCell] = []
+    # Converts "target" cells into normal cells.
+    def settle_board(self, board):
+        settled_board: [BoardCell] = []
         for cell in board:
-            normalized_cell: BoardCell = {
+            settled_cell: BoardCell = {
                 "badge": cell["badge"],
             }
             if cell.get("is_target"):
-                normalized_cell["is_active"] = not cell.get("is_active")
+                settled_cell["is_active"] = not cell.get("is_active")
             else:
-                normalized_cell["is_active"] = cell.get("is_active")
+                settled_cell["is_active"] = cell.get("is_active")
 
-            normalized_board.append(normalized_cell)
-        return normalized_board
+            settled_board.append(settled_cell)
+        return settled_board
 
     def _level_to_new_board(self, level) -> [BoardCell]:
         board = []
@@ -191,69 +207,75 @@ class BadgesManager:
             })
         return board
 
-    def _put_grumpy_cat_to_board(self, normalized_board: [BoardCell]):
-        for cell in normalized_board:
+    def _put_grumpy_cat_to_board(self, board: [BoardCell]):
+        settled_board = self.settle_board(board)
+        for cell in settled_board:
             if cell["badge"] == "c0" and not cell.get("is_active"):
                 cell["is_target"] = True
                 break
-        return normalized_board
+        return settled_board
 
-    def _has_grump_cats_on_board(self, normalized_board):
-        for cell in normalized_board:
+    def _has_grump_cats_on_board(self, board: [BoardCell]):
+        settled_board = self.settle_board(board)
+        for cell in settled_board:
             if cell["badge"] == "c0" and cell.get("is_active"):
                 return True
         return False
 
-    def _expell_grumpy_cat(self, normalized_board, badge):
-        for cell in normalized_board:
+    def _expell_grumpy_cat(self, board: [BoardCell], badge):
+        settled_board = self.settle_board(board)
+        for cell in settled_board:
             if cell["badge"] == "c0" and cell.get("is_active"):
                 cell["is_target"] = True
                 cell["projectile_override"] = badge
                 break
-        return normalized_board
+        return settled_board
 
-    def _has_closed_badge_on_board(self, normalized_board, badge):
-        for cell in normalized_board:
+    def _has_closed_badge_on_board(self, board: [BoardCell], badge):
+        settled_board = self.settle_board(board)
+        for cell in settled_board:
             if cell["badge"] == badge and not cell.get("is_active"):
                 return True
         return False
 
-    def _open_badge(self, normalized_board, badge):
-        for cell in normalized_board:
+    def _open_badge(self, board: [BoardCell], badge):
+        settled_board = self.settle_board(board)
+        for cell in settled_board:
             if cell["badge"] == badge and not cell.get("is_active"):
                 cell["is_target"] = True
                 break
-        return normalized_board
+        return settled_board
 
     def _put_badge_to_board(self, badge)-> ([BoardCell], str):
         overwrites = [["s2", "s1"], ["s2", "s0"], ["s1", "s0"], ["c2", "c1"]]
 
         if badge is None:
-            return self.data["board"], badge
-        normalized_board = self._normalize_board(self.data["board"])
+            return self.data["board_with_last_badge_target"], badge
+
+        old_board = self.data["board_with_last_badge_target"]
 
         if badge == "c0":
-            return self._put_grumpy_cat_to_board(normalized_board), badge
+            return self._put_grumpy_cat_to_board(old_board), badge
 
-        if self._has_grump_cats_on_board(normalized_board):
-            return self._expell_grumpy_cat(normalized_board, badge), badge
+        if self._has_grump_cats_on_board(old_board):
+            return self._expell_grumpy_cat(old_board, badge), badge
 
-        if self._has_closed_badge_on_board(normalized_board, badge):
-            return self._open_badge(normalized_board, badge), badge
+        if self._has_closed_badge_on_board(old_board, badge):
+            return self._open_badge(old_board, badge), badge
 
         for overwrite in overwrites:
             senior_badge = overwrite[0]
             junior_badge = overwrite[1]
-            if badge == senior_badge and self._has_closed_badge_on_board(normalized_board, junior_badge):
-                return self._open_badge(normalized_board, junior_badge), junior_badge
+            if badge == senior_badge and self._has_closed_badge_on_board(old_board, junior_badge):
+                return self._open_badge(old_board, junior_badge), junior_badge
 
-        return normalized_board, badge
+        return old_board, badge
 
 
     def _is_level_over(self, board) -> bool:
-        normalized_board = self._normalize_board(board)
+        settled_board = self.settle_board(board)
         fine_cells = 0
-        for cell in normalized_board:
+        for cell in settled_board:
             if cell["badge"] == "c0":
                 if not cell.get("is_active"):
                     fine_cells += 1
@@ -261,10 +283,10 @@ class BadgesManager:
                 fine_cells += 1
 
 
-        return fine_cells == len(normalized_board)
+        return fine_cells == len(settled_board)
 
     def is_level_completed(self):
-        return self._is_level_over(self.data["board"])
+        return self._is_level_over(self.data["board_with_last_badge_target"])
 
     def get_next_level_board(self):
         next_level = self.data["level"] + 1
