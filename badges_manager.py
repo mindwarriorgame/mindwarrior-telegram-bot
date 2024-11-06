@@ -74,7 +74,7 @@ class BadgesManager:
 
     def __init__(self, badges_serialized = None):
         if badges_serialized is None or badges_serialized == "":
-            self.data = UserBadgesData(badges_state={}, board=self._level_to_new_board(LEVELS[0]), level=1)
+            self.data = UserBadgesData(badges_state={}, board=self._level_to_new_board(LEVELS[0]), level=0)
         else:
             self.data = UserBadgesData(**json.loads(badges_serialized))
 
@@ -112,13 +112,13 @@ class BadgesManager:
 
         if self._is_level_over(self.data["board"]):
             self.data["level"] += 1
-            self.data["board"] = self._level_to_new_board(LEVELS[self.data["level"] - 1])
+            self.data["board"] = self._level_to_new_board(LEVELS[self.data["level"]])
             self.data["badges_state"] = {}
             for counter in counters:
                 badge, new_state = counter.on_game_started(active_play_time_secs, None, difficulty)
                 self.data["badges_state"][counter.__class__.__name__] = new_state
 
-        badge_to_return = None
+        badge_to_put_on_board = None
         has_grumpy_cat = self._has_grump_cats_on_board(self.data["board"])
         for counter in counters:
             state = None
@@ -132,21 +132,20 @@ class BadgesManager:
             # shouldn't be accommodated for anything else
             if has_grumpy_cat:
                 if badge:
-                    badge_to_return = badge
+                    badge_to_put_on_board = badge
                     break
                 continue
 
             self.data["badges_state"][counter.__class__.__name__] = new_state
 
-            if badge is not None and badge_to_return is None:
-                badge_to_return = badge
+            if badge is not None and badge_to_put_on_board is None:
+                badge_to_put_on_board = badge
                 if terminate_if_found:
                     break
 
-        self.data["last_badge"] = badge_to_return
-        self.data["board"] = self._put_badge_to_board(badge_to_return)
+        self.data["board"], self.data["last_badge"] = self._put_badge_to_board(badge_to_put_on_board)
 
-        return badge_to_return
+        return self.data["last_badge"]
 
     def progress(self, active_play_time_secs: float, difficulty: int):
         badges = ["f0", "s0", "s1", "s2", "t0", "c1", "c2"]
@@ -226,30 +225,29 @@ class BadgesManager:
                 break
         return normalized_board
 
-    def _put_badge_to_board(self, badge):
-
+    def _put_badge_to_board(self, badge)-> ([BoardCell], str):
         overwrites = [["s2", "s1"], ["s2", "s0"], ["s1", "s0"], ["c2", "c1"]]
 
         if badge is None:
-            return self.data["board"]
+            return self.data["board"], badge
         normalized_board = self._normalize_board(self.data["board"])
 
         if badge == "c0":
-            return self._put_grumpy_cat_to_board(normalized_board)
+            return self._put_grumpy_cat_to_board(normalized_board), badge
 
         if self._has_grump_cats_on_board(normalized_board):
-            return self._expell_grumpy_cat(normalized_board, badge)
+            return self._expell_grumpy_cat(normalized_board, badge), badge
 
         if self._has_closed_badge_on_board(normalized_board, badge):
-            return self._open_badge(normalized_board, badge)
+            return self._open_badge(normalized_board, badge), badge
 
         for overwrite in overwrites:
             senior_badge = overwrite[0]
             junior_badge = overwrite[1]
             if badge == senior_badge and self._has_closed_badge_on_board(normalized_board, junior_badge):
-                return self._open_badge(normalized_board, junior_badge)
+                return self._open_badge(normalized_board, junior_badge), junior_badge
 
-        return normalized_board
+        return normalized_board, badge
 
 
     def _is_level_over(self, board) -> bool:
@@ -267,3 +265,9 @@ class BadgesManager:
 
     def is_level_completed(self):
         return self._is_level_over(self.data["board"])
+
+    def get_next_level_board(self):
+        next_level = self.data["level"] + 1
+        if next_level >= len(LEVELS):
+            return self._level_to_new_board(random.choice(LEVELS[5:]))
+        return self._level_to_new_board(LEVELS[next_level])
