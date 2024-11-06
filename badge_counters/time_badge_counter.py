@@ -32,7 +32,7 @@ class TimeBadgeCounter:
 
     def progress(self, for_badge, active_play_time_secs, state, difficulty):
         if for_badge != "t0":
-            return None, -1
+            return None
 
         if state is None:
             return [{

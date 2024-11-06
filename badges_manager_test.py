@@ -1,142 +1,78 @@
 import json
 import unittest
 
-from badges_manager import BadgesManager
+from badges_manager import BadgesManager, generate_levels
 
 
 class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
 
-    def test_on_start_game_shows_f0(self):
-        mng = BadgesManager("")
-        self.assertEqual(mng.on_game_started(0), "f0")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'f0': 1},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_superhappy,0',
-                                                                        'FeatherBadgeCounter': '0',
-                                                                        'StarBadgeCounter': '0',
-                                                                        'TimeBadgeCounter': '0'}})
+    def test_generate_levels(self):
+        generate_levels()
 
-    def test_on_review_shows_star(self):
-        mng = BadgesManager('{"badges_counter": {"f0": 1}, "badges_state": {"CatBadgeCounter": "pending_happy,0", "FeatherBadgeCounter": "0", "StarBadgeCounter": "2", "TimeBadgeCounter": "0"}}')
-        self.assertEqual(mng.on_review(0), "s0")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'f0': 1, 's0': 1},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_happy,0',
-                                                                        'FeatherBadgeCounter': '0',
-                                                                        'StarBadgeCounter': '3',
-                                                                        'TimeBadgeCounter': '0'}})
+    def test_start_game_starts_from_level_1(self):
+        badges_manager = BadgesManager()
+        badge = badges_manager.on_game_started(0, 2)
+        self.assertEqual(badge, "f0")
+        self.assertEqual(badges_manager.get_level(), 1)
+        self.assertEqual(badges_manager.get_board(), [{'badge': 'f0', 'is_active': None, 'is_target': True},
+                                                      {'badge': 's0', 'is_active': None},
+                                                      {'badge': 'c0', 'is_active': None}])
 
-    def test_on_second_review_shows_med_star(self):
-        mng = BadgesManager('{"badges_counter": {"f0": 1, "s0": 1}, "badges_state": {"CatBadgeCounter": "pending_happy,0", "FeatherBadgeCounter": "0", "StarBadgeCounter": "5", "TimeBadgeCounter": "0"}}')
-        self.assertEqual(mng.on_review(0), "s1")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'f0': 1, 's1': 1, 's0': 1},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_happy,0',
-                                                                        'FeatherBadgeCounter': '0',
-                                                                        'StarBadgeCounter': '6',
-                                                                        'TimeBadgeCounter': '0'}})
+        self.assertEqual(badges_manager.progress(1000, 2), {'c1': [{'badge': 'c1',
+                                                                    'challenge': 'review_regularly_no_penalty',
+                                                                    'progress_pct': 1,
+                                                                    'remaining_time_secs': 56600}],
+                                                            'c2': [{'badge': 'c1',
+                                                                    'challenge': 'review_regularly_no_penalty',
+                                                                    'progress_pct': 1,
+                                                                    'remaining_time_secs': 56600},
+                                                                   {'badge': 'c2',
+                                                                    'challenge': 'review_regularly_no_prompt',
+                                                                    'progress_pct': 0,
+                                                                    'remaining_time_secs': 57600}],
+                                                            'f0': [{'badge': 'f0',
+                                                                    'challenge': 'update_formula',
+                                                                    'progress_pct': 1,
+                                                                    'remaining_time_secs': 85400}],
+                                                            's0': [{'badge': 's0',
+                                                                    'challenge': 'review_regularly_no_penalty',
+                                                                    'progress_pct': 0,
+                                                                    'remaining_reviews': 3}],
+                                                            's1': [{'badge': 's1',
+                                                                    'challenge': 'review_regularly_no_penalty',
+                                                                    'progress_pct': 0,
+                                                                    'remaining_reviews': 6}],
+                                                            's2': [{'badge': 's2',
+                                                                    'challenge': 'review_regularly_no_penalty',
+                                                                    'progress_pct': 0,
+                                                                    'remaining_reviews': 9}],
+                                                            't0': [{'badge': 't0',
+                                                                    'challenge': 'play_time',
+                                                                    'progress_pct': 1,
+                                                                    'remaining_time_secs': 85400}]})
+        self.assertEqual(badges_manager.is_level_completed(), False)
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "pending_happy,57600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": null, "is_target": true}, {"badge": "s0", "is_active": null}, {"badge": "c0", "is_active": null}], "level": 1, "last_badge": "f0"}')
 
-    def test_on_third_review_shows_top_star(self):
-        mng = BadgesManager('{"badges_counter": {"f0": 1, "s1": 1, "s0": 1}, "badges_state": {"CatBadgeCounter": "pending_happy,0", "FeatherBadgeCounter": "0", "StarBadgeCounter": "17", "TimeBadgeCounter": "0"}}')
-        self.assertEqual(mng.on_review(0), "s2")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'f0': 1,
-                                                                          's1': 1,
-                                                                          's0': 1,
-                                                                          's2': 1},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_happy,0',
-                                                                        'FeatherBadgeCounter': '0',
-                                                                        'StarBadgeCounter': '18',
-                                                                        'TimeBadgeCounter': '0'}})
 
-    def test_on_forth_review_shows_top_star(self):
-        mng = BadgesManager('{"badges_counter": {"f0": 1, "s1": 1, "s0": 1, "s2": 1}, "badges_state": {"CatBadgeCounter": "pending_happy,0", "FeatherBadgeCounter": "0", "StarBadgeCounter": "17", "TimeBadgeCounter": "0"}}')
-        self.assertEqual(mng.on_review(0), "s2")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'f0': 1,
-                                                                          's1': 1,
-                                                                          's0': 1,
-                                                                          's2': 2},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_happy,0',
-                                                                        'FeatherBadgeCounter': '0',
-                                                                        'StarBadgeCounter': '18',
-                                                                        'TimeBadgeCounter': '0'}})
+    def test_grumpy_cat_gets_in(self):
+        badges_manager = BadgesManager('{"badges_state": {"CatBadgeCounter": "pending_happy,57600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": null, "is_target": true}, {"badge": "s0", "is_active": null}, {"badge": "c0", "is_active": null}], "level": 1, "last_badge": "f0"}')
+        badge = badges_manager.on_penalty(61000, 2)
+        self.assertEqual(badge, "c0")
+        self.assertEqual(badges_manager.get_level(), 1)
+        self.assertEqual(badges_manager.get_board(), [{'badge': 'f0', 'is_active': True},
+                                                      {'badge': 's0', 'is_active': None},
+                                                      {'badge': 'c0', 'is_active': None, 'is_target': True}])
 
-    def test_on_review_after_penalty_drops_to_first_star(self):
-        mng = BadgesManager('{"badges_counter": {"f0": 1, "s1": 1, "s0": 1, "s2": 2}, "badges_state": {"CatBadgeCounter": "pending_happy,0", "FeatherBadgeCounter": "0", "StarBadgeCounter": "5", "TimeBadgeCounter": "0"}}')
-        mng.on_penalty(0)
-        self.assertEqual(mng.on_review(0), None)
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'c0': 1,
-                                                                          'f0': 1,
-                                                                          's1': 1,
-                                                                          's0': 1,
-                                                                          's2': 2},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_superhappy,0',
-                                                                        'FeatherBadgeCounter': '0',
-                                                                        'StarBadgeCounter': '1',
-                                                                        'TimeBadgeCounter': '0'}})
+        self.assertEqual(badges_manager.is_level_completed(), False)
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "pending_happy,118600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, {"badge": "c0", "is_active": null, "is_target": true}], "level": 1, "last_badge": "c0"}')
 
-    def test_on_formula_update_gives_another_f0_every_24_hours(self):
-        mng = BadgesManager("")
-        self.assertEqual(mng.on_game_started(0), "f0")
-        self.assertEqual(mng.on_formula_updated(12 * 3600), None)
-        self.assertEqual(mng.on_formula_updated(26 * 3600), "f0")
-        self.assertEqual(mng.on_formula_updated(36 * 3600), None)
-        self.assertEqual(mng.on_formula_updated(52 * 3600), "f0")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'f0': 3},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_superhappy,0',
-                                                                        'FeatherBadgeCounter': '187200',
-                                                                        'StarBadgeCounter': '0',
-                                                                        'TimeBadgeCounter': '0'}})
-
-    def test_time_badge_each_24_hours(self):
-        mng = BadgesManager("")
-        mng.on_review(0)
-        mng.on_penalty(24*3600) # to suppress happy cat
-        self.assertEqual(mng.on_review(27 * 3600), "t0")
-        self.assertEqual(mng.on_review(28 * 3600), None)
-        self.assertEqual(mng.on_review(29 * 3600), None)
-        self.assertEqual(mng.on_review(30 * 3600), "s0")
-        mng.on_penalty(53*3600) # to suppress happy cat
-        self.assertEqual(mng.on_review(54 * 3600), "time")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'c0': 2, 's0': 1, 't0': 2},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_superhappy,194400',
-                                                                        'FeatherBadgeCounter': None,
-                                                                        'StarBadgeCounter': '0',
-                                                                        'TimeBadgeCounter': '194400'}})
-
-    def test_unhappy_cat_on_penalty(self):
-        mng = BadgesManager("")
-        self.assertEqual(mng.on_penalty(0), "c0")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'c0': 1},
-                                                       'badges_state': {'CatBadgeCounter': None,
-                                                                        'FeatherBadgeCounter': None,
-                                                                        'StarBadgeCounter': '0',
-                                                                        'TimeBadgeCounter': None}})
-
-    def test_happy_cat_on_review_without_penalties(self):
-        mng = BadgesManager("")
-        mng.on_review(0)
-        mng.on_prompt(14 * 3600)
-        self.assertEqual(mng.on_review(17 * 3600), "c1")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'c1': 1},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_superhappy,61200',
-                                                                        'FeatherBadgeCounter': None,
-                                                                        'StarBadgeCounter': '1',
-                                                                        'TimeBadgeCounter': '0'}})
-
-    def test_happy_cat_resets_on_penalty(self):
-        mng = BadgesManager("")
-        mng.on_review(0)
-        mng.on_penalty(6 * 3600)
-        self.assertEqual(mng.on_review(17 * 3600), None)
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'c0': 1},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_superhappy,61200',
-                                                                        'FeatherBadgeCounter': None,
-                                                                        'StarBadgeCounter': '1',
-                                                                        'TimeBadgeCounter': '0'}})
-
-    def test_superhappy_no_prompt(self):
-        mng = BadgesManager("")
-        mng.on_review(0)
-        self.assertEqual(mng.on_review(17 * 3600), "c2")
-        self.assertEqual(json.loads(mng.serialize()), {'badges_counter': {'c2': 1},
-                                                       'badges_state': {'CatBadgeCounter': 'pending_superhappy,61200',
-                                                                        'FeatherBadgeCounter': None,
-                                                                        'StarBadgeCounter': '1',
-                                                                        'TimeBadgeCounter': '0'}})
+    def test_kicking_out_grumpy_cat(self):
+        badges_manager = BadgesManager('{"badges_state": {"CatBadgeCounter": "pending_happy,118600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, {"badge": "c0", "is_active": null, "is_target": true}], "level": 1, "last_badge": "c0"}')
+        badge = badges_manager.on_review(200000, 2)
+        self.assertEqual(badge, "c1")
+        self.assertEqual(badges_manager.get_board(), [{'badge': 'f0', 'is_active': True},
+                                                      {'badge': 's0', 'is_active': None},
+                                                      {'badge': 'c0',
+                                                       'is_active': True,
+                                                       'is_target': True,
+                                                       'projectile_override': 'c1'}])

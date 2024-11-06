@@ -49,7 +49,7 @@ class StarBadgeCounter:
 
     def progress(self, for_badge, active_play_time_secs, state, difficulty):
         if for_badge != "s0" and for_badge != "s1" and for_badge != "s2":
-            return None, -1
+            return None
 
         cnt = 0
         if state is not None:

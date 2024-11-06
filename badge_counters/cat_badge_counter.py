@@ -49,7 +49,7 @@ class CatBadgeCounter:
 
     def progress(self, for_badge, active_play_time_secs, state, difficulty):
         if for_badge != "c1" and for_badge != "c2":
-            return None, -1
+            return None
 
         if state is None:
             if for_badge == "c1":
