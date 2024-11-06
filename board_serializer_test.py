@@ -6,10 +6,10 @@ from board_serializer import serialize_board, serialize_progress
 class BoardSerializedTest(unittest.IsolatedAsyncioTestCase):
 
     def test_serialize_simple_board(self):
-        board = [{'badge': 'f0', 'is_active': None, 'is_target': True},
+        board = [{'badge': 'f0', 'is_active': True, 'is_last_modified': True},
                  {'badge': 's0', 'is_active': None},
                  {'badge': 'c0', 'is_active': None}]
-        self.assertEqual(serialize_board(board), 'f0t_s0_c0')
+        self.assertEqual(serialize_board(board), 'f0am_s0_c0')
 
     def test_serialize_progress(self):
         serialized = serialize_progress({'c1': [{'badge': 'c1',
@@ -50,15 +50,14 @@ class BoardSerializedTest(unittest.IsolatedAsyncioTestCase):
     def test_serialize_grumpy_cat(self):
         serialized = serialize_board([{'badge': 'f0', 'is_active': True},
                                              {'badge': 's0', 'is_active': None},
-                                             {'badge': 'c0', 'is_active': None, 'is_target': True}])
+                                             {'badge': 'c0', 'is_active': True, 'is_last_modified': True}])
 
-        self.assertEqual(serialized, 'f0a_s0_c0t')
+        self.assertEqual(serialized, 'f0a_s0_c0am')
 
     def test_serialize_kicking_out_grumpy_cat(self):
         serialized = serialize_board([{'badge': 'f0', 'is_active': True},
                                       {'badge': 's0', 'is_active': None},
                                       {'badge': 'c0',
-                                       'is_active': True,
-                                       'is_target': True,
-                                       'projectile_override': 'c1'}])
-        self.assertEqual(serialized, 'f0a_s0_c0at')
+                                       'is_active': False,
+                                       'is_last_modified': True}])
+        self.assertEqual(serialized, 'f0a_s0_c0m')

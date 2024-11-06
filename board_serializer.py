@@ -4,8 +4,8 @@ def serialize_cell(cell: BoardCell) -> str:
     ret = cell["badge"]
     if cell.get("is_active"):
         ret += "a"
-    if cell.get("is_target"):
-        ret += "t"
+    if cell.get("is_last_modified"):
+        ret += "m"
     return ret
 
 badgeProgressKey = {
