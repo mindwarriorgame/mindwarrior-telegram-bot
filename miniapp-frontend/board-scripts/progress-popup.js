@@ -21,8 +21,7 @@ function renderReviewWithoutSomething(template, pct, counter, counterIsTime= tru
     return ret.join(' ');
 }
 
-function openPopup(badge, progressBase64) {
-    const progress = JSON.parse(window.Base64.decode(progressBase64 || window.Base64.encode('{}')));
+function openPopup(badge, progress) {
     let content = `<img src="../badge-images/${badge}_512.jpg" />`;
 
     const timeBadges = {

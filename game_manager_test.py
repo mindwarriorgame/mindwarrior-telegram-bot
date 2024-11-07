@@ -201,10 +201,15 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                     with time_machine.travel("2022-04-21 06:20", tick=False):
                         data = self.game_manager.process_tick()
                         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
-                                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                             {'text': 'View achievements 🏆',
+                                                              'url': 'http://frontend?lang=en&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
                                                  'image': None,
                                                  'menu_commands': [],
-                                                 'message': 'You forgot to review your <i>Formula</i> 🟥\n'
+                                                 'message': '⛔🏆 Grumpy cat is blocking the achievements! Press "View '
+                                                            'achievements" button below to kick it out.\n'
+                                                            '\n'
+                                                            'You forgot to review your <i>Formula</i> 🟥\n'
                                                             '\n'
                                                             "♦️ You've lost 3 crystals\n"
                                                             '\n'

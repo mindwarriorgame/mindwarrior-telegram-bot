@@ -83,6 +83,7 @@ class Lang:
     badge_unhappy_cat: str
     badge_new: str
     view_badges_button: str
+    locked_achievements: str
 
 fr = Lang(
     lang_code='fr',
@@ -247,7 +248,8 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
 
     badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé à l'intérieur!",
     badge_new = "🏆 Vous avez obtenu un nouveau succès!",
-    view_badges_button = "Voir les succès"
+    view_badges_button = "Voir les succès",
+    locked_achievements = "⛔🏆 Grumpy cat is blocking the achievements! Press \"View achievements\" button below to kick it out."
 )
 
 
@@ -409,7 +411,8 @@ Presiona el botón de abajo para iniciar el juego.""",
 
     badge_unhappy_cat = "😾 ¡Ups! ¡Se coló un gato gruñón!",
     badge_new = "🏆 ¡Has conseguido un nuevo logro!",
-    view_badges_button = "Ver logros"
+    view_badges_button = "Ver logros",
+    locked_achievements = "⛔🏆 Grumpy cat is blocking the achievements! Press \"View achievements\" button below to kick it out."
 )
 
 
@@ -574,7 +577,8 @@ Press the button below to start the game.""",
 
     badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!\nPress \"View achievements\" button below.",
     badge_new = "🏆 You've got a new achievement!\nPress \"View achievements\" button below.",
-    view_badges_button = "View achievements 🏆"
+    view_badges_button = "View achievements 🏆",
+    locked_achievements = "⛔🏆 Grumpy cat is blocking the achievements! Press \"View achievements\" button below to kick it out."
 
 )
 
@@ -736,7 +740,8 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
 
     badge_unhappy_cat = "😾 Ups! Eine mürrische Katze hat sich eingeschlichen!",
     badge_new = "🏆 Du hast eine neue Errungenschaft!",
-    view_badges_button = "Erfolge ansehen"
+    view_badges_button = "Erfolge ansehen",
+    locked_achievements = "⛔🏆 Grumpy cat is blocking the achievements! Press \"View achievements\" button below to kick it out."
 )
 
 
@@ -903,7 +908,8 @@ ru = Lang(
 
     badge_unhappy_cat = "😾 Ой! Похоже, к вам забрался недовольный кот!\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     badge_new = "🏆 Вы получили новое достижение\nНажмите кнопку \"Посмотреть достижения\" снизу.",
-    view_badges_button = "Посмотреть достижения 🏆"
+    view_badges_button = "Посмотреть достижения 🏆",
+    locked_achievements = "⛔🏆 Недовольный кот блокирует достижения! Нажмите кнопку \"Посмотреть достижения\" снизу."
 )
 
 

@@ -830,24 +830,36 @@ class GameManager:
         badges_manager = BadgesManager(user['badges_serialized'])
 
         active_play_time_secs = self._calculate_active_play_time_seconds(user)
+
+        had_c0 = badges_manager.has_grumpy_cats_on_board()
+
         badge = getattr(badges_manager, event)(active_play_time_secs, user['difficulty'])
 
         user['badges_serialized'] = badges_manager.serialize()
         self.users_orm.upsert_user(user)
 
+        lang = self._get_user_lang(user['lang_code'])
+        button_url = self._render_board_url(lang, badge, badges_manager, active_play_time_secs, user['difficulty'])
+
+        if had_c0:
+            return self._wrap_message_with_badge(lang, "had_c0", message, button_url)
+
         if badge is None:
             return message
-
-        lang = self._get_user_lang(user['lang_code'])
-
-        button_url = self._render_board_url(lang, badge, badges_manager, active_play_time_secs, user['difficulty'])
 
         return self._wrap_message_with_badge(lang, badge, message, button_url)
 
     def _wrap_message_with_badge(self, lang: Lang, badge: str, message: Reply, button_url: str) -> Reply:
+        message_prefix = ""
+        if badge == "c0":
+            message_prefix = lang.badge_unhappy_cat
+        elif badge == "had_c0":
+            message_prefix = lang.locked_achievements
+        else:
+            message_prefix = lang.badge_new
         return {
             'to_chat_id': message['to_chat_id'],
-            'message': (lang.badge_unhappy_cat if badge == "c0" else lang.badge_new) + "\n\n" + message['message'],
+            'message': message_prefix + "\n\n" + message['message'],
             'buttons': message['buttons'] + [{
                 'text': lang.view_badges_button,
                 'url': button_url

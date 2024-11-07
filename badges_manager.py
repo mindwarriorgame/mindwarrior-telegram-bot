@@ -143,7 +143,7 @@ class BadgesManager:
                 self.data["badges_state"][counter.__class__.__name__] = new_state
 
         badge_to_put_on_board = None
-        has_grumpy_cat = self._has_grumpy_cats_on_board(self.data["board"])
+        has_grumpy_cat = self.has_grumpy_cats_on_board()
         for counter in counters:
             state = None
             if self.data["badges_state"].get(counter.__class__.__name__) is not None:
@@ -239,8 +239,8 @@ class BadgesManager:
             })
         return board
 
-    def _has_grumpy_cats_on_board(self, board: [BoardCell]):
-        for cell in board:
+    def has_grumpy_cats_on_board(self):
+        for cell in self.data['board']:
             if cell["badge"] == "c0" and cell.get("is_active"):
                 return True
         return False
