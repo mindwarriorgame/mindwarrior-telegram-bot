@@ -249,7 +249,7 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
     badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé à l'intérieur!",
     badge_new = "🏆 Vous avez obtenu un nouveau succès!",
     view_badges_button = "Voir les succès",
-    locked_achievements = "⛔🏆 Grumpy cat is blocking the achievements! Press \"View achievements\" button below to kick it out."
+    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!"
 )
 
 
@@ -412,7 +412,7 @@ Presiona el botón de abajo para iniciar el juego.""",
     badge_unhappy_cat = "😾 ¡Ups! ¡Se coló un gato gruñón!",
     badge_new = "🏆 ¡Has conseguido un nuevo logro!",
     view_badges_button = "Ver logros",
-    locked_achievements = "⛔🏆 Grumpy cat is blocking the achievements! Press \"View achievements\" button below to kick it out."
+    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!"
 )
 
 
@@ -454,7 +454,7 @@ Press the button below to start the game.""",
                                 "\n"
                                 "<b>{reward_msg}</b>\n"
                                 "\n"
-                                "💠 Total crystals: {score}\n"
+                                "💎 Total crystals: {score}\n"
                                 "⏳ Play time: {time}\n"
                                 "\n"
                                 "Next review before {next_review}\n"
@@ -466,7 +466,7 @@ Press the button below to start the game.""",
                                            "\n"
                                            "No reward (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">cool-down rule</a>)\n"
                                            "\n"
-                                           "💠 Total crystals: {score}\n"
+                                           "💎 Total crystals: {score}\n"
                                            "⏳ Play time: {time}\n"
                                            "\n"
                                            "Next review before {next_review}\n"
@@ -485,7 +485,7 @@ Press the button below to start the game.""",
                              "\n"
                              "<b>{old} -> {new}</b>\n"
                              "\n"
-                             "💠 Total crystals: 0\n"
+                             "💎 Total crystals: 0\n"
                              "🏆 Level: 1\n"
                              "⏳ Play time: 0d 0h 0m\n"
                              "\n"
@@ -506,7 +506,7 @@ Press the button below to start the game.""",
                    "simply review your <i>Formula</i> using the button below.",
 
     # TODO: add level
-    stats_command=("💠 <a href=\"https://mindwarriorgame.org/faq.en.html#review\">Earned crystals</a>: {score}\n"
+    stats_command=("💎 <a href=\"https://mindwarriorgame.org/faq.en.html#review\">Earned crystals</a>: {score}\n"
                    "🏆 Level : {level}\n"
                    "⌛ Active play time: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty</a>: {difficulty} ({difficulty_details})\n"
@@ -564,13 +564,13 @@ Press the button below to start the game.""",
     penalty_msg_no_penalty_first_time = "No penalty (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">\"{difficulty}\" level, first miss</a> 😬)",
     penalty_msg_first_time = "♦️ You've lost {penalty} crystals (first miss)\n"
                              "\n"
-                             "💠 Remaining crystals: {score}",
+                             "💎 Remaining crystals: {score}",
     penalty_msg_generic_small = "♦️ You've lost {penalty} crystals\n"
                                 "\n"
-                                "💠 Remaining crystals: {score}",
+                                "💎 Remaining crystals: {score}",
     penalty_msg_generic_full = "♦️ You've lost {penalty} crystals\n"
                                "\n"
-                               "💠 Remaining crystals: {score}",
+                               "💎 Remaining crystals: {score}",
     penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
                    "\n"
                    "{penalty_msg}",
@@ -578,8 +578,7 @@ Press the button below to start the game.""",
     badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!\nPress \"View achievements\" button below.",
     badge_new = "🏆 You've got a new achievement!\nPress \"View achievements\" button below.",
     view_badges_button = "View achievements 🏆",
-    locked_achievements = "⛔🏆 Grumpy cat is blocking the achievements! Press \"View achievements\" button below to kick it out."
-
+    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!\nPay {n} crystals to get rid of it (/pay)."
 )
 
 de = Lang(
@@ -741,7 +740,7 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
     badge_unhappy_cat = "😾 Ups! Eine mürrische Katze hat sich eingeschlichen!",
     badge_new = "🏆 Du hast eine neue Errungenschaft!",
     view_badges_button = "Erfolge ansehen",
-    locked_achievements = "⛔🏆 Grumpy cat is blocking the achievements! Press \"View achievements\" button below to kick it out."
+    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!"
 )
 
 
@@ -784,7 +783,7 @@ ru = Lang(
                                 "\n"
                                 "<b>{reward_msg}</b>\n"
                                 "\n"
-                                "💠 Всего кристаллов: {score}\n"
+                                "💎 Всего кристаллов: {score}\n"
                                 "⏳ Время игры: {time}\n"
                                 "\n"
                                 "Следующий просмотр не позже {next_review}\n"
@@ -797,7 +796,7 @@ ru = Lang(
                                            "\n"
                                            "Без награды (<a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty:~:text=%D0%BC%D0%B5%D0%B6%D0%B4%D1%83%20%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D1%8B%D0%BC%D0%B8%20%D0%BF%D1%80%D0%BE%D1%88%D0%BB%D0%BE%20%D1%85%D0%BE%D1%82%D1%8F%20%D0%B1%D1%8B%205%20%D0%BC%D0%B8%D0%BD%D1%83%D1%82\">слишком частые просмотры</a>)\n"
                                            "\n"
-                                           "💠 Всего кристаллов: {score}\n"
+                                           "💎 Всего кристаллов: {score}\n"
                                            "⏳ Время игры: {time}\n"
                                            "\n"
                                            "Следующий просмотр не позже {next_review}\n"
@@ -817,7 +816,7 @@ ru = Lang(
                              "\n"
                              "<b>{old} -> {new}</b>\n"
                              "\n"
-                             "💠 Всего кристаллов: 0\n"
+                             "💎 Всего кристаллов: 0\n"
                              "🏆 Уровень: 1\n"
                              "⏳ Время игры: 0d 0h 0m\n"
                              "\n"
@@ -836,7 +835,7 @@ ru = Lang(
                    "\n"
                    "Для снятия с паузы просмотрите свою <i>Формулу</i> с помощью кнопки ниже.",
 
-    stats_command=("💠 <a href=\"https://mindwarriorgame.org/faq.ru.html#review\">Заработано кристаллов</a>: {score}\n"
+    stats_command=("💎 <a href=\"https://mindwarriorgame.org/faq.ru.html#review\">Заработано кристаллов</a>: {score}\n"
                    "🏆 Уровень: {level}\n"
                    "⌛ Время активной игры: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">Сложность игры</a>: {difficulty} ({difficulty_details})\n"
@@ -895,13 +894,13 @@ ru = Lang(
     penalty_msg_no_penalty_first_time = "Без штрафа (уровень <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">\"{difficulty}\", первый пропуск</a> 😬)",
     penalty_msg_first_time = "♦️ Вы потеряли кристаллы: -{penalty} (первый пропуск)\n"
                              "\n"
-                             "💠 Осталось кристалов: {score}",
+                             "💎 Осталось кристалов: {score}",
     penalty_msg_generic_small = "♦️ Вы потеряли кристаллы: -{penalty}\n"
                                 "\n"
-                                "💠 Осталось кристаллов: {score}",
+                                "💎 Осталось кристаллов: {score}",
     penalty_msg_generic_full = "♦️ Вы потеряли кристаллы: -{penalty}\n"
                                "\n"
-                               "💠 Осталось кристаллов: {score}",
+                               "💎 Осталось кристаллов: {score}",
     penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n"
                    "\n"
                    "{penalty_msg}",
@@ -909,7 +908,7 @@ ru = Lang(
     badge_unhappy_cat = "😾 Ой! Похоже, к вам забрался недовольный кот!\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     badge_new = "🏆 Вы получили новое достижение\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     view_badges_button = "Посмотреть достижения 🏆",
-    locked_achievements = "⛔🏆 Недовольный кот блокирует достижения! Нажмите кнопку \"Посмотреть достижения\" снизу."
+    locked_achievements = "⛔🏆😾 Недовольный кот блокирует достижения!"
 )
 
 

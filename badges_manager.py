@@ -149,8 +149,9 @@ class BadgesManager:
             if self.data["badges_state"].get(counter.__class__.__name__) is not None:
                 state = self.data["badges_state"][counter.__class__.__name__]
 
-            # Grumpy cat should spoil everything
-            if has_grumpy_cat:
+            if has_grumpy_cat and method_name != "on_penalty":
+                # Grumpy cat should spoil everything, except of penalty (which will work as usually to make sure all
+                # c0 cells will be filled up)
                 badge, state = counter.on_penalty(active_play_time_secs, state, difficulty, self._get_inactive_badges_on_board(self.data['board']))
                 self.data["badges_state"][counter.__class__.__name__] = state
                 continue

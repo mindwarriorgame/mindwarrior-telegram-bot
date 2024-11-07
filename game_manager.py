@@ -455,10 +455,10 @@ class GameManager:
 
     def on_render_screen(self, chat_id, user_message) -> list[Reply]:
         langs = LangProvider.get_available_languages()
-        # langs = {
-        #     en.lang_code: en,
-        #     ru.lang_code: ru,
-        # }
+        langs = {
+            en.lang_code: en,
+            ru.lang_code: ru,
+        }
 
         if user_message == "render_screen_0":
             return [self._render_list_of_langs(chat_id, langs)]
@@ -483,6 +483,7 @@ class GameManager:
             for is_resumed in [True, False]:
                 for lang_code, lang in langs.items():
                     ret = ret + [self._render_review_command_success_no_rewards(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed)]
+                    ret = ret + [self._wrap_message_with_unblock(lang, self._render_review_command_success_no_rewards(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed))]
             return ret
 
         if user_message == "render_screen_4":
@@ -841,8 +842,8 @@ class GameManager:
         lang = self._get_user_lang(user['lang_code'])
         button_url = self._render_board_url(lang, badge, badges_manager, active_play_time_secs, user['difficulty'])
 
-        if had_c0:
-            return self._wrap_message_with_badge(lang, "had_c0", message, button_url)
+        if had_c0 and badge is None:
+            return self._wrap_message_with_unblock(lang, message)
 
         if badge is None:
             return message
@@ -853,8 +854,6 @@ class GameManager:
         message_prefix = ""
         if badge == "c0":
             message_prefix = lang.badge_unhappy_cat
-        elif badge == "had_c0":
-            message_prefix = lang.locked_achievements
         else:
             message_prefix = lang.badge_new
         return {
@@ -864,6 +863,15 @@ class GameManager:
                 'text': lang.view_badges_button,
                 'url': button_url
             }],
+            'menu_commands': message['menu_commands'],
+            'image': message['image']
+        }
+
+    def _wrap_message_with_unblock(self, lang: Lang, message: Reply) -> Reply:
+        return {
+            'to_chat_id': message['to_chat_id'],
+            'message': lang.locked_achievements + "\n\n" + message['message'],
+            'buttons': message['buttons'],
             'menu_commands': message['menu_commands'],
             'image': message['image']
         }

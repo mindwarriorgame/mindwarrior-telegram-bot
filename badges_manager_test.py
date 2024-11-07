@@ -106,3 +106,17 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                       {'badge': 'c0', 'is_active': None},
                                                       {'badge': 'c0', 'is_active': None}])
         self.assertEqual(badges_manager.is_level_completed(), False)
+
+    def test_c0_can_block_two_cells(self):
+        badges_manager = BadgesManager('{"board": '
+                                       '[{"badge": "f0", "is_active": false, "is_last_modified": true}, {"badge": "c0", '
+                                       '"is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "last_badge": "f0"}')
+        badge = badges_manager.on_penalty(0, 2)
+        self.assertEqual(badge, 'c0')
+        badge = badges_manager.on_penalty(0, 2)
+        self.assertEqual(badge, 'c0')
+        self.assertEqual(badges_manager.get_board(), [{'badge': 'f0', 'is_active': False},
+                                                      {'badge': 'c0', 'is_active': True},
+                                                      {'badge': 'c0', 'is_active': True, 'is_last_modified': True}])
+        badge = badges_manager.on_penalty(0, 2)
+        self.assertEqual(badge, None)
