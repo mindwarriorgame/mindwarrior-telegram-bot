@@ -8,7 +8,7 @@ from board_serializer import serialize_board, serialize_progress
 from counter import Counter
 from graph_renderer import REVIEW_COUNTER_HISTORY_NAME, PAUSED_COUNTER_HISTORY_NAME, GraphRenderer
 from history import add_timer_rec_to_history, get_timer_recs_from_history
-from lang_provider import LangProvider, Lang
+from lang_provider import LangProvider, Lang, en, ru
 from users_orm import UsersOrm, User
 
 
@@ -242,19 +242,18 @@ class GameManager:
 
         self.users_orm.upsert_user(user)
 
-        ret = None
         if new_stars > 0:
             ret = self._render_review_command_success(user['rewards'], next_review,
                                                        time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
                                                        lang=lang,
                                                        chat_id=user['user_id'], is_resumed=is_resumed, new_stars=new_stars)
+            return self._handle_badge_event(user, 'on_review', ret)
         else:
-            ret = self._render_review_command_success_no_rewards(user['rewards'], next_review,
+            return self._render_review_command_success_no_rewards(user['rewards'], next_review,
                                                                   time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
                                                                   lang=lang,
                                                                   chat_id=user['user_id'], is_resumed=is_resumed)
 
-        return self._handle_badge_event(user, 'on_review', ret)
 
     def _calculate_active_play_time_seconds(self, user: User) -> int:
         counter = Counter(user['active_game_counter_state'])
@@ -456,6 +455,10 @@ class GameManager:
 
     def on_render_screen(self, chat_id, user_message) -> list[Reply]:
         langs = LangProvider.get_available_languages()
+        # langs = {
+        #     en.lang_code: en,
+        #     ru.lang_code: ru,
+        # }
 
         if user_message == "render_screen_0":
             return [self._render_list_of_langs(chat_id, langs)]
@@ -472,6 +475,7 @@ class GameManager:
                 for lang_code, lang in langs.items():
                     ret = ret + [self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed, 1)]
                     ret = ret + [self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed, 2)]
+                    ret = ret + [self._wrap_message_with_badge(lang, "c1", self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed, 2), "https://google.com")]
             return ret
 
         if user_message == "render_screen_3":
@@ -500,6 +504,7 @@ class GameManager:
             for lang_code, lang in langs.items():
                 ret = ret + [self._render_penalty(lang, chat_id, 2, 10, True)]
                 ret = ret + [self._render_penalty(lang, chat_id, 2, 10, False)]
+                ret = ret + [self._wrap_message_with_badge(lang, "c0", self._render_penalty(lang, chat_id, 2, 10, False), "https://google.com")]
             return ret
 
 
@@ -836,6 +841,9 @@ class GameManager:
 
         button_url = self._render_board_url(lang, badge, badges_manager, active_play_time_secs, user['difficulty'])
 
+        return self._wrap_message_with_badge(lang, badge, message, button_url)
+
+    def _wrap_message_with_badge(self, lang: Lang, badge: str, message: Reply, button_url: str) -> Reply:
         return {
             'to_chat_id': message['to_chat_id'],
             'message': (lang.badge_unhappy_cat if badge == "c0" else lang.badge_new) + "\n\n" + message['message'],
