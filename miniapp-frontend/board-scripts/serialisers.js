@@ -55,15 +55,12 @@ function serializeProgressMap(progressMap) {
 function deserializeProgressMap(str) {
     const ret = {};
     str.split("--").forEach((chunk, chunkIdx) =>  {
-        const [badge, numItems, ...progressItems] = chunk.split("_");
+        const [badge, ...progressItems] = chunk.split("_");
         const items = [];
-        for (let itemIdx = 0; itemIdx < numItems; itemIdx++) {
-            items.push({
-                [badgeProgressKey[badge]]: parseInt(progressItems[itemIdx * 2]),
-                progress_pct: parseInt(progressItems[itemIdx * 2 + 1])
-            });
-        }
-        ret[badge] = items;
+        ret[badge] = {
+            [badgeProgressKey[badge]]: parseInt(progressItems[0]),
+            progress_pct: parseInt(progressItems[1])
+        };
     });
     return ret;
 }

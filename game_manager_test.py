@@ -824,8 +824,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            ' - next_prompt_type: reminder\n'
                                            '\n'
                                            ' - badges_serialized: {"badges_state": {"CatBadgeCounter": '
-                                           '"pending_happy,43200", "TimeBadgeCounter": "64800", '
-                                           '"StarBadgeCounter": "0", "FeatherBadgeCounter": "64800"}, '
-                                           '"board": [{"badge": "f0", "is_active": true, "is_last_modified": '
-                                           'true}, {"badge": "s0", "is_active": null}, {...',
+                                           '"43200", "TimeBadgeCounter": "64800", "StarBadgeCounter": "0,3", '
+                                           '"FeatherBadgeCounter": "64800"}, "board": [{"badge": "f0", '
+                                           '"is_active": true, "is_last_modified": true}, {"badge": "s0", '
+                                           '"is_active": null}, {"badge": "c0...',
                                 'to_chat_id': 1})

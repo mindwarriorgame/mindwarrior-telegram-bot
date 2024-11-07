@@ -423,6 +423,9 @@
     const board1 = new Board(document.getElementById('board1'), newBadge);
     board1Items.forEach(item => {
         board1.addCell(item, boardProgress1[item.badge]);
+        if (!item.active) {
+            delete boardProgress1[item.badge];
+        }
     });
 
     let board2;
@@ -432,6 +435,9 @@
         const boardProgress2 = deserializeProgressMap(urlParams.get('bp2'));
         board2Items.forEach(item => {
             board2.addCell(item, boardProgress2[item.badge]);
+            if (!item.active) {
+                delete boardProgress2[item.badge];
+            }
         });
         board2.newBoardMode();
         board2.setHeader(lang.level_board2.replace('###', "" + (parseInt(level) + 1)));

@@ -12,40 +12,36 @@ class BoardSerializedTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(serialize_board(board), 'f0am_s0_c0')
 
     def test_serialize_progress(self):
-        serialized = serialize_progress({'c1': [{'badge': 'c1',
-                                                 'challenge': 'review_regularly_no_penalty',
-                                                 'progress_pct': 1,
-                                                 'remaining_time_secs': 56600}],
-                                         'c2': [{'badge': 'c1',
+        serialized = serialize_progress({'c1': {'badge': 'c1',
                                                  'challenge': 'review_regularly_no_penalty',
                                                  'progress_pct': 1,
                                                  'remaining_time_secs': 56600},
-                                                {'badge': 'c2',
-                                                 'challenge': 'review_regularly_no_prompt',
-                                                 'progress_pct': 0,
-                                                 'remaining_time_secs': 57600}],
-                                         'f0': [{'badge': 'f0',
+                                         'c2': {'badge': 'c1',
+                                                 'challenge': 'review_regularly_no_penalty',
+                                                 'progress_pct': 1,
+                                                 'remaining_time_secs': 56600},
+                                         'f0': {'badge': 'f0',
                                                  'challenge': 'update_formula',
                                                  'progress_pct': 1,
-                                                 'remaining_time_secs': 85400}],
-                                         's0': [{'badge': 's0',
+                                                 'remaining_time_secs': 85400},
+                                         's0': {'badge': 's0',
                                                  'challenge': 'review_regularly_no_penalty',
                                                  'progress_pct': 0,
-                                                 'remaining_reviews': 3}],
-                                         's1': [{'badge': 's1',
+                                                 'remaining_reviews': 3},
+                                         's1': {'badge': 's1',
                                                  'challenge': 'review_regularly_no_penalty',
                                                  'progress_pct': 0,
-                                                 'remaining_reviews': 6}],
-                                         's2': [{'badge': 's2',
+                                                 'remaining_reviews': 6},
+                                         's2': {'badge': 's2',
                                                  'challenge': 'review_regularly_no_penalty',
                                                  'progress_pct': 0,
-                                                 'remaining_reviews': 9}],
-                                         't0': [{'badge': 't0',
+                                                 'remaining_reviews': 9},
+                                         't0': {'badge': 't0',
                                                  'challenge': 'play_time',
                                                  'progress_pct': 1,
-                                                 'remaining_time_secs': 85400}]})
+                                                 'remaining_time_secs': 85400}})
 
-        self.assertEqual(serialized, 'c1_1_56600_1--c2_2_56600_1_57600_0--f0_1_85400_1--s0_1_3_0--s1_1_6_0--s2_1_9_0--t0_1_85400_1')
+        self.assertEqual(serialized, 'c1_56600_1--c2_56600_1--f0_85400_1--s0_3_0--s1_6_0--s2_9_0--t0_85400_1')
 
     def test_serialize_grumpy_cat(self):
         serialized = serialize_board([{'badge': 'f0', 'is_active': True},

@@ -20,10 +20,9 @@ badgeProgressKey = {
 
 def serialize_progress(progress: dict) -> str:
     serialized_items = []
-    for badge, items in progress.items():
-        chunk = badge + "_" + str(len(items))
-        for item in items:
-            chunk += "_" + str(item[badgeProgressKey[badge]]) + "_" + str(item["progress_pct"])
+    for badge, item in progress.items():
+        chunk = badge
+        chunk += "_" + str(item[badgeProgressKey[badge]]) + "_" + str(item["progress_pct"])
         serialized_items.append(chunk)
     return "--".join(serialized_items)
 

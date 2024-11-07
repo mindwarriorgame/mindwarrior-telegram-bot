@@ -38,7 +38,7 @@ class Board {
         return this.newBadge === 'c0';
     }
 
-    addCell(item, progressItems) {
+    addCell(item, progressItem) {
         let itemHtml = "";
         let isTarget = false;
         if (item.badge === 'c0') {
@@ -86,26 +86,27 @@ class Board {
                 // Leave instructions for grumpy cat: it might become active on board and the user would like to
                 // know how to get rid of it
                 itemHtml = itemHtml.replace('<a', '<a style="display:none;" ');
-                itemHtml = itemHtml.replace('width: 100%', 'width: ' + 0 + '%');
+                itemHtml = itemHtml.replace('cell-progress', 'cell-progress green');
+                itemHtml = itemHtml.replace("class=\"lock\"", "class=\"lock\" style=\"display:none;\"");
             }
 
-        } else if (progressItems) {
-            itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\', \'' + window.Base64.encode(JSON.stringify(progressItems)) + '\')');
+        } else if (progressItem) {
+            itemHtml = itemHtml.replace('openPopup()', 'openPopup(\'' + item.badge + '\', \'' + window.Base64.encode(JSON.stringify(progressItem)) + '\')');
 
-            let pct = 0;
-            for (let actionIdx = 0; actionIdx < progressItems.length; actionIdx++) {
-                const action = progressItems[actionIdx];
-                pct += action.progress_pct;
-            }
-            pct = Math.floor(pct / progressItems.length);
-            itemHtml = itemHtml.replace('width: 100%', 'width: ' + pct + '%');
-            if (pct < 33) {
+            itemHtml = itemHtml.replace('width: 100%', 'width: ' + progressItem.progress_pct + '%');
+            if (progressItem.progress_pct < 33) {
                 itemHtml = itemHtml.replace('cell-progress', 'cell-progress red');
-            } else if (pct < 66) {
+            } else if (progressItem.progress_pct < 66) {
                 itemHtml = itemHtml.replace('cell-progress', 'cell-progress yellow');
             } else {
                 itemHtml = itemHtml.replace('cell-progress', 'cell-progress green');
             }
+
+            itemHtml = itemHtml.replace("class=\"lock\"", "class=\"lock\" style=\"display:none;\"");
+        } else {
+            // Items without progress remain locked
+            itemHtml = itemHtml.replace('<a', '<a style="display:none;" ');
+            itemHtml = itemHtml.replace('width: 100%', 'width: ' + 0 + '%');
         }
         this.boardEltWrapper.innerHTML += itemHtml;
     }

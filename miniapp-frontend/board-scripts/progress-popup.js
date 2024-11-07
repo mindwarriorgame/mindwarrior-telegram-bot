@@ -11,52 +11,33 @@ function renderProgressBar(pct) {
         </div>`;
 }
 
-function renderReviewWithoutSomething(template, step, inactive, pct, timeSecs, withProgressBar)  {
-    let stepPrefix = '';
-    if (step) {
-        stepPrefix = `${step}. `;
-    }
+function renderReviewWithoutSomething(template, pct, timeSecs)  {
     const ret = [
-        '<p class="pct' + (inactive ? 100 : 0) + '">',
-
-        (pct == 100) ? '✅ ' : '',
-        stepPrefix,
-
+        '<p>',
         template.replace('###', toTimeInterval(timeSecs)),
         '</p>'
     ];
-    if (withProgressBar) {
-        ret.push(renderProgressBar(pct));
-    }
+    ret.push(renderProgressBar(pct));
     return ret.join(' ');
 }
 
-function openPopup(badge, actionsBase64) {
-    const actions = JSON.parse(window.Base64.decode(actionsBase64 || window.Base64.encode('{}')));
+function openPopup(badge, progressBase64) {
+    const progress = JSON.parse(window.Base64.decode(progressBase64 || window.Base64.encode('{}')));
     let content = `<img src="../badge-images/${badge}_512.jpg" />`;
+
+    const timeBadges = {
+        'c1': window.lang.review_without_misses_duration,
+        'c2': window.lang.review_without_reminders_duration,
+        'f0': window.lang.update_formula_after,
+        't0': window.lang.play_game,
+    };
+
     if (badge === 'c0') {
         content += `<p>${window.lang.kick_out}</p>`;
-    } else if (badge === 'c1') {
-        let action = actions[0];
-        content += renderReviewWithoutSomething(window.lang.review_without_misses_duration, null, action.progress_pct == 100, action.progress_pct, action.remaining_time_secs, true);
-    } else if (badge === 'c2') {
-        let action1 = actions[0];
-        content += renderReviewWithoutSomething(window.lang.review_without_misses_duration, 1, action1.progress_pct == 100, action1.progress_pct, action1.remaining_time_secs, action1.progress_pct < 100);
-
-        action2 = actions[1];
-        content += renderReviewWithoutSomething(window.lang.review_without_reminders_duration, 2, action1.progress_pct < 100, action2.progress_pct, action2.remaining_time_secs, action1.progress_pct == 100 && action2.progress_pct < 100);
-    } else if (badge === 'f0') {
-        let action = actions[0];
-        content += `<p>${window.lang.update_formula_after.replace('###', toTimeInterval(action.remaining_time_secs))}</p>`;
-        content += renderProgressBar(action.progress_pct);
-    } else if (badge === 't0') {
-        let action = actions[0];
-        content += `<p>${window.lang.play_game.replace('###', toTimeInterval(action.remaining_time_secs))}</p>`;
-        content += renderProgressBar(action.progress_pct);
-    } else if (badge === 's0' || badge === 's1' || badge === 's2') {
-        let action = actions[0];
-        content += `<p>${window.lang.review_without_misses_times.replace('###', action.remaining_reviews)}</p>`;
-        content += renderProgressBar(action.progress_pct);
+    } else if (timeBadges[badge]) {
+        content += renderReviewWithoutSomething(timeBadges[badge], progress.progress_pct, progress.remaining_time_secs);
+    } else {
+        content += renderReviewWithoutSomething(window.lang.review_without_misses_times, progress.progress_pct, progress.remaining_reviews);
     }
 
     content += `<p><button class='action-btn' onclick='closePopup()'>${window.lang.close}</button></p>`;
