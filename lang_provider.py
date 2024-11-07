@@ -172,6 +172,7 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                    "revoyez simplement votre <i>Formule</i> en utilisant le bouton ci-dessous.",
 
     stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.fr.html#review\">Étoiles gagnées</a> : {score}\n"
+                   "🏆 Level : {level}\n"
                    "⌛ Temps de jeu actif : {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">Niveau de difficulté</a> : {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.fr.html#pause\">En pause ?</a> {paused}\n"
@@ -338,6 +339,7 @@ Presiona el botón de abajo para iniciar el juego.""",
                    "simplemente revisa tu <i>Fórmula</i> con el botón a continuación.",
 
     stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.es.html#review\">Estrellas ganadas</a>: {score}\n"
+                   "🏆 Level: {level}\n"
                    "⌛ Tiempo de juego activo: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Dificultad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.es.html#pause\">¿Pausado?</a> {paused}\n"
@@ -502,6 +504,7 @@ Press the button below to start the game.""",
 
     # TODO: add level
     stats_command=("💠 <a href=\"https://mindwarriorgame.org/faq.en.html#review\">Earned crystals</a>: {score}\n"
+                   "🏆 Level : {level}\n"
                    "⌛ Active play time: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.en.html#pause\">Paused?</a> {paused}\n"
@@ -663,6 +666,7 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                    "überprüfe einfach deine <i>Formel</i> mit dem untenstehenden Knopf.",
 
     stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.de.html#review\">Erworbene Sterne</a>: {score}\n"
+                   "🏆 Level : {level}\n"
                    "⌛ Aktive Spielzeit: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">Pausiert?</a> {paused}\n"
@@ -827,8 +831,8 @@ ru = Lang(
                    "\n"
                    "Для снятия с паузы просмотрите свою <i>Формулу</i> с помощью кнопки ниже.",
 
-    # TODO: add level
     stats_command=("💠 <a href=\"https://mindwarriorgame.org/faq.ru.html#review\">Заработано кристаллов</a>: {score}\n"
+                   "🏆 Уровень: {level}\n"
                    "⌛ Время активной войны: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">Сложность игры</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.ru.html#pause\">На паузе?</a> {paused}\n"

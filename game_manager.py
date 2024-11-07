@@ -654,6 +654,7 @@ class GameManager:
             'to_chat_id': chat_id,
             'message': lang.stats_command.format(
                 score=rewards,
+                level=badges_manager.get_level() + 2 if badges_manager.is_level_completed() else badges_manager.get_level() + 1,
                 difficulty=lang.difficulties[difficulty],
                 difficulty_details=str(difficulty + 1) + "/" + str(len(lang.difficulties)),
                 time=self._format_time_minutes(lang, active_play_time_seconds),

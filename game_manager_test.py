@@ -483,6 +483,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'menu_commands': [],
                                 'message': '💠 <a href="https://mindwarriorgame.org/faq.en.html#review">Earned '
                                            'crystals</a>: 5\n'
+                                           '🏆 Level : 1\n'
                                            '⌛ Active play time: 0d 0h 15m\n'
                                            '💪 <a '
                                            'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty</a>: '
