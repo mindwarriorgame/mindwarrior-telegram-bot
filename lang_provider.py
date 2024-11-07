@@ -833,7 +833,7 @@ ru = Lang(
 
     stats_command=("💠 <a href=\"https://mindwarriorgame.org/faq.ru.html#review\">Заработано кристаллов</a>: {score}\n"
                    "🏆 Уровень: {level}\n"
-                   "⌛ Время активной войны: {time}\n"
+                   "⌛ Время активной игры: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">Сложность игры</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.ru.html#pause\">На паузе?</a> {paused}\n"
                    "❄️ <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Время до следующей награды</a>: {cooldown}\n"
