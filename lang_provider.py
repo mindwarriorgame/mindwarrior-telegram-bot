@@ -561,13 +561,13 @@ Press the button below to start the game.""",
     penalty_msg_no_penalty_first_time = "No penalty (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">\"{difficulty}\" level, first miss</a> 😬)",
     penalty_msg_first_time = "♦️ You've lost {penalty} crystals (first miss)\n"
                              "\n"
-                             "💠 Remaining stars: {score}",
+                             "💠 Remaining crystals: {score}",
     penalty_msg_generic_small = "♦️ You've lost {penalty} crystals\n"
                                 "\n"
-                                "💠 Remaining stars: {score}",
+                                "💠 Remaining crystals: {score}",
     penalty_msg_generic_full = "♦️ You've lost {penalty} crystals\n"
                                "\n"
-                               "💠 Remaining stars: {score}",
+                               "💠 Remaining crystals: {score}",
     penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
                    "\n"
                    "{penalty_msg}",

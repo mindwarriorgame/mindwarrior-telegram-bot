@@ -41,7 +41,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=c1_1_43200_0--c2_2_43200_0_43200_0--t0_1_64800_0--s0_1_2_0--s1_1_4_0--s2_1_6_0--f0_1_64800_0'}],
+                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=s0_3_0'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': "🏆 You've got a new achievement!\n"
@@ -136,7 +136,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                      {'text': 'View achievements 🏆',
-                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=c1_1_28800_0--c2_2_28800_0_28800_0--t0_1_21000_51--s0_1_2_0--s1_1_4_0--s2_1_6_0--f0_1_21000_51'}],
+                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
                                          'image': None,
                                          'menu_commands': [],
                                          'message': '😾 Oops! A grumpy cat sneaked in!\n'
@@ -167,7 +167,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                      {'text': 'View achievements 🏆',
-                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=c1_1_43200_0--c2_2_43200_0_43200_0--t0_1_53400_17--s0_1_2_0--s1_1_4_0--s2_1_6_0--f0_1_53400_17'}],
+                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
                                          'image': None,
                                          'menu_commands': [],
                                          'message': '😾 Oops! A grumpy cat sneaked in!\n'
@@ -185,7 +185,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(user['rewards'], 0)
 
     @time_machine.travel("2022-04-21", tick=False)
-    def test_process_tick_does_not_reduce_scores_for_easy_after_second_miss(self):
+    def test_process_tick_does_reduce_scores_for_easy_after_second_miss(self):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         user['difficulty'] = 1
@@ -201,19 +201,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                     with time_machine.travel("2022-04-21 06:20", tick=False):
                         data = self.game_manager.process_tick()
                         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
-                                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
-                                                             {'text': 'View achievements 🏆',
-                                                              'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0a&bp1=c1_1_31800_26--c2_2_31800_26_43200_0--t0_1_42000_35--s0_1_2_0--s1_1_4_0--s2_1_6_0--f0_1_42000_35'}],
+                                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                                  'image': None,
                                                  'menu_commands': [],
-                                                 'message': '😾 Oops! A grumpy cat sneaked in!\n'
-                                                            'Press "View achievements" button below.\n'
-                                                            '\n'
-                                                            'You forgot to review your <i>Formula</i> 🟥\n'
+                                                 'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                                             '\n'
                                                             "♦️ You've lost 3 crystals\n"
                                                             '\n'
-                                                            '💠 Remaining stars: -3',
+                                                            '💠 Remaining crystals: -3',
                                                  'to_chat_id': 1}])
                         user = self.users_orm.get_user_by_id(1)
                         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 9, 5).astimezone(datetime.timezone.utc))
@@ -295,7 +290,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=c1_1_86400_0--c2_2_86400_0_86400_0--t0_1_129600_0--s0_1_4_0--s1_1_8_0--s2_1_12_0--f0_1_129600_0'}],
+                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=s0_7_0'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': "🏆 You've got a new achievement!\n"
@@ -478,7 +473,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_stats_command(1)
         self.assertEqual(data, {'buttons': [{'text': 'View achievements 🏆',
-                                             'url': 'http://frontend?lang=en&level=1&b1=f0_s0_c0&bp1=c1_1_57600_0--c2_2_57600_0_57600_0--t0_1_86400_0--s0_1_3_0--s1_1_6_0--s2_1_9_0--f0_1_86400_0'}],
+                                             'url': 'http://frontend?lang=en&level=1&b1=f0_s0_c0&bp1=s0_5_0--f0_86400_0'}],
                                 'image': None,
                                 'menu_commands': [],
                                 'message': '💠 <a href="https://mindwarriorgame.org/faq.en.html#review">Earned '

@@ -11,10 +11,10 @@ function renderProgressBar(pct) {
         </div>`;
 }
 
-function renderReviewWithoutSomething(template, pct, timeSecs)  {
+function renderReviewWithoutSomething(template, pct, counter, counterIsTime= true)  {
     const ret = [
         '<p>',
-        template.replace('###', toTimeInterval(timeSecs)),
+        template.replace('###', counterIsTime ? toTimeInterval(counter) : counter),
         '</p>'
     ];
     ret.push(renderProgressBar(pct));
@@ -37,7 +37,7 @@ function openPopup(badge, progressBase64) {
     } else if (timeBadges[badge]) {
         content += renderReviewWithoutSomething(timeBadges[badge], progress.progress_pct, progress.remaining_time_secs);
     } else {
-        content += renderReviewWithoutSomething(window.lang.review_without_misses_times, progress.progress_pct, progress.remaining_reviews);
+        content += renderReviewWithoutSomething(window.lang.review_without_misses_times, progress.progress_pct, progress.remaining_reviews, false);
     }
 
     content += `<p><button class='action-btn' onclick='closePopup()'>${window.lang.close}</button></p>`;
