@@ -78,7 +78,7 @@ class BadgesManager:
     def __init__(self, difficulty, badges_serialized = None):
         self.difficulty = difficulty
         if badges_serialized is None or badges_serialized == "":
-            self.data = UserBadgesData(badges_state={}, board=self._level_to_new_board(LEVELS[0]), level=0)
+            self.data = UserBadgesData(badges_state={}, board=self._level_to_new_board(LEVELS[0]), level=0, c0_hp=0, c0_hp_next_delta=3, last_badge=None)
         else:
             self.data = UserBadgesData(**json.loads(badges_serialized))
 
@@ -103,10 +103,10 @@ class BadgesManager:
             self.data["c0_hp"] = 0
             for cell in self.data["board"]:
                 if cell["badge"] == "c0" and cell.get("is_active"):
-                    self._reset_grumpy_cat_healthpoints()
+                    self.data["c0_hp"] = self._max_grumpy_cat_healthpoints()
 
-    def _reset_grumpy_cat_healthpoints(self):
-        self.data["c0_hp"] = 5 * (self.difficulty + 1)
+    def _max_grumpy_cat_healthpoints(self):
+        return 5 * (self.difficulty + 1)
 
     def on_game_started(self, active_play_time_secs: float) -> Optional[str]:
         # "terminate_if_found" is False we need to initialize all counters. That's a rare case when two badges might be have given
@@ -134,7 +134,7 @@ class BadgesManager:
             if self.data["c0_hp"] == 0:
                 self._kick_off_grump_cat()
                 if self.count_active_grumpy_cats_on_board() > 0:
-                    self._reset_grumpy_cat_healthpoints()
+                    self.data["c0_hp"] = self._max_grumpy_cat_healthpoints()
 
                 return "c0_removed"
 
@@ -203,7 +203,7 @@ class BadgesManager:
             self.data["board"], self.data["last_badge"] = self._put_badge_to_board(badge_to_put_on_board)
 
             if self.data["last_badge"] == "c0" and self.data["c0_hp"] == 0:
-                self._reset_grumpy_cat_healthpoints()
+                self.data["c0_hp"] = self._max_grumpy_cat_healthpoints()
 
             return self.data["last_badge"]
         else:
@@ -218,7 +218,7 @@ class BadgesManager:
         return inactive_badges
 
     def progress(self, active_play_time_secs: float):
-        badges = ["f0", "s0", "s1", "s2", "t0", "c1", "c2"]
+        badges = ["f0", "s0", "s1", "s2", "t0", "c1", "c2", "c0"]
 
         counters = [
             CatBadgeCounter(),
@@ -230,7 +230,17 @@ class BadgesManager:
         all_progress = {}
         for counter in counters:
             for badge in badges:
-                maybe_progress = counter.progress(badge, int(active_play_time_secs), self.data["badges_state"].get(counter.__class__.__name__), self.difficulty, self._get_inactive_badges_on_board(self.data['board']))
+                maybe_progress = None
+                if badge == "c0":
+                    maybe_progress = {
+                        "remaining_reviews": self.data["c0_hp"],
+                        "challenge": "review",
+                        "badge": badge,
+                        "progress_pct": 100 - (self.data["c0_hp"] * 100 // self._max_grumpy_cat_healthpoints())
+                    }
+                else:
+                    maybe_progress = counter.progress(badge, int(active_play_time_secs), self.data["badges_state"].get(counter.__class__.__name__), self.difficulty, self._get_inactive_badges_on_board(self.data['board']))
+
                 if maybe_progress is not None:
                     all_progress[badge] = maybe_progress
 

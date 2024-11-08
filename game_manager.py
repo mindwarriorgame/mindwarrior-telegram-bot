@@ -780,6 +780,8 @@ class GameManager:
 
         badge = getattr(badges_manager, event)(active_play_time_secs)
 
+
+
         user['badges_serialized'] = badges_manager.serialize()
         self.users_orm.upsert_user(user)
 
