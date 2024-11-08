@@ -39,9 +39,13 @@ class BoardSerializedTest(unittest.IsolatedAsyncioTestCase):
                                          't0': {'badge': 't0',
                                                  'challenge': 'play_time',
                                                  'progress_pct': 1,
-                                                 'remaining_time_secs': 85400}})
+                                                 'remaining_time_secs': 85400},
+                                         'c0': {'badge': 'c0',
+                                                 'challenge': 'review',
+                                                 'progress_pct': 7,
+                                                 'remaining_reviews': 14}})
 
-        self.assertEqual(serialized, 'c1_56600_1--c2_56600_1--f0_85400_1--s0_3_0--s1_6_0--s2_9_0--t0_85400_1')
+        self.assertEqual(serialized, 'c1_56600_1--c2_56600_1--f0_85400_1--s0_3_0--s1_6_0--s2_9_0--t0_85400_1--c0_14_7')
 
     def test_serialize_grumpy_cat(self):
         serialized = serialize_board([{'badge': 'f0', 'is_active': True},

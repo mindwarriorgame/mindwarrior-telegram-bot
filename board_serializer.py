@@ -15,7 +15,8 @@ badgeProgressKey = {
     't0': "remaining_time_secs",
     's0': "remaining_reviews",
     's1': "remaining_reviews",
-    's2': "remaining_reviews"
+    's2': "remaining_reviews",
+    'c0': "remaining_reviews",
 };
 
 def serialize_progress(progress: dict) -> str:
