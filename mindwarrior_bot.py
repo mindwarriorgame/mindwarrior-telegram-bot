@@ -18,7 +18,7 @@ FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL')
 
 bot = Bot(token=TOKEN)
 
-game_manager = GameManager("mindwarrior.db", ENV, FRONTEND_BASE_URL)
+game_manager = GameManager("mindwarrior2.db", ENV, FRONTEND_BASE_URL)
 
 async def process_ticks():
     global game_manager

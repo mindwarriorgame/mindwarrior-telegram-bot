@@ -5,6 +5,7 @@ import unittest
 import time_machine
 import time
 
+from badges_manager import BadgesManager
 from counter import Counter
 from game_manager import GameManager
 from users_orm import UsersOrm
@@ -44,10 +45,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                               'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=s0_3_0'}],
                                  'image': None,
                                  'menu_commands': [],
-                                 'message': "🏆 You've got a new achievement!\n"
-                                            'Press "View achievements" button below.\n'
+                                 'message': 'The game has started 🏁\n'
                                             '\n'
-                                            'The game has started 🏁\n'
+                                            "🏆 You've got a new achievement!\n"
+                                            'Press "View achievements" button below.\n'
                                             '\n'
                                             '💪<a '
                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
@@ -62,23 +63,21 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
 
         self.assertIsNone(user['paused_counter_state'])
-
         self.assertIsNotNone(user['active_game_counter_state'])
+
         counter = Counter(user['active_game_counter_state'])
         self.assertTrue(counter.is_active())
 
         self.assertEqual(user['difficulty'], 1)
-        self.assertEqual(user['rewards'], 0)
-        self.assertEqual(user['last_reward_time'], None)
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 2, 45).astimezone(datetime.timezone.utc))
         self.assertEqual(user['next_prompt_type'], 'reminder')
 
         self.assertIsNotNone(user['review_counter_state'])
         counter = Counter(user['review_counter_state'])
         self.assertTrue(counter.is_active())
-
+        badges_manager = BadgesManager(user['badges_serialized'])
+        self.assertEqual(badges_manager.get_last_badge(), "f0")
         self.assertEqual(counter.get_total_seconds(), 0)
-
 
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -122,15 +121,24 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
 
     @time_machine.travel("2022-04-21", tick=False)
-    def test_process_tick_does_not_reduce_score_for_beginner(self):
+    def test_process_tick_brings_grumpy_cat(self):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         user['difficulty'] = 0
         self.users_orm.upsert_user(user)
         self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+
         user = self.users_orm.get_user_by_id(1)
         with time_machine.travel("2022-04-21 05:50", tick=False):
-            self.game_manager.process_tick()
+            data = self.game_manager.process_tick()
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                  'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                     'image': None,
+                                     'menu_commands': [],
+                                     'message': "Don't forget to review your <i>Formula</i>! ⏰\n"
+                                                '\n'
+                                                'The due time is in 15 minutes, hurry up!',
+                                     'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
@@ -139,86 +147,58 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                       'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
                                          'image': None,
                                          'menu_commands': [],
-                                         'message': '😾 Oops! A grumpy cat sneaked in!\n'
-                                                    'Press "View achievements" button below.\n'
+                                         'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                                     '\n'
-                                                    'You forgot to review your <i>Formula</i> 🟥\n'
+                                                    '😾 Oops! A grumpy cat sneaked in!\n'
+                                                    'Press "View achievements" button below.',
+                                         'to_chat_id': 1}])
+                user = self.users_orm.get_user_by_id(1)
+                self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
+                self.assertEqual(user['next_prompt_type'], 'reminder')
+                badges = BadgesManager(user['badges_serialized'])
+                self.assertEqual(badges.get_last_badge(), "c0")
+
+    @time_machine.travel("2022-04-21", tick=False)
+    def test_process_tick_grumpy_cat_blocking(self):
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        user['difficulty'] = 0
+        self.users_orm.upsert_user(user)
+
+        self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+
+        user = self.users_orm.get_user_by_id(1)
+        badges_manager = BadgesManager(user['badges_serialized'])
+        badges_manager.on_penalty(0, 1)
+        user['badges_serialized'] = badges_manager.serialize()
+        self.users_orm.upsert_user(user)
+
+        with time_machine.travel("2022-04-21 05:50", tick=False):
+            data = self.game_manager.process_tick()
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                  'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                     'image': None,
+                                     'menu_commands': [],
+                                     'message': "Don't forget to review your <i>Formula</i>! ⏰\n"
+                                                '\n'
+                                                'The due time is in 15 minutes, hurry up!',
+                                     'to_chat_id': 1}])
+            with time_machine.travel("2022-04-21 06:10", tick=False):
+                data = self.game_manager.process_tick()
+                self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                      'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                     {'text': 'View achievements 🏆',
+                                                      'url': 'http://frontend?lang=en&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
+                                         'image': None,
+                                         'menu_commands': [],
+                                         'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                                     '\n'
-                                                    'No penalty (<a '
-                                                    'href="https://mindwarriorgame.org/faq.en.html#difficulty">"Beginner" '
-                                                    'level</a>)',
+                                                    '⛔🏆😾 A grumpy cat is blocking new achievements!',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
                 self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
                 self.assertEqual(user['next_prompt_type'], 'reminder')
 
-    @time_machine.travel("2022-04-21", tick=False)
-    def test_process_tick_does_not_reduce_scores_in_lenient_mode_for_easy(self):
-        user = self.users_orm.get_user_by_id(1)
-        user['lang_code'] = 'en'
-        user['difficulty'] = 1
-        self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
-        user = self.users_orm.get_user_by_id(1)
-        with time_machine.travel("2022-04-21 02:50", tick=False):
-            self.game_manager.process_tick()
-            with time_machine.travel("2022-04-21 03:10", tick=False):
-                data = self.game_manager.process_tick()
-                self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
-                                                      'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
-                                                     {'text': 'View achievements 🏆',
-                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
-                                         'image': None,
-                                         'menu_commands': [],
-                                         'message': '😾 Oops! A grumpy cat sneaked in!\n'
-                                                    'Press "View achievements" button below.\n'
-                                                    '\n'
-                                                    'You forgot to review your <i>Formula</i> 🟥\n'
-                                                    '\n'
-                                                    'No penalty (<a '
-                                                    'href="https://mindwarriorgame.org/faq.en.html#difficulty">"Easy" '
-                                                    'level, first miss</a> 😬)',
-                                         'to_chat_id': 1}])
-                user = self.users_orm.get_user_by_id(1)
-                self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 5, 55).astimezone(datetime.timezone.utc))
-                self.assertEqual(user['next_prompt_type'], 'reminder')
-                self.assertEqual(user['rewards'], 0)
-
-    @time_machine.travel("2022-04-21", tick=False)
-    def test_process_tick_does_reduce_scores_for_easy_after_second_miss(self):
-        user = self.users_orm.get_user_by_id(1)
-        user['lang_code'] = 'en'
-        user['difficulty'] = 1
-        self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
-        user = self.users_orm.get_user_by_id(1)
-        with time_machine.travel("2022-04-21 02:50", tick=False):
-            self.game_manager.process_tick() # reminder
-            with time_machine.travel("2022-04-21 03:10", tick=False):
-                self.game_manager.process_tick() # first penalty
-                with time_machine.travel("2022-04-21 06:00", tick=False):
-                    self.game_manager.process_tick() # reminder
-                    with time_machine.travel("2022-04-21 06:20", tick=False):
-                        data = self.game_manager.process_tick()
-                        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
-                                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
-                                                             {'text': 'View achievements 🏆',
-                                                              'url': 'http://frontend?lang=en&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
-                                                 'image': None,
-                                                 'menu_commands': [],
-                                                 'message': '⛔🏆 Grumpy cat is blocking the achievements! Press "View '
-                                                            'achievements" button below to kick it out.\n'
-                                                            '\n'
-                                                            'You forgot to review your <i>Formula</i> 🟥\n'
-                                                            '\n'
-                                                            "♦️ You've lost 3 crystals\n"
-                                                            '\n'
-                                                            '💠 Remaining crystals: -3',
-                                                 'to_chat_id': 1}])
-                        user = self.users_orm.get_user_by_id(1)
-                        self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 9, 5).astimezone(datetime.timezone.utc))
-                        self.assertEqual(user['next_prompt_type'], 'reminder')
-                        self.assertEqual(user['rewards'], -3)
 
     @time_machine.travel("2022-04-21", tick=False)
     def test_on_review_first_time(self):
@@ -228,8 +208,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(65)
         user['review_counter_state'] = counter.serialize()
         user['difficulty']  = 4
-        user['rewards'] = 5
-        user['last_reward_time'] = datetime.datetime(2022, 4, 20)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         user['active_game_counter_state'] = counter.serialize()
@@ -255,8 +233,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(65)
         user['review_counter_state'] = counter.serialize()
         user['difficulty']  = 4
-        user['rewards'] = 5
-        user['last_reward_time'] = datetime.datetime(2022, 4, 20)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         counter.move_time_back(25)
@@ -284,8 +260,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(1)
         user['paused_counter_state'] = counter.serialize()
         user['difficulty']  = 4
-        user['rewards'] = 5
-        user['last_reward_time'] = datetime.datetime(2022, 4, 20).astimezone(datetime.timezone.utc)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
@@ -298,10 +272,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                               'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=s0_7_0'}],
                                  'image': None,
                                  'menu_commands': [],
-                                 'message': "🏆 You've got a new achievement!\n"
-                                            'Press "View achievements" button below.\n'
+                                 'message': 'The game has started 🏁\n'
                                             '\n'
-                                            'The game has started 🏁\n'
+                                            "🏆 You've got a new achievement!\n"
+                                            'Press "View achievements" button below.\n'
                                             '\n'
                                             '💪<a '
                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
@@ -320,8 +294,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(counter.is_active())
         self.assertLess(abs(counter.get_total_seconds()), 0.001)
         self.assertEqual(user['difficulty'], 4)
-        self.assertEqual(user['rewards'], 0)
-        self.assertEqual(user['last_reward_time'], None)
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 0, 45).astimezone(datetime.timezone.utc))
         counter = Counter(user['review_counter_state'])
         self.assertEqual(counter.is_active(), True)
@@ -343,16 +315,15 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45'}])
 
     @time_machine.travel("2022-04-22", tick=False)
-    def test_set_difficulty_updates_difficulty_resets_scores_for_high_levels(self):
+    def test_set_difficulty_updates_resets_scores(self):
         user = self.users_orm.get_user_by_id(1)
         counter = Counter("")
         counter.resume()
         counter.move_time_back(15)
         user['paused_counter_state'] = counter.serialize()
+        user['badges_serialized'] = 'blah'
         user['difficulty']  = 2
-        user['rewards'] = 5
         user['active_game_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 21)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
@@ -370,7 +341,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '\n'
                                            '<b>Medium -> Hard</b>\n'
                                            '\n'
-                                           '💠 Total crystals: 0\n'
                                            '🏆 Level: 1\n'
                                            '⏳ Play time: 0d 0h 0m\n'
                                            '\n'
@@ -378,9 +348,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'to_chat_id': 1})
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['difficulty'], 3)
-        self.assertEqual(user['rewards'], 0)
         self.assertIsNone(user['paused_counter_state'])
-        self.assertEqual(user['last_reward_time'], None)
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 22, 1, 0).astimezone(datetime.timezone.utc))
         self.assertEqual(user['next_prompt_type'], 'penalty')
 
@@ -394,6 +362,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(counter.get_total_seconds(), 0)
 
         self.assertIsNone(user['counters_history_serialized'])
+        self.assertEqual(user['badges_serialized'], '')
 
     @time_machine.travel("2022-04-22", tick=False)
     def test_set_difficulty_sets_next_reminder_for_low_levels(self):
@@ -403,9 +372,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(15)
         user['paused_counter_state'] = counter.serialize()
         user['difficulty']  = 2
-        user['rewards'] = 5
         user['active_game_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 21)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
@@ -423,7 +390,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '\n'
                                            '<b>Medium -> Easy</b>\n'
                                            '\n'
-                                           '💠 Total crystals: 0\n'
                                            '🏆 Level: 1\n'
                                            '⏳ Play time: 0d 0h 0m\n'
                                            '\n'
@@ -431,9 +397,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'to_chat_id': 1})
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['difficulty'], 1)
-        self.assertEqual(user['rewards'], 0)
         self.assertIsNone(user['paused_counter_state'])
-        self.assertEqual(user['last_reward_time'], None)
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 22, 2, 45).astimezone(datetime.timezone.utc))
         self.assertEqual(user['next_prompt_type'], 'reminder')
 
@@ -446,7 +410,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(15)
         user['paused_counter_state'] = counter.serialize()
         user['difficulty']  = 2
-        user['rewards'] = 5
         user['active_game_counter_state'] = counter.serialize()
         user['last_reward_time'] = datetime.datetime(2022, 4, 21)
         user['lang_code'] = 'en'
@@ -468,9 +431,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(15)
         user['paused_counter_state'] = counter.serialize()
         user['difficulty']  = 2
-        user['rewards'] = 5
         user['active_game_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 21)
         user['next_prompt_time'] = datetime.datetime(2022, 4, 22, 1, 45).astimezone(datetime.timezone.utc)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
@@ -481,9 +442,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              'url': 'http://frontend?lang=en&level=1&b1=f0_s0_c0&bp1=s0_5_0--f0_86400_0'}],
                                 'image': None,
                                 'menu_commands': [],
-                                'message': '💠 <a href="https://mindwarriorgame.org/faq.en.html#review">Earned '
-                                           'crystals</a>: 5\n'
-                                           '🏆 Level : 1\n'
+                                'message': '🏆 Level : 1\n'
                                            '⌛ Active play time: 0d 0h 15m\n'
                                            '💪 <a '
                                            'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty</a>: '
@@ -507,7 +466,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(15)
         user['paused_counter_state'] = None
         user['active_game_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 21)
         user['next_prompt_time'] = datetime.datetime(2022, 4, 22, 1, 45).astimezone(datetime.timezone.utc)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
@@ -597,18 +555,16 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'to_chat_id': 1})
 
     @time_machine.travel("2022-04-21", tick=False)
-    def test_on_data_reviewed_records_counter_histories_and_adds_one_star(self):
+    def test_on_formula_reviewed_resumed(self):
         user = self.users_orm.get_user_by_id(1)
         counter = Counter("")
         counter.resume()
         counter.move_time_back(15)
         user['paused_counter_state'] = counter.serialize()
         user['difficulty']  = 2
-        user['rewards'] = 5
         counter.move_time_back(10)
         user['active_game_counter_state'] = counter.serialize()
         user['review_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 20)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
 
@@ -620,11 +576,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'menu_commands': [],
                                  'message': 'The game is resumed.\n'
                                             '<i>Formula</i> has been reviewed 🎉\n'
-                                            '\n'
-                                            "<b>💎 You've got a new crystal!</b>\n"
-                                            '\n'
-                                            '💠 Total crystals: 6\n'
-                                            '⏳ Play time: 0d 0h 25m\n'
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'
@@ -635,41 +586,80 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(user['counters_history_serialized'], '['
                                                               '{"counter_name": "paused", "counter_stopped_duration_secs": 900, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}, '
                                                               '{"counter_name": "review", "counter_stopped_duration_secs": 1500, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}]')
-        self.assertEqual(user['rewards'], 6)
-        self.assertEqual(user['last_reward_time'], datetime.datetime(2022, 4, 21).astimezone(datetime.timezone.utc))
+        badges = BadgesManager(user['badges_serialized'])
+        self.assertEqual(badges.is_level_completed(), False)
         self.assertEqual(user['next_prompt_type'], 'reminder')
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 1, 15).astimezone(datetime.timezone.utc))
 
     @time_machine.travel("2022-04-21", tick=False)
-    def test_on_data_reviewed_records_counter_histories_and_adds_two_stars(self):
+    def test_on_formula_reviewed_adds_badges(self):
         user = self.users_orm.get_user_by_id(1)
         counter = Counter("")
         counter.resume()
         counter.move_time_back(15)
         user['paused_counter_state'] = counter.serialize()
         user['difficulty']  = 0
-        user['rewards'] = 5
         counter.move_time_back(10)
         user['active_game_counter_state'] = counter.serialize()
         user['review_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 20)
         user['lang_code'] = 'en'
         user['next_prompt_type'] = 'reminder'
+        badges = BadgesManager(user['badges_serialized'])
+        badges.on_review(0, 1)
+        badges.on_review(0, 1)
+        user['badges_serialized'] = badges.serialize()
         self.users_orm.upsert_user(user)
 
         data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
-                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                             {'text': 'View achievements 🏆',
+                                              'url': 'http://frontend?lang=en&new_badge=s0&level=1&b1=f0_s0am_c0&bp1=f0_43200_0'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': 'The game is resumed.\n'
                                             '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
-                                            "<b>💎💎 You've got 2 new crystals!</b>\n"
+                                            "🏆 You've got a new achievement!\n"
+                                            'Press "View achievements" button below.\n'
                                             '\n'
-                                            '💠 Total crystals: 7\n'
-                                            '⏳ Play time: 0d 0h 25m\n'
+                                            'Next review before 12:15 am\n'
+                                            '\n'
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /stats - game progress',
+                                 'to_chat_id': 1}])
+
+    @time_machine.travel("2022-04-21", tick=False)
+    def test_on_formula_reviewed_grumpy_cat_blocks(self):
+        user = self.users_orm.get_user_by_id(1)
+        counter = Counter("")
+        counter.resume()
+        counter.move_time_back(15)
+        user['paused_counter_state'] = counter.serialize()
+        user['difficulty']  = 0
+        counter.move_time_back(10)
+        user['active_game_counter_state'] = counter.serialize()
+        user['review_counter_state'] = counter.serialize()
+        user['lang_code'] = 'en'
+        user['next_prompt_type'] = 'reminder'
+        badges = BadgesManager(user['badges_serialized'])
+        badges.on_penalty(0, 1)
+        user['badges_serialized'] = badges.serialize()
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                             {'text': 'View achievements 🏆',
+                                              'url': 'http://frontend?lang=en&level=1&b1=f0_s0_c0am&bp1=s0_3_0--f0_43200_0'}],
+                                 'image': None,
+                                 'menu_commands': [],
+                                 'message': 'The game is resumed.\n'
+                                            '<i>Formula</i> has been reviewed 🎉\n'
+                                            '\n'
+                                            '⛔🏆😾 A grumpy cat is blocking new achievements!\n'
                                             '\n'
                                             'Next review before 12:15 am\n'
                                             '\n'
@@ -680,16 +670,13 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
     @time_machine.travel("2022-04-21", tick=False)
     def test_on_data_reviewed_records_counter_histories_correctly_calculates_next_prompt_for_high_levels_without_prompts(self):
         user = self.users_orm.get_user_by_id(1)
+        user['paused_counter_state'] = None
+        user['difficulty']  = 3
         counter = Counter("")
         counter.resume()
-        counter.move_time_back(15)
-        user['paused_counter_state'] = counter.serialize()
-        user['difficulty']  = 3
-        user['rewards'] = 5
-        counter.move_time_back(10)
+        counter.move_time_back(25)
         user['active_game_counter_state'] = counter.serialize()
         user['review_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 20)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
 
@@ -699,13 +686,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                  'image': None,
                                  'menu_commands': [],
-                                 'message': 'The game is resumed.\n'
-                                            '<i>Formula</i> has been reviewed 🎉\n'
-                                            '\n'
-                                            "<b>💎 You've got a new crystal!</b>\n"
-                                            '\n'
-                                            '💠 Total crystals: 6\n'
-                                            '⏳ Play time: 0d 0h 25m\n'
+                                 'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             'Next review before 12:18 am\n'
                                             '\n'
@@ -713,26 +694,21 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             ' ‣ /stats - game progress',
                                  'to_chat_id': 1}])
         user = self.users_orm.get_user_by_id(1)
-        self.assertEqual(user['counters_history_serialized'], '['
-                                                              '{"counter_name": "paused", "counter_stopped_duration_secs": 900, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}, '
-                                                              '{"counter_name": "review", "counter_stopped_duration_secs": 1500, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}]')
-        self.assertEqual(user['rewards'], 6)
+        self.assertEqual(user['counters_history_serialized'], '[{"counter_name": "review", "counter_stopped_duration_secs": 1500, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}]')
         self.assertEqual(user['next_prompt_type'], 'penalty')
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 1, 0).astimezone(datetime.timezone.utc))
 
     @time_machine.travel("2022-04-21", tick=False)
-    def test_on_data_reviewed_cooldown_rule(self):
+    def test_on_formula_reviewed_cooldown_rule(self):
         user = self.users_orm.get_user_by_id(1)
         counter = Counter("")
         counter.resume()
         counter.move_time_back(15)
         user['paused_counter_state'] = counter.serialize()
         user['difficulty']  = 2
-        user['rewards'] = 5
         counter.move_time_back(10)
         user['active_game_counter_state'] = counter.serialize()
         user['review_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 20)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
 
@@ -745,16 +721,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'menu_commands': [],
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
-                                            'No reward (<a '
-                                            'href="https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).">cool-down '
-                                            'rule</a>)\n'
-                                            '\n'
-                                            '💠 Total crystals: 6\n'
-                                            '⏳ Play time: 0d 0h 25m\n'
+                                            '❄️ Early reviews are not rewarded.\n'
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'
-                                            ' ‣ /pause - pause the game',
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /stats - game progress',
                                  'to_chat_id': 1}])
 
     def test_formula_command_renders_set_letter_button(self):
@@ -780,6 +752,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
     def test_data_command(self):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
+        user['shared_key_uuid'] = 'abc'
         self.users_orm.upsert_user(user)
         self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
         self.game_manager.on_pause_command(1)
@@ -793,7 +766,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'menu_commands': [],
                                 'message': 'Your raw data:\n'
                                            '\n'
-                                           f" - shared_key_uuid: {user['shared_key_uuid']}\n"
+                                           ' - shared_key_uuid: abc\n'
                                            '\n'
                                            ' - user_id: 1\n'
                                            '\n'
@@ -805,8 +778,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
                                            '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
                                            '\n'
-                                           ' - last_reward_time: None\n'
-                                           '\n'
                                            ' - next_prompt_time: 2022-04-20 16:45:00+00:00\n'
                                            '\n'
                                            ' - active_game_counter_state: {"is_active": false, '
@@ -816,8 +787,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            ' - paused_counter_state: {"is_active": true, '
                                            '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
                                            '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
-                                           '\n'
-                                           ' - rewards: 0\n'
                                            '\n'
                                            ' - counters_history_serialized: None\n'
                                            '\n'
@@ -829,3 +798,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '"is_active": true, "is_last_modified": true}, {"badge": "s0", '
                                            '"is_active": null}, {"badge": "c0...',
                                 'to_chat_id': 1})
+
+    def test_render_screens(self):
+        for screenIdx in range(0, 20):
+            self.game_manager.on_data_provided(1, 'render_screen_' + str(screenIdx))

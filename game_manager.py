@@ -27,14 +27,7 @@ REVIEW_INTERVAL_MINS = 15
 
 PROMPT_MINUTES = [60*6, 60*3, 60 + 30, 60, 45]
 
-REWARD_BEFORE_REMINDER = [2, 2, 1, 1, 1, 1]
-REWARD_AFTER_REMINDER = [1, 1, 1, 1, 1, 1]
 HAS_REMINDER = [True, True, True, False, False]
-
-PENALTY_SMALL = 3
-PENALTY_FULL = 6
-PENALTY_FIRST =      [0, 0, 3, 3, 6]
-PENALTY_CONSEQUENT = [0, 3, 6, 6, 6]
 
 NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM  = 'next_review_prompt_minutes=' + ",".join([str(PROMPT_MINUTES[idx]) for idx in range(0, len(PROMPT_MINUTES))])
 
@@ -71,7 +64,7 @@ class GameManager:
             self.users_orm.upsert_user(user)
             return self.on_help_command(chat_id)
         else:
-            return self._render_single_message(chat_id, "Invalid language code. Try again (/start)")
+            return self._render_single_message(chat_id, "Invalid language code. Try again (/start)", None, None)
 
     def _get_user_lang(self, lang_code: str) -> Lang:
         languages = LangProvider.get_available_languages()
@@ -81,13 +74,15 @@ class GameManager:
         return lang
 
     def on_data_provided(self, chat_id: int, user_message: str) -> list[Reply]:
+        if "render_screen_" in user_message:
+            return self.on_render_screen(chat_id, user_message)
+
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
             return [self.on_start_command(chat_id)]
 
         lang = self._get_user_lang(user['lang_code'])
-        if "render_screen_" in user_message:
-            return self.on_render_screen(chat_id, user_message)
+
         if "start_game" in user_message:
             return [self._on_start_game(lang, user, user_message)]
         if "formula_updated" in user_message:
@@ -99,12 +94,12 @@ class GameManager:
         if "regenerate_shared_key_uuid" in user_message:
             user['shared_key_uuid'] = str(uuid.uuid4())
             self.users_orm.upsert_user(user)
-            return [self._render_single_message(chat_id, "Shared key UUID regenerated")]
+            return [self._render_single_message(chat_id, "Shared key UUID regenerated", None, None)]
         if "delete_data_confirmed" in user_message:
             self.users_orm.remove_user(chat_id)
-            return [self._render_single_message(chat_id, lang.data_deleted)]
+            return [self._render_single_message(chat_id, lang.data_deleted, None, None)]
 
-        return [self._render_single_message(chat_id, "Invalid data")]
+        return [self._render_single_message(chat_id, "Invalid data", None, None)]
 
     def _format_time_minutes(self, lang: Lang, time_secs: int, skip_zeros = False) -> str:
         days = int(time_secs // 86400)
@@ -131,10 +126,12 @@ class GameManager:
         next_review_prompt_times = user_message.split("start_game;next_review:")[1].split(",,")
         self._restart_user_game(user)
 
-        return self._handle_badge_event(user, 'on_game_started', self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id']))
+        badge_message, badge_button = self._handle_badge_event(user, 'on_game_started')
+        return self._render_game_started_screen(next_review_prompt_times[user['difficulty']], user['difficulty'], lang, user['user_id'], badge_message, badge_button)
 
     def _on_formula_updated(self, lang: Lang, user: User) -> Reply:
-        return self._handle_badge_event(user, 'on_formula_updated', self._render_single_message(user['user_id'], lang.formula_changed))
+        maybe_badge_msg, maybe_badge_button = self._handle_badge_event(user, 'on_formula_updated')
+        return self._render_single_message(user['user_id'], lang.formula_changed, maybe_badge_msg, maybe_badge_button)
 
     def _on_set_difficulty(self, lang: Lang, user: User, user_message: str) -> Reply:
         if user['active_game_counter_state'] is None:
@@ -148,9 +145,9 @@ class GameManager:
             next_reviews = split.split(';')[1].split('next_review:')[1].split(',,')
             next_review_at = next_reviews[new_difficulty]
         except:
-            return self._render_single_message(user['user_id'], "Cannot parse input")
+            return self._render_single_message(user['user_id'], "Cannot parse input", None, None)
         if new_difficulty < 0 or new_difficulty >= len(lang.difficulties):
-            return self._render_single_message(user['user_id'], "Invalid difficulty level")
+            return self._render_single_message(user['user_id'], "Invalid difficulty level", None, None)
 
         old_difficulty = user['difficulty']
         if old_difficulty is None:
@@ -167,14 +164,12 @@ class GameManager:
 
     def _restart_user_game(self, user: User):
         user['review_counter_state'] = Counter('').resume().serialize()
-        user['last_reward_time'] = None
 
         self._reset_user_next_prompt(user)
 
         user['active_game_counter_state'] = Counter('').resume().serialize()
         user['paused_counter_state'] = None
 
-        user['rewards'] = 0
         user['counters_history_serialized'] = None
         user['badges_serialized'] = ""
         self.users_orm.upsert_user(user)
@@ -211,7 +206,7 @@ class GameManager:
             user_timestamp = int(user_message.split('reviewed_at:')[1].split(';')[0])
             next_review = user_message.split('next_review:')[1].split(',,')[user['difficulty']]
         except:
-            return self._render_single_message(user['user_id'], "Cannot parse input")
+            return self._render_single_message(user['user_id'], "Cannot parse input", None, None)
         delta = abs(now_timestamp - user_timestamp)
         if delta > 60:
             return {
@@ -225,34 +220,24 @@ class GameManager:
 
         since_last_review_secs = int(Counter(user['review_counter_state']).get_total_seconds())
 
-        new_stars = REWARD_AFTER_REMINDER[user['difficulty']]
-        if user['next_prompt_type'] == NEXT_PROMPT_TYPE_REMINDER and since_last_review_secs < PROMPT_MINUTES[user['difficulty']] * 60:
-            new_stars = REWARD_BEFORE_REMINDER[user['difficulty']]
-
-        if user['last_reward_time'] is not None and (now_utc() - user['last_reward_time']).total_seconds() < 5*60:
-            new_stars = 0
-        else:
-            user['last_reward_time'] = now_utc()
-            user['rewards'] += new_stars
+        is_cooldown = (since_last_review_secs < 5*60)
 
         self._record_counter_time(user, REVIEW_COUNTER_HISTORY_NAME, user['review_counter_state'])
         user['review_counter_state'] = Counter('').resume().serialize()
 
         self._reset_user_next_prompt(user)
-
         self.users_orm.upsert_user(user)
 
-        if new_stars > 0:
-            ret = self._render_review_command_success(user['rewards'], next_review,
-                                                       time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
+        if is_cooldown:
+            return self._render_review_command_success(lang.cooldown_msg, None, next_review,
                                                        lang=lang,
-                                                       chat_id=user['user_id'], is_resumed=is_resumed, new_stars=new_stars)
-            return self._handle_badge_event(user, 'on_review', ret)
+                                                       chat_id=user['user_id'], is_resumed=is_resumed)
+
         else:
-            return self._render_review_command_success_no_rewards(user['rewards'], next_review,
-                                                                  time=self._format_time_minutes(lang, self._calculate_active_play_time_seconds(user)),
-                                                                  lang=lang,
-                                                                  chat_id=user['user_id'], is_resumed=is_resumed)
+            maybe_badge_msg, maybe_badge_button =  self._handle_badge_event(user, 'on_review')
+            return self._render_review_command_success(maybe_badge_msg, maybe_badge_button, next_review,
+                                                       lang=lang,
+                                                       chat_id=user['user_id'], is_resumed=is_resumed)
 
 
     def _calculate_active_play_time_seconds(self, user: User) -> int:
@@ -333,14 +318,11 @@ class GameManager:
         if user['active_game_counter_state'] is None:
             return self._render_start_game_button(lang, user)
 
-        last_reward_time = user['last_reward_time'] if user['last_reward_time'] is not None else now_utc()
-        since_last_reward_secs = int((now_utc() - last_reward_time).total_seconds())
+        since_last_review_secs = int(Counter(user['review_counter_state']).get_total_seconds())
 
         till_next_prompt_time = 0
         if user['next_prompt_time'] is not None:
-            till_next_prompt_time = int((user['next_prompt_time'] - now_utc()).total_seconds())
-            if till_next_prompt_time < 0:
-                till_next_prompt_time = 0
+            till_next_prompt_time = max(int((user['next_prompt_time'] - now_utc()).total_seconds()), 0)
 
         paused_at = None
         if user['paused_counter_state'] is not None:
@@ -351,8 +333,8 @@ class GameManager:
                                              , lang.difficulties[user['difficulty']],
                                              paused_at)
 
-        return self._render_stats(lang, BadgesManager(user['badges_serialized']), user['user_id'], user['rewards'], user['difficulty'], self._calculate_active_play_time_seconds(user),
-                                  user['paused_counter_state'] is not None, since_last_reward_secs, till_next_prompt_time, fname)
+        return self._render_stats(lang, BadgesManager(user['badges_serialized']), user['user_id'], user['difficulty'], self._calculate_active_play_time_seconds(user),
+                                  user['paused_counter_state'] is not None, since_last_review_secs, till_next_prompt_time, fname)
 
     def on_difficulty_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
@@ -383,21 +365,13 @@ class GameManager:
         return replies
 
     def _process_penalty_prompt(self, user: User) -> Reply:
-        difficulty = user['difficulty']
-        penalty_minutes = PROMPT_MINUTES[difficulty]
-
         self._reset_user_next_prompt(user)
-
-        lang = self._get_user_lang(user['lang_code'])
-
-        review_counter = Counter(user['review_counter_state'])
-        is_first_penalty = (review_counter.get_total_seconds() / 60) <= penalty_minutes * 1.5
-
-        user['rewards'] -= self._calculate_penalty(difficulty, is_first_penalty)
-
         self.users_orm.upsert_user(user)
 
-        return self._handle_badge_event(user, 'on_penalty', self._render_penalty(lang, user['user_id'], user['difficulty'], user['rewards'], is_first_penalty))
+        maybe_badge_msg, maybe_badge_button = self._handle_badge_event(user, 'on_penalty')
+
+        lang = self._get_user_lang(user['lang_code'])
+        return self._render_penalty(lang, maybe_badge_msg, maybe_badge_button, user['user_id'])
 
     def _record_counter_time(self, user: User, counter_name: str, serialized_counter: str):
         counter = Counter(serialized_counter)
@@ -414,50 +388,41 @@ class GameManager:
                    f'?env={self.env}&lang_code={lang.lang_code}&review=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}'
         }
 
-    def _render_game_started_screen(self, next_review: str, difficulty: int, lang: Lang, chat_id: int) -> Reply:
+    def _render_game_started_screen(self, next_review: str, difficulty: int, lang: Lang, chat_id: int, maybe_badge_message: Optional[str], maybe_badge_button: Optional[Button]) -> Reply:
         difficulty = lang.difficulties[difficulty]
+        buttons = [self._render_review_button(lang)]
+        if maybe_badge_button is not None:
+            buttons.append(maybe_badge_button)
         return {
             'to_chat_id': chat_id,
-            'message': lang.game_started.format(next_review=next_review, difficulty=difficulty),
-            'buttons': [self._render_review_button(lang)],
+            'message': lang.game_started.format(next_review=next_review, difficulty=difficulty
+                                                , maybe_achievement=("\n" + maybe_badge_message + "\n") if maybe_badge_message is not None else ""),
+            'buttons': buttons,
             'menu_commands': [],
             'image': None
         }
 
-    def _render_review_command_success(self, score: int, next_review: str, time: str, lang: Lang, chat_id: int, is_resumed: bool, new_stars: int) -> Reply:
-        if new_stars != 1 and new_stars != 2:
-            raise Exception("Invalid new_stars value")
-        message = lang.review_command_success_text.format(score=score, next_review=next_review, time=time,
-                                                          reward_msg=lang.review_reward_msg if new_stars == 1 else lang.review_reward_msg_very_happy)
+    def _render_review_command_success(self, maybe_achievement_msg: Optional[str], maybe_achievement_button: Optional[Button], next_review: str, lang: Lang, chat_id: int, is_resumed: bool) -> Reply:
+        message = lang.review_command_success_text.format(next_review=next_review, time=time,
+                                                          maybe_achievement=("\n" + maybe_achievement_msg + "\n") if maybe_achievement_msg is not None else "")
+        buttons = [self._render_review_button(lang)]
+        if maybe_achievement_button is not None:
+            buttons.append(maybe_achievement_button)
         if is_resumed:
             message = lang.resumed + "\n" + message
         return {
             'to_chat_id': chat_id,
             'message': message,
-            'buttons': [self._render_review_button(lang)],
+            'buttons': buttons,
             'menu_commands': [],
             'image': None
         }
-
-    def _render_review_command_success_no_rewards(self, score: int, next_review: str, time: str, lang: Lang, chat_id: int, is_resumed: bool) -> Reply:
-        message = lang.review_command_success_no_rewards_text.format(score=score, next_review=next_review, time=time)
-        if is_resumed:
-            message = lang.resumed + "\n" + message
-        return {
-            'to_chat_id': chat_id,
-            'message': message,
-            'buttons': [self._render_review_button(lang)],
-            'menu_commands': [],
-            'image': None
-        }
-
-
 
     def on_render_screen(self, chat_id, user_message) -> list[Reply]:
         langs = LangProvider.get_available_languages()
         langs = {
-            en.lang_code: en,
-            ru.lang_code: ru,
+            'en': en,
+            'ru': ru
         }
 
         if user_message == "render_screen_0":
@@ -466,56 +431,46 @@ class GameManager:
         if user_message == "render_screen_1":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_game_started_screen("10:00", 1, lang, chat_id)]
+                ret = ret + [self._render_game_started_screen("10:00", 1, lang, chat_id, None, None)]
+                ret = ret + [self._render_game_started_screen("10:00", 1, lang, chat_id, lang.badge_new, {
+                    "text": lang.view_badges_button,
+                    "url": "https://google.com"
+                })]
             return ret
 
         if user_message == "render_screen_2":
             ret = []
             for is_resumed in [True, False]:
                 for lang_code, lang in langs.items():
-                    ret = ret + [self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed, 1)]
-                    ret = ret + [self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed, 2)]
-                    ret = ret + [self._wrap_message_with_badge(lang, "c1", self._render_review_command_success(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed, 2), "https://google.com")]
+                    ret = ret + [self._render_review_command_success(None, None, "10:00", lang, chat_id, is_resumed)]
+                    ret = ret + [self._render_review_command_success(lang.badge_new, {
+                        "text": lang.view_badges_button,
+                        "url": "https://google.com"
+                    }, "10:00", lang, chat_id, is_resumed)]
+                    ret = ret + [self._render_review_command_success(lang.locked_achievements, {
+                        "text": lang.view_badges_button,
+                        "url": "https://google.com"
+                    }, "10:00", lang, chat_id, is_resumed)]
+                    ret = ret + [self._render_review_command_success(lang.cooldown_msg, None, "10:00", lang, chat_id, is_resumed)]
             return ret
 
         if user_message == "render_screen_3":
             ret = []
-            for is_resumed in [True, False]:
-                for lang_code, lang in langs.items():
-                    ret = ret + [self._render_review_command_success_no_rewards(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed)]
-                    ret = ret + [self._wrap_message_with_unblock(lang, self._render_review_command_success_no_rewards(5, "10:00", "1d 3h 5m", lang, chat_id, is_resumed))]
+            for lang_code, lang in langs.items():
+                ret = ret + [self._render_penalty(lang, None, None, chat_id)]
+                ret = ret + [self._render_penalty(lang, lang.badge_unhappy_cat, {
+                    "text": lang.view_badges_button,
+                    "url": "https://google.com"
+                }, chat_id)]
             return ret
 
         if user_message == "render_screen_4":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_penalty(lang, chat_id, 0, 10, True)]
-                ret = ret + [self._render_penalty(lang, chat_id, 4, 10, True)]
-            return ret
-
-        if user_message == "render_screen_5":
-            ret = []
-            for lang_code, lang in langs.items():
-                ret = ret + [self._render_penalty(lang, chat_id, 1, 10, True)]
-                ret = ret + [self._render_penalty(lang, chat_id, 1, 10, False)]
-            return ret
-
-        if user_message == "render_screen_6":
-            ret = []
-            for lang_code, lang in langs.items():
-                ret = ret + [self._render_penalty(lang, chat_id, 2, 10, True)]
-                ret = ret + [self._render_penalty(lang, chat_id, 2, 10, False)]
-                ret = ret + [self._wrap_message_with_badge(lang, "c0", self._render_penalty(lang, chat_id, 2, 10, False), "https://google.com")]
-            return ret
-
-
-        if user_message == "render_screen_7":
-            ret = []
-            for lang_code, lang in langs.items():
                 ret = ret + [self._render_difficulty_buttons(lang, chat_id, 2)]
             return ret
 
-        if user_message == "render_screen_8":
+        if user_message == "render_screen_5":
             ret = []
             for lang_code, lang in langs.items():
                 ret = ret + [self._render_difficulty_changed(chat_id, lang, 0, 1, "10:00", False)]
@@ -523,19 +478,19 @@ class GameManager:
                 ret = ret + [self._render_difficulty_changed(chat_id, lang, 3, 4, "10:00", False)]
             return ret
 
-        if user_message == "render_screen_9":
+        if user_message == "render_screen_6":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_stats(lang, BadgesManager(None), chat_id, 5, 2, 1000, False, 100, 1000, None)]
+                ret = ret + [self._render_stats(lang, BadgesManager(None), chat_id, 2, 1000, False, 100, 1000, None)]
             return ret
 
-        if user_message == "render_screen_10":
+        if user_message == "render_screen_7":
             ret = []
             for lang_code, lang in langs.items():
                 ret = ret + [self._render_edit_formula(lang, 'blahbah', chat_id)]
             return ret
 
-        if user_message == "render_screen_11":
+        if user_message == "render_screen_8":
             ret = []
             for lang_code, lang in langs.items():
                 ret = ret + [self._render_review_screen(lang, chat_id, True, None)]
@@ -543,37 +498,41 @@ class GameManager:
                 ret = ret + [self._render_review_screen(lang, chat_id, False, 123321)]
             return ret
 
-        if user_message == "render_screen_12":
+        if user_message == "render_screen_9":
             ret = []
             for lang_code, lang in langs.items():
                 ret = ret + [self._render_on_pause(lang, chat_id)]
             return ret
 
-        if user_message == "render_screen_13":
+        if user_message == "render_screen_10":
             ret = []
             for lang_code, lang in langs.items():
                 ret = ret + [self._render_already_on_pause(lang, chat_id)]
             return ret
 
-        if user_message == "render_screen_14":
+        if user_message == "render_screen_11":
             ret = []
             for lang_code, lang in langs.items():
                 ret = ret + [self._render_delete_data_screen(lang, chat_id, [" - shared_key_uuid: blahblah"])]
             return ret
 
-        if user_message == "render_screen_15":
+        if user_message == "render_screen_12":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_single_message(chat_id, lang.data_deleted)]
+                ret = ret + [self._render_single_message(chat_id, lang.data_deleted, None, None)]
             return ret
 
-        if user_message == "render_screen_16":
+        if user_message == "render_screen_13":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_single_message(chat_id, lang.formula_changed)]
+                ret = ret + [self._render_single_message(chat_id, lang.formula_changed, None, None)]
+                ret = ret + [self._render_single_message(chat_id, lang.formula_changed, lang.badge_new, {
+                    "text": lang.view_badges_button,
+                    "url": "https://google.com"
+                })]
             return ret
 
-        if user_message == "render_screen_17":
+        if user_message == "render_screen_14":
             ret = []
             for lang_code, lang in langs.items():
                 ret = ret + [self._render_reminder_prompt(lang, chat_id)]
@@ -603,17 +562,20 @@ class GameManager:
         for lang_code in sorted(languages):
             lang = languages[lang_code]
             new_lang_msg = "/" + lang_code + " - " + lang.lang_name
-            if (lang_code == "en"):
+            if lang_code == "en":
                 message = new_lang_msg + "\n\n" + message
             else:
                 message += new_lang_msg + "\n\n"
-        return self._render_single_message(chat_id, message)
+        return self._render_single_message(chat_id, message, None, None)
 
-    def _render_single_message(self, chat_id, msg) -> Reply:
+    def _render_single_message(self, chat_id, msg: str, maybe_badge_message: Optional[str], maybe_badge_button: Optional[Button]) -> Reply:
+        buttons = []
+        if maybe_badge_button is not None:
+            buttons.append(maybe_badge_button)
         return {
             'to_chat_id': chat_id,
-            'message': msg,
-            'buttons': [],
+            'message': msg + ("\n\n" + maybe_badge_message if maybe_badge_message is not None else ""),
+            'buttons': buttons,
             'menu_commands': [],
             'image': None
         }
@@ -650,17 +612,16 @@ class GameManager:
             'image': None
         }
 
-    def _render_stats(self, lang, badges_manager, chat_id, rewards, difficulty, active_play_time_seconds, is_paused, since_last_reward_secs, till_next_prompt_time, fname) -> Reply:
+    def _render_stats(self, lang, badges_manager, chat_id, difficulty, active_play_time_seconds, is_paused, since_last_review_secs, till_next_prompt_time, fname) -> Reply:
         return {
             'to_chat_id': chat_id,
             'message': lang.stats_command.format(
-                score=rewards,
                 level=badges_manager.get_level() + 2 if badges_manager.is_level_completed() else badges_manager.get_level() + 1,
                 difficulty=lang.difficulties[difficulty],
                 difficulty_details=str(difficulty + 1) + "/" + str(len(lang.difficulties)),
                 time=self._format_time_minutes(lang, active_play_time_seconds),
                 paused="⚪" if not is_paused else "🟢",
-                cooldown=self._format_time_seconds(lang, 5*60 - since_last_reward_secs if since_last_reward_secs < 5*60 else 0),
+                cooldown=self._format_time_seconds(lang, 5*60 - since_last_review_secs if since_last_review_secs < 5*60 else 0),
                 punishment=self._format_time_minutes(lang, till_next_prompt_time, skip_zeros=True)
             ),
             'buttons': [{
@@ -749,32 +710,16 @@ class GameManager:
             'image': None
         }
 
-    def _render_penalty(self, lang: Lang, chat_id: int, difficulty: int, scores: int, is_first_penalty: bool) -> Reply:
-        penalty_msg = ""
-        penalty = self._calculate_penalty(difficulty, is_first_penalty)
+    def _render_penalty(self, lang: Lang, maybe_badge_msg: Optional[str], maybe_badge_button: Optional[Button], chat_id: int) -> Reply:
 
-        if PENALTY_CONSEQUENT[difficulty] == 0:
-            penalty_msg = lang.penalty_msg_no_penalty_for_level.format(difficulty=lang.difficulties[difficulty])
-
-        elif is_first_penalty and PENALTY_FIRST[difficulty] == 0:
-            penalty_msg = lang.penalty_msg_no_penalty_first_time.format(difficulty=lang.difficulties[difficulty])
-
-        elif is_first_penalty and PENALTY_FIRST[difficulty] < PENALTY_CONSEQUENT[difficulty]:
-            penalty_msg = lang.penalty_msg_first_time.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
-
-        elif penalty == PENALTY_SMALL:
-            penalty_msg = lang.penalty_msg_generic_small.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
-
-        elif penalty == PENALTY_FULL:
-            penalty_msg = lang.penalty_msg_generic_full.format(difficulty=lang.difficulties[difficulty], penalty=penalty, score=scores)
-
-        if penalty_msg == "":
-            raise Exception("Unknown penalty message")
+        buttons = [self._render_review_button(lang)]
+        if maybe_badge_button is not None:
+            buttons.append(maybe_badge_button)
 
         return {
             'to_chat_id': chat_id,
-            'message': lang.penalty_text.format(penalty_msg=penalty_msg),
-            'buttons': [self._render_review_button(lang)],
+            'message': lang.penalty_text + (("\n\n" + maybe_badge_msg) if maybe_badge_msg is not None else ""),
+            'buttons': buttons,
             'menu_commands': [],
             'image': None
         }
@@ -787,7 +732,9 @@ class GameManager:
 
         self.users_orm.upsert_user(user)
 
-        return self._handle_badge_event(user, 'on_prompt', self._render_reminder_prompt(lang, user['user_id']))
+        self._handle_badge_event(user, 'on_prompt')
+
+        return self._render_reminder_prompt(lang, user['user_id'])
 
     def _reset_user_next_prompt(self, user: User):
         difficulty = user['difficulty']
@@ -798,9 +745,6 @@ class GameManager:
         if HAS_REMINDER[difficulty]:
             user['next_prompt_time'] -= datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
             user['next_prompt_type'] = NEXT_PROMPT_TYPE_REMINDER
-
-    def _calculate_penalty(self, difficulty, is_first_penalty):
-        return PENALTY_FIRST[difficulty] if is_first_penalty else PENALTY_CONSEQUENT[difficulty]
 
     def _render_reminder_prompt(self, lang, chat_id):
         return {
@@ -827,7 +771,7 @@ class GameManager:
 
         return button_url
 
-    def _handle_badge_event(self, user, event, message: Reply) -> Reply:
+    def _handle_badge_event(self, user, event) -> (Optional[str], Optional[Button]):
         badges_manager = BadgesManager(user['badges_serialized'])
 
         active_play_time_secs = self._calculate_active_play_time_seconds(user)
@@ -842,41 +786,17 @@ class GameManager:
         lang = self._get_user_lang(user['lang_code'])
         button_url = self._render_board_url(lang, badge, badges_manager, active_play_time_secs, user['difficulty'])
 
-        if had_c0 and badge is None:
-            return self._wrap_message_with_unblock(lang, message)
+        view_achievemnts_button = {
+            'text': lang.view_badges_button,
+            'url': button_url
+        }
 
         if badge is None:
-            return message
+            if had_c0:
+                return lang.locked_achievements, view_achievemnts_button
+            return None, None
 
-        return self._wrap_message_with_badge(lang, badge, message, button_url)
-
-    def _wrap_message_with_badge(self, lang: Lang, badge: str, message: Reply, button_url: str) -> Reply:
-        message_prefix = ""
-        if badge == "c0":
-            message_prefix = lang.badge_unhappy_cat
-        else:
-            message_prefix = lang.badge_new
-        return {
-            'to_chat_id': message['to_chat_id'],
-            'message': message_prefix + "\n\n" + message['message'],
-            'buttons': message['buttons'] + [{
-                'text': lang.view_badges_button,
-                'url': button_url
-            }],
-            'menu_commands': message['menu_commands'],
-            'image': message['image']
-        }
-
-    def _wrap_message_with_unblock(self, lang: Lang, message: Reply) -> Reply:
-        return {
-            'to_chat_id': message['to_chat_id'],
-            'message': lang.locked_achievements + "\n\n" + message['message'],
-            'buttons': message['buttons'],
-            'menu_commands': message['menu_commands'],
-            'image': message['image']
-        }
-
-
+        return lang.badge_unhappy_cat if badge == "c0" else lang.badge_new, view_achievemnts_button
 
 
 

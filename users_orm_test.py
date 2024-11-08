@@ -34,11 +34,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code=None,
             difficulty=1,
             review_counter_state=None,
-            last_reward_time=None,
             next_prompt_time=None,
             active_game_counter_state=None,
             paused_counter_state=None,
-            rewards=0,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='',
@@ -59,11 +57,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='ru',
             difficulty=1,
             review_counter_state=None,
-            last_reward_time=None,
             next_prompt_time=None,
             active_game_counter_state=None,
             paused_counter_state=None,
-            rewards=0,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='qwe',
@@ -73,11 +69,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['difficulty'] = 2
         user['review_counter_state'] = 'my_review_counter_state'
-        user['last_reward_time'] = datetime.datetime(2022, 4, 21, 1, 0, 0)
         user['next_prompt_time'] = datetime.datetime(2022, 4, 21, 2, 0, 0)
         user['active_game_counter_state'] = 'my_active_game_counter_state'
         user['paused_counter_state'] = 'my_paused_counter_state'
-        user['rewards'] = 10
         user['counters_history_serialized'] = 'my_counters_history_serialized'
         user['shared_key_uuid'] = 'dbca'
         user['next_prompt_type'] = 'ewq'
@@ -89,11 +83,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='en',
             difficulty=2,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0).astimezone(datetime.timezone.utc),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
             active_game_counter_state='my_active_game_counter_state',
             paused_counter_state='my_paused_counter_state',
-            rewards=10,
             counters_history_serialized='my_counters_history_serialized',
             shared_key_uuid='dbca',
             next_prompt_type='ewq',
@@ -110,11 +102,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='ru',
             difficulty=1,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0).astimezone(datetime.timezone.utc),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
             active_game_counter_state='my_active_game_counter_state',
             paused_counter_state=None,
-            rewards=10,
             counters_history_serialized='my_counters_history_serialized',
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',
@@ -130,11 +120,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='ru',
             difficulty=1,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             active_game_counter_state=None,
             paused_counter_state=None,
-            rewards=10,
             counters_history_serialized='counters_history_serialized',
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',
@@ -150,11 +138,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='ru',
             difficulty=1,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             active_game_counter_state='my_active_game_counter_state',
             paused_counter_state=None,
-            rewards=10,
             counters_history_serialized='my_counters_history_serialized',
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',
@@ -171,11 +157,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='ru',
             difficulty=1,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
             next_prompt_time=datetime.datetime(2023, 4, 21, 5, 59, 0),
             active_game_counter_state='my_active_game_counter_state',
             paused_counter_state=None,
-            rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',
@@ -192,11 +176,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='ru',
             difficulty=1,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             active_game_counter_state='my_active_game_counter_state',
             paused_counter_state='my_paused_counter_state',
-            rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',
@@ -211,11 +193,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='ru',
             difficulty=3,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             active_game_counter_state='my_active_game_counter_state',
             paused_counter_state='my_paused_counter_state',
-            rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',
@@ -231,28 +211,25 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code=None,
             difficulty=1,
             review_counter_state=None,
-            last_reward_time=None,
             next_prompt_time=None,
             active_game_counter_state=None,
             paused_counter_state=None,
-            rewards=0,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='',
             badges_serialized=''
         ))
 
-    def test_count_active_users(self):
+    @time_machine.travel("2022-04-21 00:00:00")
+    def test_counters(self):
         user = User(
             user_id=124,
             lang_code='ru',
             difficulty=1,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             active_game_counter_state='my_active_game_counter_state',
             paused_counter_state=None,
-            rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',
@@ -264,40 +241,15 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.users_orm.count_inactive_users(1), 0)
         self.assertEqual(self.users_orm.count_recently_rewarded_users(1), 0)
 
-    @time_machine.travel("2022-04-21 00:00:00")
-    def test_count_recently_rewarded_users(self):
-        user = User(
-            user_id=124,
-            lang_code='ru',
-            difficulty=1,
-            review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
-            next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
-            active_game_counter_state='my_active_game_counter_state',
-            paused_counter_state=None,
-            rewards=10,
-            counters_history_serialized=None,
-            shared_key_uuid='abcd',
-            next_prompt_type='prompt_type',
-            badges_serialized='badges_serialized'
-        )
-        self.users_orm.upsert_user(user)
-        self.assertEqual(self.users_orm.count_active_users(1), 1)
-        self.assertEqual(self.users_orm.count_paused_users(1), 0)
-        self.assertEqual(self.users_orm.count_inactive_users(1), 0)
-        self.assertEqual(self.users_orm.count_recently_rewarded_users(1), 1)
-
     def test_count_paused_users(self):
         user = User(
             user_id=124,
             lang_code='ru',
             difficulty=1,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             active_game_counter_state='my_active_game_counter_state',
             paused_counter_state='paused',
-            rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',
@@ -314,11 +266,9 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             lang_code='ru',
             difficulty=1,
             review_counter_state='my_review_counter_state',
-            last_reward_time=datetime.datetime(2022, 4, 21, 1, 0, 0),
             next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             active_game_counter_state=None,
             paused_counter_state=None,
-            rewards=10,
             counters_history_serialized=None,
             shared_key_uuid='abcd',
             next_prompt_type='prompt_type',

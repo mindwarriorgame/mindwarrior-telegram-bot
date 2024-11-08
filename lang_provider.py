@@ -13,10 +13,7 @@ class Lang:
 
     help_command_start_playing_button: str
 
-    review_reward_msg_very_happy: str
-    review_reward_msg: str
     review_command_success_text: str
-    review_command_success_no_rewards_text: str
     review_command_text: str
     review_command_button_yourself: str
     review_command_button_world: str
@@ -72,18 +69,13 @@ class Lang:
 
     reminder_text: str
 
-    penalty_msg_no_penalty_for_level: str
-    penalty_msg_no_penalty_first_time: str
-    penalty_msg_first_time: str
-    penalty_msg_generic_small: str
-    penalty_msg_generic_full: str
-
     penalty_text: str
 
     badge_unhappy_cat: str
     badge_new: str
     view_badges_button: str
     locked_achievements: str
+    cooldown_msg: str
 
 fr = Lang(
     lang_code='fr',
@@ -116,30 +108,13 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
     review_command_button_yourself="S'améliorer 💪",
     review_command_button_world="Améliorer le monde 🙌",
 
-    review_reward_msg_very_happy="😻 Vous avez gagné 2 nouvelles étoiles !",
-    review_reward_msg="😺 Vous avez gagné une nouvelle étoile !",
-    review_command_success_text="<i>Formule</i> révisée 🎉\n"
+    review_command_success_text="<i>Formula</i> has been reviewed 🎉\n"
+                                "{maybe_achievement}"
                                 "\n"
-                                "<b>{reward_msg}</b>\n"
+                                "Next review before {next_review}\n"
                                 "\n"
-                                "🌟 Total d'étoiles : {score}\n"
-                                "⏳ Temps de jeu : {time}\n"
-                                "\n"
-                                "Prochaine révision avant {next_review}\n"
-                                "\n"
-                                " ‣ /pause - mettre le jeu en pause\n"
-                                " ‣ /stats - progression du jeu",
-
-    review_command_success_no_rewards_text="<i>Formule</i> révisée 🎉\n"
-                                           "\n"
-                                           "Pas de récompense (<a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty:~:text=seront%20récompensées%20(-,%22règle%20de%20refroidissement%22,-)\">règle de refroidissement</a>)\n"
-                                           "\n"
-                                           "🌟 Total d'étoiles : {score}\n"
-                                           "⏳ Temps de jeu : {time}\n"
-                                           "\n"
-                                           "Prochaine révision avant {next_review}\n"
-                                           "\n"
-                                           " ‣ /pause - mettre le jeu en pause",
+                                " ‣ /pause - pause the game\n"
+                                " ‣ /stats - game progress",
 
     review_since_last_time="Temps écoulé depuis la dernière révision : {duration}",
 
@@ -172,8 +147,7 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                    "Pour reprendre le jeu, "
                    "revoyez simplement votre <i>Formule</i> en utilisant le bouton ci-dessous.",
 
-    stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.fr.html#review\">Étoiles gagnées</a> : {score}\n"
-                   "🏆 Level : {level}\n"
+    stats_command=("🏆 Level : {level}\n"
                    "⌛ Temps de jeu actif : {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">Niveau de difficulté</a> : {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.fr.html#pause\">En pause ?</a> {paused}\n"
@@ -186,6 +160,7 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                    "Pour reprendre le jeu, revoyez simplement votre <i>Formule</i> avec le bouton ci-dessous.",
 
     game_started="Le jeu a commencé 🏁\n"
+                 "{maybe_achievement}"
                  "\n"
                  "💪<a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">Niveau de difficulté</a> : {difficulty}\n"
                  "\n"
@@ -228,28 +203,13 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                   "\n"
                   "Le moment est dans 15 minutes, dépêchez-vous !",
 
-    penalty_msg_no_penalty_for_level = "😼 Pas de pénalité (<a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">niveau \"{difficulty}\"</a>)",
-    penalty_msg_no_penalty_first_time = "😼 Pas de pénalité (<a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">niveau \"{difficulty}\", premier oubli</a> 😬)",
-    penalty_msg_first_time = "😿 Vous avez perdu {penalty} étoiles (premier oubli)❗\n"
-                             "\n"
-                             "🌟 Étoiles restantes : {score}",
-    penalty_msg_generic_small = "😿 Vous avez perdu {penalty} étoiles ❗\n"
-                                "\n"
-                                "🌟 Étoiles restantes : {score}",
-    penalty_msg_generic_full = "😿 Vous avez perdu {penalty} étoiles ❗\n"
-                               "\n"
-                               "🌟 Il ne vous reste plus que {score} étoiles !",
-
-    penalty_text = (
-        "Vous avez oublié de revoir votre <i>Formule</i> 🟥\n"
-        "\n"
-        "{penalty_msg}"
-    ),
+    penalty_text = "Vous avez oublié de revoir votre <i>Formule</i> 🟥",
 
     badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé à l'intérieur!",
     badge_new = "🏆 Vous avez obtenu un nouveau succès!",
     view_badges_button = "Voir les succès",
-    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!"
+    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
+    cooldown_msg="❄️ Early reviews are not rewarded."
 )
 
 
@@ -284,30 +244,13 @@ Presiona el botón de abajo para iniciar el juego.""",
     review_command_button_yourself="Mejórate a ti mismo 💪",
     review_command_button_world="Mejora el mundo 🙌",
 
-    review_reward_msg_very_happy="😻 ¡Has ganado 2 nuevas estrellas!",
-    review_reward_msg="😺 ¡Has ganado una nueva estrella!",
-    review_command_success_text="<i>Fórmula</i> revisada 🎉\n"
+    review_command_success_text="<i>Formula</i> has been reviewed 🎉\n"
+                                "{maybe_achievement}"
                                 "\n"
-                                "<b>{reward_msg}</b>\n"
+                                "Next review before {next_review}\n"
                                 "\n"
-                                "🌟 Estrellas totales: {score}\n"
-                                "⏳ Tiempo de juego: {time}\n"
-                                "\n"
-                                "Próxima revisión antes de {next_review}\n"
-                                "\n"
-                                " ‣ /pause - pausar el juego\n"
-                                " ‣ /stats - progreso del juego",
-
-    review_command_success_no_rewards_text="<i>Fórmula</i> revisada 🎉\n"
-                                           "\n"
-                                           "Sin recompensa (<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=ser%C3%A1%20recompensado%20(-,%22regla%20de%20enfriamiento%22,-).\">regla de enfriamiento</a>)\n"
-                                           "\n"
-                                           "🌟 Estrellas totales: {score}\n"
-                                           "⏳ Tiempo de juego: {time}\n"
-                                           "\n"
-                                           "Próxima revisión antes de {next_review}\n"
-                                           "\n"
-                                           " ‣ /pause - pausar el juego",
+                                " ‣ /pause - pause the game\n"
+                                " ‣ /stats - game progress",
 
     review_since_last_time="Tiempo desde la última revisión: {duration}",
 
@@ -340,8 +283,7 @@ Presiona el botón de abajo para iniciar el juego.""",
                    "Para reanudar el juego, "
                    "simplemente revisa tu <i>Fórmula</i> con el botón a continuación.",
 
-    stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.es.html#review\">Estrellas ganadas</a>: {score}\n"
-                   "🏆 Level: {level}\n"
+    stats_command=("🏆 Level: {level}\n"
                    "⌛ Tiempo de juego activo: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Dificultad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.es.html#pause\">¿Pausado?</a> {paused}\n"
@@ -394,25 +336,13 @@ Presiona el botón de abajo para iniciar el juego.""",
                   "\n"
                   "¡El tiempo límite es en 15 minutos, date prisa!",
 
-    penalty_msg_no_penalty_for_level = "😼 Sin penalización (nivel <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">\"{difficulty}\"</a>)",
-    penalty_msg_no_penalty_first_time = "😼 Sin penalización (<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel \"Fácil\", primer fallo</a> 😬)\n",
-    penalty_msg_first_time = "😿 Has perdido {penalty} estrellas (primera vez que se pierde) ❗\n"
-                             "\n"
-                             "🌟 Estrellas restantes: {score}",
-    penalty_msg_generic_small = "😿 Has perdido {penalty} estrellas ❗\n"
-                                "\n"
-                                "🌟 Estrellas restantes: {score}",
-    penalty_msg_generic_full = "🙀 Has perdido {penalty} estrellas ❗\n"
-                               "\n"
-                               "🌟 Estrellas restantes: {score}",
-    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥\n"
-                   "\n"
-                   "{penalty_msg}",
+    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥",
 
     badge_unhappy_cat = "😾 ¡Ups! ¡Se coló un gato gruñón!",
     badge_new = "🏆 ¡Has conseguido un nuevo logro!",
     view_badges_button = "Ver logros",
-    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!"
+    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
+    cooldown_msg="❄️ Early reviews are not rewarded."
 )
 
 
@@ -448,30 +378,14 @@ Press the button below to start the game.""",
     review_command_button_yourself="Improve yourself 💪",
     review_command_button_world="Improve the world 🙌",
 
-    review_reward_msg_very_happy="💎💎 You've got 2 new crystals!",
-    review_reward_msg="💎 You've got a new crystal!",
     review_command_success_text="<i>Formula</i> has been reviewed 🎉\n"
-                                "\n"
-                                "<b>{reward_msg}</b>\n"
-                                "\n"
-                                "💎 Total crystals: {score}\n"
-                                "⏳ Play time: {time}\n"
+                                "{maybe_achievement}"
                                 "\n"
                                 "Next review before {next_review}\n"
                                 "\n"
                                 " ‣ /pause - pause the game\n"
                                 " ‣ /stats - game progress",
 
-    review_command_success_no_rewards_text="<i>Formula</i> has been reviewed 🎉\n"
-                                           "\n"
-                                           "No reward (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">cool-down rule</a>)\n"
-                                           "\n"
-                                           "💎 Total crystals: {score}\n"
-                                           "⏳ Play time: {time}\n"
-                                           "\n"
-                                           "Next review before {next_review}\n"
-                                           "\n"
-                                           " ‣ /pause - pause the game",
 
     review_since_last_time="Time since the last review: {duration}",
 
@@ -485,7 +399,6 @@ Press the button below to start the game.""",
                              "\n"
                              "<b>{old} -> {new}</b>\n"
                              "\n"
-                             "💎 Total crystals: 0\n"
                              "🏆 Level: 1\n"
                              "⏳ Play time: 0d 0h 0m\n"
                              "\n"
@@ -505,9 +418,7 @@ Press the button below to start the game.""",
                    "To resume the game, "
                    "simply review your <i>Formula</i> using the button below.",
 
-    # TODO: add level
-    stats_command=("💎 <a href=\"https://mindwarriorgame.org/faq.en.html#review\">Earned crystals</a>: {score}\n"
-                   "🏆 Level : {level}\n"
+    stats_command=("🏆 Level : {level}\n"
                    "⌛ Active play time: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.en.html#pause\">Paused?</a> {paused}\n"
@@ -519,6 +430,7 @@ Press the button below to start the game.""",
                    "\n"
                    "To resume the game, simply review your <i>Formula</i> with the button below.",
     game_started="The game has started 🏁\n"
+                 "{maybe_achievement}"
                  "\n"
                  "💪<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty level</a>: {difficulty}\n"
                  "\n"
@@ -543,7 +455,7 @@ Press the button below to start the game.""",
     formula_command_button="Update your Formula 🧪",
     review_command_timeout="Timeout, please try again.🤷",
     graph_header="Intervals between review (mins)",
-    graph_penalty_threshold="Penalty threshold: {difficulty_threshold_mins} mins (difficulty={difficulty_str})",
+    graph_penalty_threshold="Review interval threshold: {difficulty_threshold_mins} mins (difficulty={difficulty_str})",
     graph_mean_threshold="Median: {mean_mins} mins",
     graph_xlabel="Time",
     graph_ylabel="Interval between reviews (mins)",
@@ -560,25 +472,13 @@ Press the button below to start the game.""",
                   "\n"
                   "The due time is in 15 minutes, hurry up!",
 
-    penalty_msg_no_penalty_for_level = "No penalty (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">\"{difficulty}\" level</a>)",
-    penalty_msg_no_penalty_first_time = "No penalty (<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">\"{difficulty}\" level, first miss</a> 😬)",
-    penalty_msg_first_time = "♦️ You've lost {penalty} crystals (first miss)\n"
-                             "\n"
-                             "💎 Remaining crystals: {score}",
-    penalty_msg_generic_small = "♦️ You've lost {penalty} crystals\n"
-                                "\n"
-                                "💎 Remaining crystals: {score}",
-    penalty_msg_generic_full = "♦️ You've lost {penalty} crystals\n"
-                               "\n"
-                               "💎 Remaining crystals: {score}",
-    penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
-                   "\n"
-                   "{penalty_msg}",
+    penalty_text = "You forgot to review your <i>Formula</i> 🟥",
 
     badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!\nPress \"View achievements\" button below.",
     badge_new = "🏆 You've got a new achievement!\nPress \"View achievements\" button below.",
     view_badges_button = "View achievements 🏆",
-    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!\nPay {n} crystals to get rid of it (/pay)."
+    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
+    cooldown_msg="❄️ Early reviews are not rewarded."
 )
 
 de = Lang(
@@ -612,30 +512,13 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
     review_command_button_yourself="Verbessere dich selbst 💪",
     review_command_button_world="Verbessere die Welt 🙌",
 
-    review_reward_msg_very_happy="😻 Du hast 2 neue Sterne bekommen!",
-    review_reward_msg="😺 Du hast einen neuen Stern bekommen!",
-    review_command_success_text="<i>Formel</i> wurde überprüft 🎉\n"
+    review_command_success_text="<i>Formula</i> has been reviewed 🎉\n"
+                                "{maybe_achievement}"
                                 "\n"
-                                "<b>{reward_msg}</b>\n"
+                                "Next review before {next_review}\n"
                                 "\n"
-                                "🌟 Gesamtzahl der Sterne: {score}\n"
-                                "⏳ Spielzeit: {time}\n"
-                                "\n"
-                                "Nächste Überprüfung vor {next_review}\n"
-                                "\n"
-                                " ‣ /pause - Spiel pausieren\n"
-                                " ‣ /stats - Spielfortschritt",
-
-    review_command_success_no_rewards_text="<i>Formel</i> wurde überprüft 🎉\n"
-                                           "\n"
-                                           "Keine Belohnung (<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlungsregel</a>)\n"
-                                           "\n"
-                                           "🌟 Gesamtzahl der Sterne: {score}\n"
-                                           "⏳ Spielzeit: {time}\n"
-                                           "\n"
-                                           "Nächste Überprüfung vor {next_review}\n"
-                                           "\n"
-                                           " ‣ /pause - Spiel pausieren",
+                                " ‣ /pause - pause the game\n"
+                                " ‣ /stats - game progress",
 
     review_since_last_time="Zeit seit der letzten Überprüfung: {duration}",
 
@@ -668,8 +551,7 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                    "Um das Spiel fortzusetzen, "
                    "überprüfe einfach deine <i>Formel</i> mit dem untenstehenden Knopf.",
 
-    stats_command=("🌟 <a href=\"https://mindwarriorgame.org/faq.de.html#review\">Erworbene Sterne</a>: {score}\n"
-                   "🏆 Level : {level}\n"
+    stats_command=("🏆 Level : {level}\n"
                    "⌛ Aktive Spielzeit: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">Pausiert?</a> {paused}\n"
@@ -681,6 +563,7 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                    "\n"
                    "Um das Spiel fortzusetzen, überprüfe einfach deine <i>Formel</i> mit dem untenstehenden Knopf.",
     game_started="Das Spiel hat begonnen 🏁\n"
+                 "{maybe_achievement}"
                  "\n"
                  "💪<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty}\n"
                  "\n"
@@ -722,25 +605,13 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                   "\n"
                   "Die Frist endet in 15 Minuten, beeile dich!",
 
-    penalty_msg_no_penalty_for_level = "😼 Keine Strafe (<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad \"{difficulty}\"</a>)",
-    penalty_msg_no_penalty_first_time = "😼 Keine Strafe (<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad \"{difficulty}\", erstes Versäumnis</a> 😬)",
-    penalty_msg_first_time = "😿 Du hast {penalty} Sterne verloren (erstes Versäumnis)❗\n"
-                             "\n"
-                             "🌟 Verbleibende Sterne: {score}",
-    penalty_msg_generic_small = "😿 Du hast {penalty} Sterne verloren ❗\n"
-                                "\n"
-                                "🌟 Verbleibende Sterne: {score}",
-    penalty_msg_generic_full = "🙀 Du hast {penalty} Sterne verloren ❗\n"
-                               "\n"
-                               "🌟 Verbleibende Sterne: {score}",
-    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥\n"
-                   "\n"
-                   "{penalty_msg}",
+    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥",
 
     badge_unhappy_cat = "😾 Ups! Eine mürrische Katze hat sich eingeschlichen!",
     badge_new = "🏆 Du hast eine neue Errungenschaft!",
     view_badges_button = "Erfolge ansehen",
-    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!"
+    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
+    cooldown_msg="❄️ Early reviews are not rewarded."
 )
 
 
@@ -777,31 +648,13 @@ ru = Lang(
     review_command_button_yourself="Улучшить себя 💪",
     review_command_button_world="Улучшить мир 🙌",
 
-    review_reward_msg_very_happy="💎💎Вы получили 2 кристалла!",
-    review_reward_msg="💎 Вы получили кристал!",
     review_command_success_text="<i>Формула</i> просмотрена 🎉\n"
-                                "\n"
-                                "<b>{reward_msg}</b>\n"
-                                "\n"
-                                "💎 Всего кристаллов: {score}\n"
-                                "⏳ Время игры: {time}\n"
+                                "{maybe_achievement}"
                                 "\n"
                                 "Следующий просмотр не позже {next_review}\n"
                                 "\n"
                                 " ‣ /pause - игру на паузу\n"
                                 " ‣ /stats - статистика игры",
-
-
-    review_command_success_no_rewards_text="<i>Формула</i> просмотрена 🎉\n"
-                                           "\n"
-                                           "Без награды (<a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty:~:text=%D0%BC%D0%B5%D0%B6%D0%B4%D1%83%20%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D1%8B%D0%BC%D0%B8%20%D0%BF%D1%80%D0%BE%D1%88%D0%BB%D0%BE%20%D1%85%D0%BE%D1%82%D1%8F%20%D0%B1%D1%8B%205%20%D0%BC%D0%B8%D0%BD%D1%83%D1%82\">слишком частые просмотры</a>)\n"
-                                           "\n"
-                                           "💎 Всего кристаллов: {score}\n"
-                                           "⏳ Время игры: {time}\n"
-                                           "\n"
-                                           "Следующий просмотр не позже {next_review}\n"
-                                           "\n"
-                                           " ‣ /pause - игру на паузу",
 
 
     review_since_last_time="Прошло с последнего просмотра: {duration}",
@@ -816,7 +669,6 @@ ru = Lang(
                              "\n"
                              "<b>{old} -> {new}</b>\n"
                              "\n"
-                             "💎 Всего кристаллов: 0\n"
                              "🏆 Уровень: 1\n"
                              "⏳ Время игры: 0d 0h 0m\n"
                              "\n"
@@ -835,8 +687,7 @@ ru = Lang(
                    "\n"
                    "Для снятия с паузы просмотрите свою <i>Формулу</i> с помощью кнопки ниже.",
 
-    stats_command=("💎 <a href=\"https://mindwarriorgame.org/faq.ru.html#review\">Заработано кристаллов</a>: {score}\n"
-                   "🏆 Уровень: {level}\n"
+    stats_command=("🏆 Уровень: {level}\n"
                    "⌛ Время активной игры: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">Сложность игры</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.ru.html#pause\">На паузе?</a> {paused}\n"
@@ -848,6 +699,7 @@ ru = Lang(
                    "Чтобы продолжить игру, просмотрите свою <i>Формулу</i> с помощью кнопки ниже.",
 
     game_started="Игра начата 🏁\n"
+                 "{maybe_achievement}"
                  "\n"
                  "💪<a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">Уровень сложности</a>: {difficulty}\n"
                  "\n"
@@ -890,25 +742,13 @@ ru = Lang(
                   "\n"
                   "Время истекает через 15 минут, поторопитесь!",
 
-    penalty_msg_no_penalty_for_level = "Без штрафа (уровень <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">\"{difficulty}\"</a>)",
-    penalty_msg_no_penalty_first_time = "Без штрафа (уровень <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">\"{difficulty}\", первый пропуск</a> 😬)",
-    penalty_msg_first_time = "♦️ Вы потеряли кристаллы: -{penalty} (первый пропуск)\n"
-                             "\n"
-                             "💎 Осталось кристалов: {score}",
-    penalty_msg_generic_small = "♦️ Вы потеряли кристаллы: -{penalty}\n"
-                                "\n"
-                                "💎 Осталось кристаллов: {score}",
-    penalty_msg_generic_full = "♦️ Вы потеряли кристаллы: -{penalty}\n"
-                               "\n"
-                               "💎 Осталось кристаллов: {score}",
-    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n"
-                   "\n"
-                   "{penalty_msg}",
+    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥",
 
     badge_unhappy_cat = "😾 Ой! Похоже, к вам забрался недовольный кот!\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     badge_new = "🏆 Вы получили новое достижение\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     view_badges_button = "Посмотреть достижения 🏆",
-    locked_achievements = "⛔🏆😾 Недовольный кот блокирует достижения!"
+    locked_achievements = "⛔🏆😾 Недовольный кот блокирует достижения!",
+    cooldown_msg="❄️ Слишком частые просмотры не вознаграждаются."
 )
 
 
