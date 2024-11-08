@@ -75,8 +75,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(user['review_counter_state'])
         counter = Counter(user['review_counter_state'])
         self.assertTrue(counter.is_active())
-        badges_manager = BadgesManager(user['badges_serialized'])
-        self.assertEqual(badges_manager.get_last_badge(), "f0")
+        badges = BadgesManager(user['difficulty'], user['badges_serialized'])
+        self.assertEqual(badges.get_last_badge(), "f0")
         self.assertEqual(counter.get_total_seconds(), 0)
 
 
@@ -155,7 +155,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 user = self.users_orm.get_user_by_id(1)
                 self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
                 self.assertEqual(user['next_prompt_type'], 'reminder')
-                badges = BadgesManager(user['badges_serialized'])
+                badges = BadgesManager(user['difficulty'], user['badges_serialized'])
                 self.assertEqual(badges.get_last_badge(), "c0")
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -168,9 +168,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
 
         user = self.users_orm.get_user_by_id(1)
-        badges_manager = BadgesManager(user['badges_serialized'])
-        badges_manager.on_penalty(0, 1)
-        user['badges_serialized'] = badges_manager.serialize()
+        badges = BadgesManager(user['difficulty'], user['badges_serialized'])
+        badges.on_penalty(0)
+        user['badges_serialized'] = badges.serialize()
         self.users_orm.upsert_user(user)
 
         with time_machine.travel("2022-04-21 05:50", tick=False):
@@ -586,7 +586,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(user['counters_history_serialized'], '['
                                                               '{"counter_name": "paused", "counter_stopped_duration_secs": 900, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}, '
                                                               '{"counter_name": "review", "counter_stopped_duration_secs": 1500, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}]')
-        badges = BadgesManager(user['badges_serialized'])
+        badges = BadgesManager(user['difficulty'], user['badges_serialized'])
         self.assertEqual(badges.is_level_completed(), False)
         self.assertEqual(user['next_prompt_type'], 'reminder')
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 1, 15).astimezone(datetime.timezone.utc))
@@ -604,9 +604,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['review_counter_state'] = counter.serialize()
         user['lang_code'] = 'en'
         user['next_prompt_type'] = 'reminder'
-        badges = BadgesManager(user['badges_serialized'])
-        badges.on_review(0, 1)
-        badges.on_review(0, 1)
+        badges = BadgesManager(user['difficulty'], user['badges_serialized'])
+        badges.on_review(0)
+        badges.on_review(0)
         user['badges_serialized'] = badges.serialize()
         self.users_orm.upsert_user(user)
 
@@ -643,8 +643,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['review_counter_state'] = counter.serialize()
         user['lang_code'] = 'en'
         user['next_prompt_type'] = 'reminder'
-        badges = BadgesManager(user['badges_serialized'])
-        badges.on_penalty(0, 1)
+        badges = BadgesManager(user['difficulty'], user['badges_serialized'])
+        badges.on_penalty(0)
         user['badges_serialized'] = badges.serialize()
         self.users_orm.upsert_user(user)
 
