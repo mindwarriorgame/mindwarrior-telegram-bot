@@ -75,6 +75,24 @@
         .board-cell img.badge {
             width: 100%;
         }
+        .board-cell .broom {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+        }
+        .board-cell .broom img {
+            display: none;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            opacity: 0.7;
+            clip-path: polygon(0% 0%, 1% 0%, 1% 100%, 0% 100%);
+        }
+        .board-cell.active .broom img {
+            display: block;
+        }
         .board-cell img.lock {
             position: absolute;
             top: 5px;
@@ -123,6 +141,7 @@
             top: 0;
             justify-content: end;
             padding-bottom: 5px;
+            z-index: 20;
         }
 
         img {
@@ -282,17 +301,17 @@
         <img src="../badge-images/t0_512.jpg" class="new_achievement placeholder" />
     </p>
     <div class="boardWrapper">
-        <p class="board-cell achievement-cell"><img src="../badge-images/t0_512.jpg" class="badge maybeTarget" />
+        <div class="board-cell achievement-cell"><img src="../badge-images/t0_512.jpg" class="badge maybeTarget" />
             <img src="lock.png" width="32" class="lock" />
             <a href="javascript:openPopup()">How to unlock?</a>
             <span class="cell-progress" style="width: 100%"></span>
-        </p>
-        <p class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge maybeTarget" />
+        </div>
+        <div class="board-cell achievement-cell active"><img src="../badge-images/f0_512.jpg" class="badge maybeTarget" />
             <img src="lock.png" width="32" class="lock" />
             <a href="javascript:openPopup()">How to unlock3?</a>
-        </p>
-        <p class="board-cell unhappy-cat-cell"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge maybeTarget" /><a href="javascript:openPopup('c0')">How to kick me out?</a></p>
-        <p class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge maybeTarget" /><a href="javascript:openPopup('c0')">How to kick me out?</a></p>
+        </div>
+        <div class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge maybeTarget" /><div class="broom"><img src="broom.png" /></div><a href="javascript:openPopup('c0')">How to kick me out?</a></div>
+        <div class="board-cell unhappy-cat-cell active"><img src="../badge-images/c0_512.jpg" class="unhappy-cat badge maybeTarget" /><a href="javascript:openPopup('c0')">How to kick me out?</a></div>
     </div>
 </div>
 
@@ -337,6 +356,7 @@
             review_without_misses_duration: 'Review <i>Formula</i> during next ### without misses 🚫🟥',
             review_without_reminders_duration: 'Review <i>Formula</i> during next ### without reminders 🚫⏰',
             review_without_misses_times: 'Review <i>Formula</i> without misses next ### time(s) 🚫🟥',
+            review_times: 'Review <i>Formula</i> next ### time(s) 💫',
             update_formula_after: 'Update the <i>Formula</i> after ### 🧪',
             kick_out: 'Earn any badge to kick me out!',
             play_game: 'Play the game during next ### 🎮',
@@ -360,6 +380,7 @@
             review_without_reminders_duration: 'Повторяйте <i>Формулу</i> в течение следующих ### без напоминаний 🚫⏰',
             review_without_misses_times: 'Повторите <i>Формулу</i> без пропусков ### раз(а) 🚫🟥',
             update_formula_after: 'Обновите <i>Формулу</i> через ### 🧪',
+            review_times: 'Повторите <i>Формулу</i> следующие ### раз(а) 💫',
             kick_out: 'Получите любое достижение, чтобы прогнать меня!',
             play_game: 'Выдается после ### активной игры 🎮',
             close: 'Закрыть',

@@ -23,6 +23,7 @@ class BadgeCell {
         this.progress = progress;
         this.aElt = this.elt.querySelector('a');
         this.progressElt = this.elt.querySelector('.cell-progress');
+        this.broomElt = this.elt.querySelector('.broom');
         this.lockElt = this.elt.querySelector('.lock');
         this.isTarget = isTarget;
         this.elt.querySelector('img').style.transition = 'none';
@@ -103,6 +104,7 @@ class BadgeCell {
 
     setGrumpyCatActive() {
         this.elt.classList.add('active');
+        this.broomElt.querySelector('img').style.clipPath = "polygon(0% 0%, " + this.progress.progress_pct + "% 0%, " + this.progress.progress_pct + "% 100%, 0% 100%)"
     }
 
     setGrumpyCatInactive() {
@@ -117,8 +119,8 @@ class Board {
         this.boardEltWrapper = boardElt.querySelector('.boardWrapper');
         this.newBadge = newBadge;
 
-        this.INACTIVE_BADGE_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[0].outerHTML.replace("t0_512.jpg", "badge.jpg");
-        this.INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('p')[2].outerHTML.replace("c0_512.jpg", "badge.jpg");
+        this.INACTIVE_BADGE_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('div')[0].outerHTML.replace("t0_512.jpg", "badge.jpg");
+        this.INACTIVE_UNHAPPY_CAT_TEMPLATE_ELT = this.boardEltWrapper.getElementsByTagName('div')[2].outerHTML.replace("c0_512.jpg", "badge.jpg");
 
         this.boardEltWrapper.innerHTML = '';
 

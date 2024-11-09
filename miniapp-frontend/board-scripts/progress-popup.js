@@ -31,12 +31,17 @@ function openPopup(badge, progress) {
         't0': window.lang.play_game,
     };
 
-    if (badge === 'c0') {
-        content += `<p>${window.lang.kick_out}</p>`;
-    } else if (timeBadges[badge]) {
+    const reviewBadges = {
+        's0': window.lang.review_without_misses_times,
+        's1': window.lang.review_without_misses_times,
+        's2': window.lang.review_without_misses_times,
+        'c0': window.lang.review_times
+    }
+
+    if (timeBadges[badge]) {
         content += renderReviewWithoutSomething(timeBadges[badge], progress.progress_pct, progress.remaining_time_secs);
     } else {
-        content += renderReviewWithoutSomething(window.lang.review_without_misses_times, progress.progress_pct, progress.remaining_reviews, false);
+        content += renderReviewWithoutSomething(reviewBadges[badge], progress.progress_pct, progress.remaining_reviews, false);
     }
 
     content += `<p><button class='action-btn' onclick='closePopup()'>${window.lang.close}</button></p>`;
