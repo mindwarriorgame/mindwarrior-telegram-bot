@@ -83,15 +83,14 @@
             bottom: 0px;
         }
         .board-cell .broom img {
-            display: none;
-            position: absolute;
             width: 100%;
             z-index: 10;
-            opacity: 0.7;
+            opacity: 0;
             clip-path: polygon(0% 0%, 1% 0%, 1% 100%, 0% 100%);
         }
         .board-cell.active .broom img {
             display: block;
+            opacity: 0.7;
         }
         .board-cell img.lock {
             position: absolute;
@@ -435,12 +434,16 @@
     const board2Items = urlParams.get('b2') ? deserializeBoard(urlParams.get('b2')) : null;
     const boardProgress1 = deserializeProgressMap(urlParams.get('bp1'));
 
-    const newBadge = urlParams.get('new_badge');
+    let newBadge = urlParams.get('new_badge');
+    let c0removed = (newBadge == 'c0_removed')
+    if (c0removed) {
+        newBadge = null;
+    }
 
     const board1 = new Board(document.getElementById('board1'), newBadge);
     board1Items.forEach(item => {
         board1.addCell(item, boardProgress1[item.badge]);
-        if (!item.active) {
+        if ((item.badge != 'c0' && !item.active) || (item.badge == 'c0' && item.active)) {
             delete boardProgress1[item.badge];
         }
     });
@@ -453,7 +456,7 @@
         const boardProgress2 = deserializeProgressMap(urlParams.get('bp2'));
         board2Items.forEach(item => {
             board2.addCell(item, boardProgress2[item.badge]);
-            if (!item.active) {
+            if ((item.badge != 'c0' && !item.active) || (item.badge == 'c0' && item.active)) {
                 delete boardProgress2[item.badge];
             }
         });
@@ -490,7 +493,7 @@
         setTimeout(() => {
             window?.Telegram?.WebApp?.expand();
 
-            if (!board1.isNewGrumpyCat() && newBadge) {
+            if (!board1.isNewGrumpyCat() && (newBadge || c0removed)) {
                 fireConfetti();
             }
 

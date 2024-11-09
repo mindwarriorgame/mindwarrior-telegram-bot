@@ -22,8 +22,8 @@ class BadgeCell {
         this.item = item;
         this.progress = progress;
         this.aElt = this.elt.querySelector('a');
-        this.progressElt = this.elt.querySelector('.cell-progress');
-        this.broomElt = this.elt.querySelector('.broom');
+        this.progressElt = this.elt.querySelector('.cell-progress') || document.createElement('div');
+        this.broomElt = this.elt.querySelector('.broom') || document.createElement('div');
         this.lockElt = this.elt.querySelector('.lock');
         this.isTarget = isTarget;
         this.elt.querySelector('img').style.transition = 'none';
@@ -33,11 +33,25 @@ class BadgeCell {
                 e.preventDefault();
                 openPopup(item.badge, progress);
             };
+        } else {
+            this.aElt.style.display = 'none';
+            if (this.progressElt) {
+                this.progressElt.style.display = 'none';
+                this.progressElt = document.createElement('div');
+            }
+            if (this.broomElt) {
+                this.broomElt.style.display = 'none';
+                const img = document.createElement('img');
+                this.broomElt = document.createElement('div');
+                this.broomElt.appendChild(img);
+            }
         }
 
         if (item.badge === 'c0') {
-            if (isTarget) {
+            if (isTarget && item.active) {
                 this.setGrumpyCatInactive();
+            } else if (item.last_modified && !item.active) {
+                this.setGrumpyCatDisappears();
             } else if (item.active) {
                 this.setGrumpyCatActive();
             } else {
@@ -104,7 +118,19 @@ class BadgeCell {
 
     setGrumpyCatActive() {
         this.elt.classList.add('active');
-        this.broomElt.querySelector('img').style.clipPath = "polygon(0% 0%, " + this.progress.progress_pct + "% 0%, " + this.progress.progress_pct + "% 100%, 0% 100%)"
+        const progressPct = this.progress?.progress_pct || 0;
+        this.broomElt.querySelector('img').style.clipPath = "polygon(0% 0%, " + progressPct + "% 0%, " + progressPct + "% 100%, 0% 100%)"
+    }
+
+    setGrumpyCatDisappears() {
+        this.elt.classList.add('active');
+        this.aElt.style.display = 'none';
+        this.broomElt.style.display = 'block';
+        this.broomElt.querySelector('img').style.clipPath = "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
+        this.elt.querySelector('img').style.removeProperty('transition');
+        setTimeout(() => {
+            this.elt.classList.remove('active');
+        }, 100);
     }
 
     setGrumpyCatInactive() {
