@@ -168,3 +168,14 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                 'challenge': 'update_formula',
                                                                 'progress_pct': 0,
                                                                 'remaining_time_secs': 86400}})
+        self.assertEqual(badges_manager.get_board(), [{'badge': 'f0', 'is_active': False},
+                                                      {'badge': 'c0', 'is_active': False, 'is_last_modified': True},
+                                                      {'badge': 'c0', 'is_active': True}])
+        badges_manager.on_review(0)
+        badges_manager.on_review(0)
+        badges_manager.on_review(0)
+        badges_manager.on_review(0)
+        badges_manager.on_review(0)
+        self.assertEqual(badges_manager.get_board(), [{'badge': 'f0', 'is_active': False},
+                                                      {'badge': 'c0', 'is_active': False},
+                                                      {'badge': 'c0', 'is_active': False, 'is_last_modified': True}])

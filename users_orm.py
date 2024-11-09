@@ -68,6 +68,7 @@ class UsersOrm:
                 PRIMARY KEY (user_id)
             )
         ''')
+        #TODO: add cooldown timer
         self.conn.commit()
 
         self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_prompt_time ON users (difficulty, active_game_counter_state_is_null, paused_counter_state_is_null, next_prompt_time)')

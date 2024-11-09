@@ -130,9 +130,10 @@ class BadgesManager:
 
         if self.count_active_grumpy_cats_on_board() > 0:
             self.data["c0_hp"] = max(0, self.data["c0_hp"] - old_delta)
+            self.data["board"] = self.clone_board_without_last_modified(self.data["board"])
 
             if self.data["c0_hp"] == 0:
-                self._kick_off_grump_cat()
+                self.data["board"] = self._expel_grumpy_cat(self.data["board"])
                 if self.count_active_grumpy_cats_on_board() > 0:
                     self.data["c0_hp"] = self._max_grumpy_cat_healthpoints()
 
@@ -151,9 +152,6 @@ class BadgesManager:
 
     def get_last_badge(self):
         return self.data.get("last_badge")
-
-    def _kick_off_grump_cat(self):
-        self.data["board"] = self._expel_grumpy_cat(self.data["board"])
 
     # "terminate_if_found" is useful when there could be multiple rewards for a single action, to make sure only one of them is given
     # and the state of the others is not updated. However, for penalties, should be False, because the penalty should affect

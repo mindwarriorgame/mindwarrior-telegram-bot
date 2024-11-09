@@ -42,7 +42,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=s0_3_0'}],
+                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=c0_0_100--s0_3_0'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': 'The game has started 🏁\n'
@@ -144,7 +144,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                      {'text': 'View achievements 🏆',
-                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
+                                                      'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=c0_5_0--s0_3_0'}],
                                          'image': None,
                                          'menu_commands': [],
                                          'message': 'You forgot to review your <i>Formula</i> 🟥\n'
@@ -188,7 +188,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                      {'text': 'View achievements 🏆',
-                                                      'url': 'http://frontend?lang=en&level=1&b1=f0a_s0_c0am&bp1=s0_3_0'}],
+                                                      'url': 'http://frontend?lang=en&level=1&b1=f0a_s0_c0am&bp1=c0_5_0--s0_3_0'}],
                                          'image': None,
                                          'menu_commands': [],
                                          'message': 'You forgot to review your <i>Formula</i> 🟥\n'
@@ -269,7 +269,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=s0_7_0'}],
+                                              'url': 'http://frontend?lang=en&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=c0_0_100--s0_7_0'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': 'The game has started 🏁\n'
@@ -411,7 +411,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['paused_counter_state'] = counter.serialize()
         user['difficulty']  = 2
         user['active_game_counter_state'] = counter.serialize()
-        user['last_reward_time'] = datetime.datetime(2022, 4, 21)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
@@ -439,7 +438,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_stats_command(1)
         self.assertEqual(data, {'buttons': [{'text': 'View achievements 🏆',
-                                             'url': 'http://frontend?lang=en&level=1&b1=f0_s0_c0&bp1=s0_5_0--f0_86400_0'}],
+                                             'url': 'http://frontend?lang=en&level=1&b1=f0_s0_c0&bp1=c0_0_100--s0_5_0--f0_86400_0'}],
                                 'image': None,
                                 'menu_commands': [],
                                 'message': '🏆 Level : 1\n'
@@ -615,7 +614,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&new_badge=s0&level=1&b1=f0_s0am_c0&bp1=f0_43200_0'}],
+                                              'url': 'http://frontend?lang=en&new_badge=s0&level=1&b1=f0_s0am_c0&bp1=c0_0_100--f0_43200_0'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': 'The game is resumed.\n'
@@ -631,7 +630,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2022-04-21", tick=False)
-    def test_on_formula_reviewed_grumpy_cat_blocks(self):
+    def test_on_formula_reviewed_not_showing_grumpy_cat(self):
         user = self.users_orm.get_user_by_id(1)
         counter = Counter("")
         counter.resume()
@@ -653,13 +652,13 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&level=1&b1=f0_s0_c0am&bp1=s0_3_0--f0_43200_0'}],
+                                              'url': 'http://frontend?lang=en&level=1&b1=f0_s0_c0a&bp1=c0_4_20--s0_3_0--f0_43200_0'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': 'The game is resumed.\n'
                                             '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
-                                            '⛔🏆😾 A grumpy cat is blocking new achievements!\n'
+                                            '🧹😾 Kicking out the grumpy cat...\n'
                                             '\n'
                                             'Next review before 12:15 am\n'
                                             '\n'
@@ -798,6 +797,149 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '"is_active": true, "is_last_modified": true}, {"badge": "s0", '
                                            '"is_active": null}, {"badge": "c0...',
                                 'to_chat_id': 1})
+
+    def test_expel_grumpy_cats(self):
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
+        user = self.users_orm.get_user_by_id(1)
+        user['badges_serialized'] = ('{"board": ['
+                                     '{"badge": "c0", "is_active": null}, '
+                                     '{"badge": "c0", "is_active": null}, '
+                                     '{"badge": "c1", "is_active": null}]}')
+
+        for penaltyIdx in range(0, 2):
+            user['next_prompt_type'] = 'penalty'
+            user['next_prompt_time'] = datetime.datetime(2022, 4, 21, 1, 0).astimezone(datetime.timezone.utc)
+            self.users_orm.upsert_user(user)
+            data = self.game_manager.process_tick()
+
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                  'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                 {'text': 'View achievements 🏆',
+                                                  'url': 'http://frontend?lang=en&new_badge=c0&level=1&b1=c0am_c0_c1&bp1=c1_43200_0--c0_10_0'
+                                                  if penaltyIdx == 0 else 'http://frontend?lang=en&new_badge=c0&level=1&b1=c0a_c0am_c1&bp1=c1_43200_0--c0_10_0'}],
+                                     'image': None,
+                                     'menu_commands': [],
+                                     'message': 'You forgot to review your <i>Formula</i> 🟥\n'
+                                                '\n'
+                                                '😾 Oops! A grumpy cat sneaked in!\n'
+                                                'Press "View achievements" button below.',
+                                     'to_chat_id': 1}])
+            user = self.users_orm.get_user_by_id(1)
+            badge_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
+            self.assertEqual(badge_manager.count_active_grumpy_cats_on_board(), penaltyIdx + 1)
+
+
+        achievement_urls = [
+            'http://frontend?lang=en&level=1&b1=c0a_c0a_c1&bp1=c1_43200_0--c0_9_10',
+            'http://frontend?lang=en&level=1&b1=c0a_c0a_c1&bp1=c1_43200_0--c0_6_40',
+            'http://frontend?lang=en&level=1&b1=c0a_c0a_c1&bp1=c1_43200_0--c0_3_70',
+        ]
+        for reviewIdx in range(0, 3):
+            print(reviewIdx)
+            user = self.users_orm.get_user_by_id(1)
+            counter = Counter(user["review_counter_state"])
+            counter.move_time_back(10)
+            user['review_counter_state'] = counter.serialize()
+            self.users_orm.upsert_user(user)
+            data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                  'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                 {'text': 'View achievements 🏆',
+                                                  'url': achievement_urls[reviewIdx]}],
+                                     'image': None,
+                                     'menu_commands': [],
+                                     'message': '<i>Formula</i> has been reviewed 🎉\n'
+                                                '\n'
+                                                '🧹😾 Kicking out the grumpy cat...\n'
+                                                '\n'
+                                                'Next review before 12:16 am\n'
+                                                '\n'
+                                                ' ‣ /pause - pause the game\n'
+                                                ' ‣ /stats - game progress',
+                                     'to_chat_id': 1}])
+
+        user = self.users_orm.get_user_by_id(1)
+        counter = Counter(user["review_counter_state"])
+        counter.move_time_back(10)
+        user['review_counter_state'] = counter.serialize()
+        self.users_orm.upsert_user(user)
+        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                             {'text': 'View achievements 🏆',
+                                              'url': 'http://frontend?lang=en&new_badge=c0_removed&level=1&b1=c0m_c0a_c1&bp1=c1_43200_0--c0_10_0'}],
+                                 'image': None,
+                                 'menu_commands': [],
+                                 'message': '<i>Formula</i> has been reviewed 🎉\n'
+                                            '\n'
+                                            '🧹 The grumpy cat has been kicked out!\n'
+                                            '😾 Grumpy cats remaining: 1\n'
+                                            '\n'
+                                            'Next review before 12:16 am\n'
+                                            '\n'
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /stats - game progress',
+                                 'to_chat_id': 1}])
+
+        achievement_urls = [
+            'http://frontend?lang=en&level=1&b1=c0_c0a_c1&bp1=c1_43200_0--c0_7_30',
+            'http://frontend?lang=en&level=1&b1=c0_c0a_c1&bp1=c1_43200_0--c0_4_60',
+            'http://frontend?lang=en&level=1&b1=c0_c0a_c1&bp1=c1_43200_0--c0_1_90',
+        ]
+        for reviewIdx in range(0, 3):
+            print(reviewIdx)
+            user = self.users_orm.get_user_by_id(1)
+            counter = Counter(user["review_counter_state"])
+            counter.move_time_back(10)
+            user['review_counter_state'] = counter.serialize()
+            self.users_orm.upsert_user(user)
+            data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                  'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                 {'text': 'View achievements 🏆',
+                                                  'url': achievement_urls[reviewIdx]}],
+                                     'image': None,
+                                     'menu_commands': [],
+                                     'message': '<i>Formula</i> has been reviewed 🎉\n'
+                                                '\n'
+                                                '🧹😾 Kicking out the grumpy cat...\n'
+                                                '\n'
+                                                'Next review before 12:16 am\n'
+                                                '\n'
+                                                ' ‣ /pause - pause the game\n'
+                                                ' ‣ /stats - game progress',
+                                     'to_chat_id': 1}])
+
+        user = self.users_orm.get_user_by_id(1)
+        counter = Counter(user["review_counter_state"])
+        counter.move_time_back(10)
+        user['review_counter_state'] = counter.serialize()
+        self.users_orm.upsert_user(user)
+        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                             {'text': 'View achievements 🏆',
+                                              'url': 'http://frontend?lang=en&new_badge=c0_removed&level=1&b1=c0_c0m_c1&bp1=c1_43200_0--c0_0_100'}],
+                                 'image': None,
+                                 'menu_commands': [],
+                                 'message': '<i>Formula</i> has been reviewed 🎉\n'
+                                            '\n'
+                                            '🧹 The grumpy cat has been kicked out!\n'
+                                            '🏆 Achievements are unlocked!\n'
+                                            '\n'
+                                            'Next review before 12:16 am\n'
+                                            '\n'
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /stats - game progress',
+                                 'to_chat_id': 1}])
+
 
     def test_render_screens(self):
         for screenIdx in range(0, 20):

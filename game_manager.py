@@ -776,11 +776,7 @@ class GameManager:
 
         active_play_time_secs = self._calculate_active_play_time_seconds(user)
 
-        had_c0 = (badges_manager.count_active_grumpy_cats_on_board() > 0)
-
         badge = getattr(badges_manager, event)(active_play_time_secs)
-
-
 
         user['badges_serialized'] = badges_manager.serialize()
         self.users_orm.upsert_user(user)
@@ -793,9 +789,14 @@ class GameManager:
             'url': button_url
         }
 
+        if badge == "c0_removed":
+            if badges_manager.count_active_grumpy_cats_on_board() == 0:
+                return lang.grumpy_cat_kicked_out + "\n" + lang.achievements_unblocked, view_achievemnts_button
+            return lang.grumpy_cat_kicked_out + "\n" + lang.remained_grumpy_cats.format(count=badges_manager.count_active_grumpy_cats_on_board()), view_achievemnts_button
+
         if badge is None:
-            if had_c0:
-                return lang.locked_achievements, view_achievemnts_button
+            if badges_manager.count_active_grumpy_cats_on_board() > 0:
+                return lang.kicking_out_grumpy_cat if event == 'on_review' else lang.locked_achievements, view_achievemnts_button
             return None, None
 
         return lang.badge_unhappy_cat if badge == "c0" else lang.badge_new, view_achievemnts_button

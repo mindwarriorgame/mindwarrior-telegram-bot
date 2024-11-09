@@ -77,6 +77,11 @@ class Lang:
     locked_achievements: str
     cooldown_msg: str
 
+    kicking_out_grumpy_cat: str
+    grumpy_cat_kicked_out: str
+    remained_grumpy_cats: str
+    achievements_unblocked: str
+
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
@@ -209,7 +214,12 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
     badge_new = "🏆 Vous avez obtenu un nouveau succès!",
     view_badges_button = "Voir les succès",
     locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
-    cooldown_msg="❄️ Early reviews are not rewarded."
+    cooldown_msg="❄️ Early reviews are not rewarded.",
+
+    kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
+    grumpy_cat_kicked_out="🧹The grumpy cat has been kicked out!",
+    remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
+    achievements_unblocked="🏆 Achievements are unlocked!"
 )
 
 
@@ -342,7 +352,12 @@ Presiona el botón de abajo para iniciar el juego.""",
     badge_new = "🏆 ¡Has conseguido un nuevo logro!",
     view_badges_button = "Ver logros",
     locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
-    cooldown_msg="❄️ Early reviews are not rewarded."
+    cooldown_msg="❄️ Early reviews are not rewarded.",
+
+    kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
+    grumpy_cat_kicked_out="🧹 The grumpy cat has been kicked out!",
+    remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
+    achievements_unblocked="🏆 Achievements are unlocked!"
 )
 
 
@@ -478,7 +493,12 @@ Press the button below to start the game.""",
     badge_new = "🏆 You've got a new achievement!\nPress \"View achievements\" button below.",
     view_badges_button = "View achievements 🏆",
     locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
-    cooldown_msg="❄️ Early reviews are not rewarded."
+    cooldown_msg="❄️ Early reviews are not rewarded.",
+
+    kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
+    grumpy_cat_kicked_out="🧹 The grumpy cat has been kicked out!",
+    remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
+    achievements_unblocked="🏆 Achievements are unlocked!"
 )
 
 de = Lang(
@@ -611,7 +631,12 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
     badge_new = "🏆 Du hast eine neue Errungenschaft!",
     view_badges_button = "Erfolge ansehen",
     locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
-    cooldown_msg="❄️ Early reviews are not rewarded."
+    cooldown_msg="❄️ Early reviews are not rewarded.",
+
+    kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
+    grumpy_cat_kicked_out="🧹😾 The grumpy cat has been kicked out!",
+    remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
+    achievements_unblocked="🏆 Achievements are unlocked!"
 )
 
 
@@ -748,7 +773,12 @@ ru = Lang(
     badge_new = "🏆 Вы получили новое достижение\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     view_badges_button = "Посмотреть достижения 🏆",
     locked_achievements = "⛔🏆😾 Недовольный кот блокирует достижения!",
-    cooldown_msg="❄️ Слишком частые просмотры не вознаграждаются."
+    cooldown_msg="❄️ Слишком частые просмотры не вознаграждаются.",
+
+    kicking_out_grumpy_cat="🧹😾 Выгоняем недовольного кота...",
+    grumpy_cat_kicked_out="🧹 Вы выгнали недовольного кота!",
+    remained_grumpy_cats="😾 Осталось недовольных котов: {count}",
+    achievements_unblocked="🏆 Достижения разблокированы!"
 )
 
 
