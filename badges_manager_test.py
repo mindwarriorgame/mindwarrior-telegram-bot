@@ -66,7 +66,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "118600", "TimeBadgeCounter": "86400", '
                                                      '"StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, '
                                                      '"board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, '
-                                                     '{"badge": "c0", "is_active": true}], "level": 0, "last_badge": "c0", "c0_hp_next_delta": 3, '
+                                                     '{"badge": "c0", "is_active": true}], "level": 0, "last_badge": null, "c0_hp_next_delta": 3, '
                                                      '"c0_hp": 12, "c0_lock_started_at": 0, "c0_active_time_penalty": 0}')
 
     def test_kicking_out_grumpy_cat(self):
@@ -104,7 +104,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
         badge = badges_manager.on_game_started(0)
         self.assertEqual(badge, None)
         self.assertEqual(badges_manager.get_level(), 0)
-        self.assertEqual(badges_manager.get_last_badge(), 'f0')
+        self.assertEqual(badges_manager.get_last_badge(), None)
         self.assertEqual(badges_manager.get_board(), [{'badge': 's0', 'is_active': None},
                                                                              {'badge': 'c0', 'is_active': None}])
 

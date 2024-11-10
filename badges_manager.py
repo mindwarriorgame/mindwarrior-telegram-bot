@@ -151,7 +151,8 @@ class BadgesManager:
                 else:
                     self.data["c0_active_time_penalty"] += int(active_play_time_secs) - self.data["c0_lock_started_at"]
 
-                return "c0_removed"
+                self.data["last_badge"] = "c0_removed"
+                return self.data["last_badge"]
 
         return self._chain_badge_counters("on_review", int(active_play_time_secs), True)
 
@@ -199,6 +200,7 @@ class BadgesManager:
                 self.data["badges_state"][counter.__class__.__name__] = new_state
 
         self.data['board'] = self.clone_board_without_last_modified(self.data['board'])
+        self.data['last_badge'] = None
 
         badge_to_put_on_board = None
         has_old_grumpy_cat = (self.count_active_grumpy_cats_on_board() > 0)

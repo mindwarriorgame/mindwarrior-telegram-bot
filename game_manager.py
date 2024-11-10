@@ -94,7 +94,7 @@ class GameManager:
         if "achievements_button" in user_message:
             return [self._render_single_message(chat_id, lang.achievements_link_regenerated, None, {
                 "text": lang.view_badges_button,
-                "url": self._render_board_url(lang, None, BadgesManager(user['difficulty'], user['badges_serialized']), Counter(user['active_game_counter_state']).get_total_seconds())
+                "url": self._render_board_url(lang, BadgesManager(user['difficulty'], user['badges_serialized']), Counter(user['active_game_counter_state']).get_total_seconds())
             })]
         if "regenerate_shared_key_uuid" in user_message:
             user['shared_key_uuid'] = str(uuid.uuid4())
@@ -638,7 +638,7 @@ class GameManager:
             ),
             'buttons': [{
                 'text': lang.view_badges_button,
-                'url': self._render_board_url(lang, None, badges_manager, active_play_time_seconds)
+                'url': self._render_board_url(lang, badges_manager, active_play_time_seconds)
             }],
             'menu_commands': [],
             'image': fname
@@ -770,11 +770,11 @@ class GameManager:
             'image': None
         }
 
-    def _render_board_url(self, lang: Lang, badge: Optional[str], badges_manager: BadgesManager, active_play_time_secs) -> str:
+    def _render_board_url(self, lang: Lang, badges_manager: BadgesManager, active_play_time_secs) -> str:
         button_url = self.frontend_base_url.replace("index.html", "board.html")
         button_url += '?lang=' + lang.lang_code + '&env=' + self.env
-        if badge is not None:
-            button_url += '&new_badge=' + badge
+        if badges_manager.get_last_badge() is not None:
+            button_url += '&new_badge=' + badges_manager.get_last_badge()
 
         button_url += "&level=" + str(badges_manager.get_level() + 1)
         button_url += "&b1=" + serialize_board(badges_manager.get_board())
@@ -799,7 +799,7 @@ class GameManager:
         self.users_orm.upsert_user(user)
 
         lang = self._get_user_lang(user['lang_code'])
-        button_url = self._render_board_url(lang, badge, badges_manager, active_play_time_secs)
+        button_url = self._render_board_url(lang, badges_manager, active_play_time_secs)
 
         view_achievements_button = {
             'text': lang.view_badges_button,
