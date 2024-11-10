@@ -35,7 +35,8 @@ function checkStringFormat($str) {
         'letter_updated' => '/^letter_updated$/',
         'formula_updated' => '/^formula_updated$/',
         'set_difficulty:POSITIVE_INT_NUMBER' => '/^set_difficulty:\d+;next_review:.*$/',
-        'delete_data_confirmed' => '/^delete_data_confirmed$/'
+        'delete_data_confirmed' => '/^delete_data_confirmed$/',
+        'regenerate_achievements_button' => '/^regenerate_achievements_button$/'
     ];
 
     // Check the string against each pattern

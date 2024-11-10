@@ -772,7 +772,7 @@ class GameManager:
 
     def _render_board_url(self, lang: Lang, badge: Optional[str], badges_manager: BadgesManager, active_play_time_secs) -> str:
         button_url = self.frontend_base_url.replace("index.html", "board.html")
-        button_url += '?lang=' + lang.lang_code
+        button_url += '?lang=' + lang.lang_code + '&env=' + self.env
         if badge is not None:
             button_url += '&new_badge=' + badge
 
