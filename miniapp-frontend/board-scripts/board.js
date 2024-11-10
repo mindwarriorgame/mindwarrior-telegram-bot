@@ -51,7 +51,7 @@ class BadgeCell {
             if (isTarget && item.active) {
                 this.setGrumpyCatInactive();
             } else if (item.last_modified && !item.active) {
-                this.setGrumpyCatDisappears();
+                this.setGrumpyCatActive();
             } else if (item.active) {
                 this.setGrumpyCatActive();
             } else {
@@ -219,6 +219,18 @@ class Board {
         this.placeholderElt.style.visibility = 'hidden';
 
         const actionCallback = () => {
+            const removedC0 = this.cells.find(cell => cell.item.badge === 'c0' && cell.item.last_modified);
+            if (removedC0) {
+                setTimeout(() => {
+                    removedC0.setGrumpyCatDisappears();
+                    setTimeout(() => {
+                        this.showActionButton();
+                        onDone();
+                    }, 1500);
+                    return;
+                }, 750);
+            }
+
             const targetCell = this.cells.find(cell => cell.isTarget);
             if (!targetCell) {
                 // Because projectile has nowhere to go
