@@ -519,8 +519,6 @@
         document.body.classList.remove("loading");
 
         setTimeout(() => {
-            window?.Telegram?.WebApp?.expand();
-
             if (!board1.isNewGrumpyCat() && (newBadge || c0removed)) {
                 fireConfetti();
             }
@@ -535,6 +533,7 @@
     Promise.all([board1.waitTillReady(), board2 ? board2.waitTillReady() : Promise.resolve()]).then(() => {
 
         window?.Telegram?.WebApp?.ready();
+        window?.Telegram?.WebApp?.expand();
 
         if (Math.abs(parseInt(urlParams.get("ts") || 0) * 100 - serverTime.now()) > 5 * 60 * 1000) {
             console.log("Old page detected");
