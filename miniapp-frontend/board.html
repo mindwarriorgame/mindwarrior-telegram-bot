@@ -11,6 +11,7 @@
     <script src="board-scripts/board.js"></script>
     <script src="board-scripts/fireworks.js"></script>
     <script src="board-scripts/progress-popup.js"></script>
+    <script src="server-time.js"></script>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -35,6 +36,7 @@
         body.loading #loader {
             display: block;
         }
+
         body.loading {
             justify-content: center;
         }
@@ -282,6 +284,13 @@
             display: none;
         }
 
+        .code {
+            background-color: #303030;
+            padding: 2px 5px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
 
     </style>
 
@@ -289,6 +298,12 @@
 <body class="loading">
 <div id="loader">
     <h1>Loading...</h1>
+    <div id="outdated" style="display:none">
+        <p>
+        </p>
+        <button class="action-btn"></button>
+        <a href="#"></a>
+    </div>
 </div>
 <div id="board1">
     <h1>Level 1: You've got a new achievement!</h1>
@@ -363,6 +378,10 @@
             play_game: 'Play the game during next ### 🎮',
             close: 'Close',
             oops: 'Oops!',
+            loading: 'Loading...',
+            loading_old_page: 'The link has expired. The page might contain out-of-date information.<br /><br />Please use <span class="code">/stats</span> command to generate a new one.<br />' +
+                '("View achievements 🏆" button)',
+            loading_continue_anyway: 'Continue anyway'
         },
         ru: {
             level_congrats: "Уровень ###: У вас новое достижение!",
@@ -386,8 +405,14 @@
             play_game: 'Выдается после ### активной игры 🎮',
             close: 'Закрыть',
             oops: 'Ой!',
+            loading: 'Загрузка...',
+            loading_old_page: 'Ссылка устарела, страница может отображать неактуальную информацию. <br /><br />Пожалуйста, используйте <span class="code">/stats</span> в чате для создания новой.<br />' +
+                '(Кнопка "Посмореть достижения 🏆").',
+            loading_continue_anyway: 'Продолжить все-равно'
         }
     }
+
+    const serverTime = new ServerTime();
 
     // Some test data
     // http://localhost:63342/mindwarrior-telegram-bot/miniapp-frontend/board.html?_ijt=6j8idd6nhn1blofrji9fk34cvo&board1=f0a_s2t_s1_s0_t0_c0apoT0_s0_s0a_c1_c2_s1_s2_c1&boardProgress1=1_3867_30--2_3867_100_10000_10--1_12345_25--1_3_10--1_3_30--1_6_75--1_1123_45&board2=f0a_s2t_s1_s0_t0_c0apoT0&boardProgress2=1_3867_0--2_3867_100_10000_0--1_12345_0--1_3_0--1_3_0--1_6_0--1_1123_0
@@ -407,7 +432,11 @@
         } else {
             a.innerHTML = lang.how_to_unlock;
         }
-    })
+    });
+    document.querySelector("#loader h1").innerHTML = lang.loading;
+    document.querySelector("#loader p").innerHTML = lang.loading_old_page;
+    document.querySelector("#loader button").innerHTML = lang.close;
+    document.querySelector("#loader a").innerHTML = lang.loading_continue_anyway;
 
 
     document.getElementById('board2').innerHTML = document.getElementById('board1').innerHTML;
@@ -486,10 +515,7 @@
         board1.setHeader(lang.level_board2.replace('###', level) + ': ' + lang.oops);
     }
 
-    Promise.all([board1.waitTillReady(), board2 ? board2.waitTillReady() : Promise.resolve()]).then(() => {
-
-        window?.Telegram?.WebApp?.ready();
-
+    function finishLoading() {
         document.body.classList.remove("loading");
 
         setTimeout(() => {
@@ -504,5 +530,24 @@
             }, newBadge ? 1000 : 0);
 
         }, newBadge ? 250 : 0);
+    }
+
+    Promise.all([board1.waitTillReady(), board2 ? board2.waitTillReady() : Promise.resolve()]).then(() => {
+
+        window?.Telegram?.WebApp?.ready();
+
+        if (Math.abs(parseInt(urlParams.get("ts") || 0) * 100 - serverTime.now()) > 5 * 60 * 1000) {
+            console.log("Old page detected");
+            document.getElementById('outdated').style.display = 'block';
+            document.querySelector('#outdated button').addEventListener('click', () => {
+                window?.Telegram?.WebApp?.close();
+            });
+            document.querySelector('#outdated a').addEventListener('click', (e) => {
+                e.preventDefault();
+                finishLoading();
+            });
+            return;
+        }
+        return finishLoading();
     });
 </script>

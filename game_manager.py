@@ -773,6 +773,8 @@ class GameManager:
             button_url += "&b2=" + serialize_board(badges_manager.get_next_level_board())
             button_url += "&bp2=" + serialize_progress(badges_manager.new_level_empty_progress())
 
+        button_url += "&ts=" + str(int(time.time()))
+
         return button_url
 
     def _handle_badge_event(self, user, event) -> (Optional[str], Optional[Button]):
