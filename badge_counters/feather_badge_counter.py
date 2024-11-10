@@ -54,5 +54,5 @@ class FeatherBadgeCounter:
             "remaining_time_secs": time_left,
             "challenge": "update_formula",
             "badge": "f0",
-            "progress_pct": 100 * time_passed // self._calculate_interval_secs(difficulty)
+            "progress_pct": min(100 * time_passed // self._calculate_interval_secs(difficulty), 100)
         }

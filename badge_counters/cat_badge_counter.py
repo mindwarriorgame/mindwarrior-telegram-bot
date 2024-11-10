@@ -69,7 +69,7 @@ class CatBadgeCounter:
                     "remaining_time_secs": secs_before_next_badge,
                     "challenge": "review_regularly_no_penalty",
                     "badge": "c1",
-                    "progress_pct": 100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty)
+                    "progress_pct": min(100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty), 100)
                 }
 
             if for_badge == "c2":
@@ -84,5 +84,5 @@ class CatBadgeCounter:
                     "remaining_time_secs": secs_before_next_badge,
                     "challenge": "review_regularly_no_prompt",
                     "badge": "c2",
-                    "progress_pct": 100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty)
+                    "progress_pct": max(min(100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty), 100), 0)
                 }

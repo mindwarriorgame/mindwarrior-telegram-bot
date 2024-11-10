@@ -51,5 +51,5 @@ class TimeBadgeCounter:
             "remaining_time_secs": time_left,
             "challenge": "play_time",
             "badge": "t0",
-            "progress_pct": 100 * time_passed // self._calculate_interval_secs(difficulty)
+            "progress_pct": min(100 * time_passed // self._calculate_interval_secs(difficulty), 100)
         }

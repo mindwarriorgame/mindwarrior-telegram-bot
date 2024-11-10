@@ -91,6 +91,11 @@ class GameManager:
             return [self._on_set_difficulty(lang, user, user_message)]
         if "reviewed_at:" in user_message:
             return [self._on_reviewed(lang, user, user_message)]
+        if "achievements_button" in user_message:
+            return [self._render_single_message(chat_id, lang.achievements_link_regenerated, None, {
+                "text": lang.view_badges_button,
+                "url": self._render_board_url(lang, None, BadgesManager(user['difficulty'], user['badges_serialized']), Counter(user['active_game_counter_state']).get_total_seconds())
+            })]
         if "regenerate_shared_key_uuid" in user_message:
             user['shared_key_uuid'] = str(uuid.uuid4())
             self.users_orm.upsert_user(user)
@@ -539,7 +544,10 @@ class GameManager:
         if user_message == "render_screen_14":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_reminder_prompt(lang, chat_id)]
+                ret = ret + [self._render_reminder_prompt(lang, chat_id, {
+                    "text": lang.view_badges_button,
+                    "url": "https://google.com"
+                })]
             return ret
         return []
 
@@ -736,9 +744,9 @@ class GameManager:
 
         self.users_orm.upsert_user(user)
 
-        self._handle_badge_event(user, 'on_prompt')
+        _, maybe_badge_button = self._handle_badge_event(user, 'on_prompt')
 
-        return self._render_reminder_prompt(lang, user['user_id'])
+        return self._render_reminder_prompt(lang, user['user_id'], maybe_badge_button)
 
     def _reset_user_next_prompt(self, user: User):
         difficulty = user['difficulty']
@@ -750,11 +758,14 @@ class GameManager:
             user['next_prompt_time'] -= datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
             user['next_prompt_type'] = NEXT_PROMPT_TYPE_REMINDER
 
-    def _render_reminder_prompt(self, lang, chat_id):
+    def _render_reminder_prompt(self, lang, chat_id, maybe_badge_button: Button):
+        buttons = [self._render_review_button(lang)]
+        if maybe_badge_button is not None:
+            buttons.append(maybe_badge_button)
         return {
             'to_chat_id': chat_id,
             'message': lang.reminder_text,
-            'buttons': [self._render_review_button(lang)],
+            'buttons': [buttons],
             'menu_commands': [],
             'image': None
         }
@@ -790,22 +801,23 @@ class GameManager:
         lang = self._get_user_lang(user['lang_code'])
         button_url = self._render_board_url(lang, badge, badges_manager, active_play_time_secs)
 
-        view_achievemnts_button = {
+        view_achievements_button = {
             'text': lang.view_badges_button,
             'url': button_url
         }
 
         if badge == "c0_removed":
             if badges_manager.count_active_grumpy_cats_on_board() == 0:
-                return lang.grumpy_cat_kicked_out + "\n" + lang.achievements_unblocked, view_achievemnts_button
-            return lang.grumpy_cat_kicked_out + "\n" + lang.remained_grumpy_cats.format(count=badges_manager.count_active_grumpy_cats_on_board()), view_achievemnts_button
+                return lang.grumpy_cat_kicked_out + "\n" + lang.achievements_unblocked, view_achievements_button
+            return lang.grumpy_cat_kicked_out + "\n" + lang.remained_grumpy_cats.format(count=badges_manager.count_active_grumpy_cats_on_board()), view_achievements_button
 
         if badge is None:
             if badges_manager.count_active_grumpy_cats_on_board() > 0:
-                return lang.kicking_out_grumpy_cat if event == 'on_review' else lang.locked_achievements, view_achievemnts_button
-            return None, None
+                return lang.kicking_out_grumpy_cat if event == 'on_review' else lang.locked_achievements, view_achievements_button
 
-        return lang.badge_unhappy_cat if badge == "c0" else lang.badge_new, view_achievemnts_button
+            return None, view_achievements_button
+
+        return lang.badge_unhappy_cat if badge == "c0" else lang.badge_new, view_achievements_button
 
 
 

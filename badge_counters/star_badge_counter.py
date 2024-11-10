@@ -87,5 +87,5 @@ class StarBadgeCounter:
             "remaining_reviews": threshold - cnt,
             "challenge": "review_regularly_no_penalty",
             "badge": min_on_board,
-            "progress_pct": cnt * 100 // threshold
+            "progress_pct": min(cnt * 100 // threshold, 100)
         }

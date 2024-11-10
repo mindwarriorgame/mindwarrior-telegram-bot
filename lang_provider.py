@@ -81,6 +81,7 @@ class Lang:
     grumpy_cat_kicked_out: str
     remained_grumpy_cats: str
     achievements_unblocked: str
+    achievements_link_regenerated: str
 
 fr = Lang(
     lang_code='fr',
@@ -118,8 +119,7 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                                 "\n"
                                 "Next review before {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pause the game\n"
-                                " ‣ /stats - game progress",
+                                " ‣ /pause - pause the game",
 
     review_since_last_time="Temps écoulé depuis la dernière révision : {duration}",
 
@@ -171,8 +171,7 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                  "\n"
                  "Revoir votre <i>Formule</i> avant {next_review}\n"
                  "\n"
-                 " ‣ /difficulty - changer la difficulté\n"
-                 " ‣ /pause - mettre le jeu en pause",
+                 " ‣ /difficulty - changer la difficulté",
 
     review_btn="Revoir votre \"Formule\"",
 
@@ -219,7 +218,8 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
     kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
     grumpy_cat_kicked_out="🧹The grumpy cat has been kicked out!",
     remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
-    achievements_unblocked="🏆 Achievements are unlocked!"
+    achievements_unblocked="🏆 Achievements are unlocked!",
+    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it."
 )
 
 
@@ -259,8 +259,7 @@ Presiona el botón de abajo para iniciar el juego.""",
                                 "\n"
                                 "Next review before {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pause the game\n"
-                                " ‣ /stats - game progress",
+                                " ‣ /pause - pause the game",
 
     review_since_last_time="Tiempo desde la última revisión: {duration}",
 
@@ -310,8 +309,7 @@ Presiona el botón de abajo para iniciar el juego.""",
                  "\n"
                  "Revisa tu <i>Fórmula</i> antes de {next_review}\n"
                  "\n"
-                 " ‣ /difficulty - cambiar la dificultad\n"
-                 " ‣ /pause - pausar el juego",
+                 " ‣ /difficulty - cambiar la dificultad",
 
     review_btn="Revisar tu \"Fórmula\"",
 
@@ -357,7 +355,8 @@ Presiona el botón de abajo para iniciar el juego.""",
     kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
     grumpy_cat_kicked_out="🧹 The grumpy cat has been kicked out!",
     remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
-    achievements_unblocked="🏆 Achievements are unlocked!"
+    achievements_unblocked="🏆 Achievements are unlocked!",
+    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it."
 )
 
 
@@ -398,8 +397,7 @@ Press the button below to start the game.""",
                                 "\n"
                                 "Next review before {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pause the game\n"
-                                " ‣ /stats - game progress",
+                                " ‣ /pause - pause the game",
 
 
     review_since_last_time="Time since the last review: {duration}",
@@ -451,8 +449,7 @@ Press the button below to start the game.""",
                  "\n"
                  "Review your <i>Formula</i> before {next_review}\n"
                  "\n"
-                 " ‣ /difficulty - change the difficulty\n"
-                 " ‣ /pause - pause the game",
+                 " ‣ /difficulty - change the difficulty",
 
     review_btn="Review your \"Formula\" 💫",
 
@@ -498,7 +495,8 @@ Press the button below to start the game.""",
     kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
     grumpy_cat_kicked_out="🧹 The grumpy cat has been kicked out!",
     remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
-    achievements_unblocked="🏆 Achievements are unlocked!"
+    achievements_unblocked="🏆 Achievements are unlocked!",
+    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it."
 )
 
 de = Lang(
@@ -537,8 +535,7 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                                 "\n"
                                 "Next review before {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pause the game\n"
-                                " ‣ /stats - game progress",
+                                " ‣ /pause - pause the game",
 
     review_since_last_time="Zeit seit der letzten Überprüfung: {duration}",
 
@@ -589,8 +586,7 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                  "\n"
                  "Überprüfe deine <i>Formel</i> vor {next_review}\n"
                  "\n"
-                 " ‣ /difficulty - Schwierigkeitsgrad ändern\n"
-                 " ‣ /pause - Spiel pausieren",
+                 " ‣ /difficulty - Schwierigkeitsgrad ändern",
 
     review_btn="Überprüfe deine \"Formel\"",
 
@@ -636,7 +632,8 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
     kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
     grumpy_cat_kicked_out="🧹😾 The grumpy cat has been kicked out!",
     remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
-    achievements_unblocked="🏆 Achievements are unlocked!"
+    achievements_unblocked="🏆 Achievements are unlocked!",
+    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it."
 )
 
 
@@ -678,8 +675,7 @@ ru = Lang(
                                 "\n"
                                 "Следующий просмотр не позже {next_review}\n"
                                 "\n"
-                                " ‣ /pause - игру на паузу\n"
-                                " ‣ /stats - статистика игры",
+                                " ‣ /pause - игру на паузу",
 
 
     review_since_last_time="Прошло с последнего просмотра: {duration}",
@@ -730,8 +726,7 @@ ru = Lang(
                  "\n"
                  "Просмотрите свою <i>Формулу</i> не позже {next_review}\n"
                  "\n"
-                 " ‣ /difficulty - изменить сложность\n"
-                 " ‣ /pause - игру на паузу",
+                 " ‣ /difficulty - изменить сложность",
 
     review_btn="Просмотреть свою \"Формулу\" 💫",
 
@@ -778,7 +773,8 @@ ru = Lang(
     kicking_out_grumpy_cat="🧹😾 Выгоняем недовольного кота...",
     grumpy_cat_kicked_out="🧹 Вы выгнали недовольного кота!",
     remained_grumpy_cats="😾 Осталось недовольных котов: {count}",
-    achievements_unblocked="🏆 Достижения разблокированы!"
+    achievements_unblocked="🏆 Достижения разблокированы!",
+    achievements_link_regenerated="Ссылка на страницу с достижениями обновлена. Нажмите на кнопку ниже, чтобы открыть ее."
 )
 
 
