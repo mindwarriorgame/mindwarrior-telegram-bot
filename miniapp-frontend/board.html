@@ -535,7 +535,7 @@
         window?.Telegram?.WebApp?.ready();
         window?.Telegram?.WebApp?.expand();
 
-        if (Math.abs(parseInt(urlParams.get("ts") || 0) * 100 - serverTime.now()) > 5 * 60 * 1000) {
+        if (Math.abs(parseInt(urlParams.get("ts") || 0) * 1000 - serverTime.now()) > 5 * 60 * 1000) {
             console.log("Old page detected");
             document.getElementById('outdated').style.display = 'block';
             document.querySelector('#outdated button').addEventListener('click', () => {
