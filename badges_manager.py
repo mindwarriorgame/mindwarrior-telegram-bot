@@ -1,61 +1,11 @@
 import json
-import random
 from typing import TypedDict, Optional, NotRequired
 
 from badge_counters.cat_badge_counter import CatBadgeCounter
 from badge_counters.feather_badge_counter import FeatherBadgeCounter
 from badge_counters.star_badge_counter import StarBadgeCounter
 from badge_counters.time_badge_counter import TimeBadgeCounter
-
-LEVELS = [
-    ["f0", "s0", "c0"],
-    ["s1", "t0", "c0", "c0"],
-    ["s0", "s1", "c0"],
-    ["s0", "s1", "t0", "c0", "c0"],
-    ["c0", "c1", "f0"],
-    ["f0", "s2", "c2", "c0", "c0"],
-]
-
-def generate_levels():
-    badges = ["f0", "s0", "s1", "s2", "t0", "c0", "c1", "c2"]
-
-    for levelNo in range(5, 50):
-        random_length = random.randint(5, 10)
-        level = []
-        for levelBadge in range(random_length):
-            level.append(random.choice(badges))
-        LEVELS.append(level)
-
-    print(json.dumps(LEVELS))
-
-# Pre-generate go make sure all users share same levels
-LEVELS += [
-           ["t0", "c1", "s2", "c2", "s2", "c1", "c2", "t0", "t0", "c1"], ["s0", "c2", "c1", "c0", "s2", "c1"],
-           ["s0", "s1", "t0", "s0", "s0"], ["t0", "t0", "s2", "s0", "s2", "s2"],
-           ["f0", "c2", "c0", "c0", "c1", "s0", "s2", "s2"],
-           ["t0", "s0", "s0", "s2", "s0", "c2", "c0", "f0", "f0", "s2"], ["c0", "s1", "c1", "c0", "c2"],
-           ["f0", "t0", "s1", "f0", "t0", "s2", "c2", "t0", "c1", "s1"], ["c0", "s0", "s0", "f0", "f0", "s0", "c1"],
-           ["t0", "c1", "s2", "s0", "s0", "c2", "c0", "s1", "t0"], ["f0", "f0", "f0", "c1", "f0"],
-           ["t0", "t0", "f0", "s2", "c0", "c2", "s2", "s0", "c2", "s2"],
-           ["c0", "s1", "s1", "s2", "c0", "c1", "s2", "s2", "s1", "c0"], ["s2", "s0", "s1", "s1", "s0"],
-           ["s0", "s1", "f0", "s1", "c2", "s2", "s1", "s0", "c2"], ["c2", "t0", "s0", "s2", "c2", "f0"],
-           ["s0", "c2", "s2", "f0", "s0", "c0"], ["s2", "s1", "c1", "f0", "t0", "c2", "c2", "s0"],
-           ["f0", "t0", "s1", "f0", "c1", "s2", "c0"], ["s2", "f0", "f0", "s0", "s0", "s2", "s1", "s1", "c1", "s1"],
-           ["t0", "c0", "s1", "s1", "f0", "c1", "c2"], ["s0", "c0", "s1", "c0", "s2", "t0", "t0", "c1", "s1", "c2"],
-           ["t0", "s1", "c2", "s0", "t0", "c1", "c1", "c1"],
-           ["f0", "c2", "s2", "s1", "s0", "f0", "c2", "c1", "s0", "c2"], ["c2", "s0", "c1", "f0", "f0", "s0", "s1"],
-           ["s1", "s0", "s2", "s0", "s0", "t0"], ["s1", "s1", "s2", "s1", "s2", "s0", "s1", "s2", "s1", "f0"],
-           ["t0", "s0", "c2", "s1", "s2", "c1", "s2"], ["c2", "t0", "s1", "f0", "f0", "s0", "f0", "t0"],
-           ["c0", "s2", "s0", "c2", "c0", "s1", "f0", "s2", "c0", "s0"],
-           ["f0", "c2", "c1", "c1", "c2", "c0", "c0", "f0"], ["s1", "t0", "s1", "s2", "f0", "c0"],
-           ["c1", "t0", "f0", "c0", "c2", "c1", "c2", "c0"], ["c1", "s2", "c1", "c2", "c0", "f0", "c1"],
-           ["c1", "s2", "s0", "s1", "s1", "t0", "t0"], ["f0", "s2", "s0", "s0", "c2"],
-           ["s1", "t0", "c1", "c0", "s1", "c2", "c2"], ["s0", "s2", "s2", "t0", "s2", "s1", "f0", "s1", "c1"],
-           ["s0", "s2", "f0", "f0", "c2", "f0", "t0"], ["s0", "s0", "f0", "s0", "s1", "s1", "s1", "s2", "s0", "c0"],
-           ["t0", "t0", "f0", "s2", "s2", "s2", "f0", "s2", "f0"], ["c2", "t0", "t0", "c0", "c2", "t0"],
-           ["s0", "c2", "c2", "s2", "c0", "t0"], ["s0", "f0", "c0", "s2", "t0", "c1", "s1", "f0"],
-           ["c1", "t0", "s2", "c2", "t0", "f0"]]
-
+from level_generator import get_level
 
 
 class BoardCell(TypedDict):
@@ -80,7 +30,14 @@ class BadgesManager:
     def __init__(self, difficulty, badges_serialized = None):
         self.difficulty = difficulty
         if badges_serialized is None or badges_serialized == "":
-            self.data = UserBadgesData(badges_state={}, board=self._level_to_new_board(LEVELS[0]), level=0, c0_hp=0, c0_hp_next_delta=3, last_badge=None)
+            self.data = UserBadgesData(badges_state={},
+                                       board=self._level_badges_to_new_board(get_level(difficulty, 0)),
+                                       level=0,
+                                       c0_hp=0,
+                                       c0_hp_next_delta=3,
+                                       last_badge=None,
+                                       c0_active_time_penalty=0,
+                                       c0_lock_started_at=0)
         else:
             self.data = UserBadgesData(**json.loads(badges_serialized))
 
@@ -94,9 +51,8 @@ class BadgesManager:
             self.data["level"] = 0
 
         if not self.data.get("board"):
-            self.data["level"] -= 1
-            self.data["board"] = self.get_next_level_board()
-            self.data["level"] += 1
+            level_badges = get_level(difficulty, self.data["level"])
+            self.data["board"] = self._level_badges_to_new_board(level_badges)
 
         if not self.data.get("c0_hp_next_delta"):
             self.data["c0_hp_next_delta"] = 3
@@ -186,9 +142,9 @@ class BadgesManager:
             FeatherBadgeCounter()
         ]
 
-        if self._is_level_over(self.data["board"]):
+        if self.is_level_completed():
             self.data["level"] += 1
-            self.data["board"] = self._level_to_new_board(LEVELS[self.data["level"]])
+            self.data["board"] = self._level_badges_to_new_board(get_level(self.difficulty, self.data["level"]))
             self.data["last_badge"] = None
             self.data["badges_state"] = {}
             self.data["c0_hp"] = 0
@@ -283,9 +239,16 @@ class BadgesManager:
         ]
 
         all_progress = {}
+        next_level_board = self._get_inactive_badges_on_board(get_level(self.difficulty, self.data["level"] + 1))
         for counter in counters:
             for badge in badges:
-                maybe_progress = counter.progress(badge, 0, None, self.difficulty, self._get_inactive_badges_on_board(self.get_next_level_board()))
+                maybe_progress = counter.progress(
+                    badge,
+                    0,
+                    None,
+                    self.difficulty,
+                    next_level_board
+                )
                 if maybe_progress is not None:
                     all_progress[badge] = maybe_progress
 
@@ -295,7 +258,6 @@ class BadgesManager:
     def serialize(self) -> str:
         return json.dumps(self.data)
 
-    # Converts "target" cells into normal cells.
     def clone_board_without_last_modified(self, board):
         settled_board: [BoardCell] = []
         for cell in board:
@@ -305,7 +267,7 @@ class BadgesManager:
             })
         return settled_board
 
-    def _level_to_new_board(self, level) -> [BoardCell]:
+    def _level_badges_to_new_board(self, level) -> [BoardCell]:
         board = []
         for badge in level:
             board.append({
@@ -352,8 +314,8 @@ class BadgesManager:
 
         return old_board, None
 
-
-    def _is_level_over(self, board) -> bool:
+    def is_level_completed(self):
+        board = self.data["board"]
         fine_cells = 0
         for cell in board:
             if cell["badge"] == "c0":
@@ -364,13 +326,5 @@ class BadgesManager:
 
         return fine_cells == len(board)
 
-    def is_level_completed(self):
-        return self._is_level_over(self.data["board"])
-
     def get_next_level_board(self):
-        next_level = self.data["level"] + 1
-        if next_level >= len(LEVELS):
-            return self._level_to_new_board(random.choice(LEVELS[5:]))
-        return self._level_to_new_board(LEVELS[next_level])
-
-
+        return self._level_badges_to_new_board(get_level(self.difficulty, self.data["level"] + 1))

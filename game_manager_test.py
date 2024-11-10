@@ -274,7 +274,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&env=prod&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=c0_0_100--s0_7_0&ts=1650463200'}],
+                                              'url': 'http://frontend?lang=en&env=prod&new_badge=f0&level=1&b1=f0am_s0_s1_s3c0&bp1=c0_0_100--s0_7_0&ts=1650463200'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': 'The game has started 🏁\n'
@@ -442,7 +442,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         data = self.game_manager.on_stats_command(1)
         self.assertEqual(data, {'buttons': [{'text': 'View achievements 🏆',
-                                             'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_c0&bp1=c0_0_100--s0_5_0--f0_86400_0&ts=1650549600'}],
+                                             'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_s1_c0&bp1=c0_0_100--s0_5_0--f0_86400_0&ts=1650549600'}],
                                 'image': None,
                                 'menu_commands': [],
                                 'message': '🏆 Level : 1\n'
@@ -576,7 +576,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_c0&bp1=c0_0_100--s0_4_20--f0_86400_0&ts=1650463200'}],
+                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_s1_c0&bp1=c0_0_100--s0_4_20--f0_86400_0&ts=1650463200'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': 'The game is resumed.\n'
@@ -687,7 +687,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_c0&bp1=c0_0_100--s0_4_20--f0_108000_0&ts=1650463200'}],
+                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_s1_c0&bp1=c0_0_100--s0_4_20--f0_108000_0&ts=1650463200'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'

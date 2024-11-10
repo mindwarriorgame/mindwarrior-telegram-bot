@@ -1,22 +1,20 @@
 
 import unittest
 
-from badges_manager import BadgesManager, generate_levels
+from badges_manager import BadgesManager
 
 
 class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
 
-    def test_generate_levels(self):
-        generate_levels()
-
-    def test_start_game_starts_from_level_1(self):
+    def test_start_game_starts_from_level_0(self):
         badges_manager = BadgesManager(2, None)
         badge = badges_manager.on_game_started(0)
         self.assertEqual(badge, "f0")
         self.assertEqual(badges_manager.get_level(), 0)
         self.assertEqual(badges_manager.get_board(), [{'badge': 'f0', 'is_active': True, 'is_last_modified': True},
-                                                                             {'badge': 's0', 'is_active': None},
-                                                                             {'badge': 'c0', 'is_active': None}])
+                                                      {'badge': 's0', 'is_active': None},
+                                                      {'badge': 's1', 'is_active': None},
+                                                      {'badge': 'c0', 'is_active': None}])
 
         self.assertEqual(badges_manager.progress(1000), {'c0': {'badge': 'c0',
                                                                 'challenge': 'review',
@@ -28,7 +26,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                 'remaining_reviews': 5}})
 
         self.assertEqual(badges_manager.is_level_completed(), False)
-        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "57600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true, "is_last_modified": true}, {"badge": "s0", "is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": "f0", "c0_lock_started_at": 0, "c0_active_time_penalty": 0}')
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "57600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true, "is_last_modified": true}, {"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": "f0", "c0_active_time_penalty": 0, "c0_lock_started_at": 0}')
 
 
     def test_grumpy_cat_gets_in(self):
@@ -115,16 +113,21 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                        '"is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "last_badge": "f0"}')
         badge = badges_manager.on_review(100000)
         self.assertEqual(badges_manager.is_level_completed(), True)
-        self.assertEqual(badges_manager.get_next_level_board(), [{'badge': 's1'}, {'badge': 't0'}, {'badge': 'c0'}, {'badge': 'c0'}])
+        self.assertEqual(badges_manager.get_next_level_board(), [{'badge': 's1'},
+                                                                 {'badge': 't0'},
+                                                                 {'badge': 'c0'},
+                                                                 {'badge': 'c1'},
+                                                                 {'badge': 'c0'}])
         badge = badges_manager.on_review(100001)
         self.assertEqual(badge, None) # first review, the level has started
         badge = badges_manager.on_review(1000001)
-        self.assertEqual(badge, 't0') # had it been same level, it would've returned None
+        self.assertEqual(badge, 'c1') # had it been same level, it would've returned None
         self.assertEqual(badges_manager.get_level(), 1)
-        self.assertEqual(badges_manager.get_last_badge(), 't0')
+        self.assertEqual(badges_manager.get_last_badge(), 'c1')
         self.assertEqual(badges_manager.get_board(), [{'badge': 's1', 'is_active': None},
-                                                      {'badge': 't0', 'is_active': True, 'is_last_modified': True},
+                                                      {'badge': 't0', 'is_active': None},
                                                       {'badge': 'c0', 'is_active': None},
+                                                      {'badge': 'c1', 'is_active': True, 'is_last_modified': True},
                                                       {'badge': 'c0', 'is_active': None}])
         self.assertEqual(badges_manager.is_level_completed(), False)
 
