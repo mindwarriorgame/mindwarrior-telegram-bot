@@ -447,7 +447,11 @@ class GameManager:
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
                     }, "10:00", lang, chat_id, is_resumed)]
-                    ret = ret + [self._render_review_command_success(lang.locked_achievements, {
+                    ret = ret + [self._render_review_command_success(lang.kicking_out_grumpy_cat, {
+                        "text": lang.view_badges_button,
+                        "url": "https://google.com"
+                    }, "10:00", lang, chat_id, is_resumed)]
+                    ret = ret + [self._render_review_command_success(lang.grumpy_cat_kicked_out + "\n" + lang.achievements_unblocked, {
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
                     }, "10:00", lang, chat_id, is_resumed)]

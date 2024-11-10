@@ -4,6 +4,7 @@
     <title>MindWarrior</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <script src="server-time.js"></script>
 
     <script>
         window.langs = {
@@ -390,44 +391,6 @@
 
 <script>
 
-    class ServerTime {
-        constructor() {
-            this.clientStartedAt = 0;
-            this.serverStartedAt = 0;
-            let syncOffset = () => {};
-            syncOffset = () => {
-                fetch('https://boo.great-site.net/time.php', {method: 'POST', mode: 'cors'})
-                    .then(response => {
-                        if (response.ok) {
-                            return response.text();
-                        } else {
-                            throw new Error('Network response was not ok');
-                        }
-                    })
-                    .then(serverTime => {
-                        this.serverStartedAt = parseInt(serverTime) * 1000;
-                        this.clientStartedAt = Date.now();
-
-                        window.localStorage.setItem('serverTime', this.serverStartedAt);
-                        window.localStorage.setItem('clientTime', this.clientStartedAt);
-
-                        console.log("Server time offset: " + (this.serverStartedAt - this.clientStartedAt) + "ms");
-                    }).catch(err => {
-                    console.error(err);
-                    setTimeout(syncOffset, 1000);
-                });
-            };
-            syncOffset();
-        }
-
-        now() {
-            if (this.serverStartedAt === 0 && window.localStorage.getItem('serverTime')) {
-                this.serverStartedAt = parseInt(window.localStorage.getItem('serverTime'));
-                this.clientStartedAt = parseInt(window.localStorage.getItem('clientTime'));
-            }
-            return this.serverStartedAt + (Date.now() - this.clientStartedAt);
-        }
-    }
 
     const SERVER_TIME = new ServerTime();
 

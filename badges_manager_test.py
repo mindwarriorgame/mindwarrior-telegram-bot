@@ -197,7 +197,10 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                'challenge': 'play_time',
                                                                'progress_pct': 99,
                                                                'remaining_time_secs': 100}})
-
+        badges_manager.on_review(250)
+        self.assertEqual(badges_manager.get_board(), [{'badge': 't0', 'is_active': False},
+                                                      {'badge': 'c0', 'is_active': False},
+                                                      {'badge': 'c0', 'is_active': False}])
         self.assertEqual(badges_manager.progress(250), {'c0': {'badge': 'c0',
                                                                'challenge': 'review',
                                                                'progress_pct': 100,

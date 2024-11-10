@@ -198,14 +198,14 @@ class BadgesManager:
                 badge, new_state = counter.on_game_started(self._adjust_active_play_time_secs(active_play_time_secs), None, self.difficulty, self._get_inactive_badges_on_board(self.data['board']))
                 self.data["badges_state"][counter.__class__.__name__] = new_state
 
+        self.data['board'] = self.clone_board_without_last_modified(self.data['board'])
+
         badge_to_put_on_board = None
         has_old_grumpy_cat = (self.count_active_grumpy_cats_on_board() > 0)
         if has_old_grumpy_cat:
             # TODO: move "c0" logic outside of CatCounter to avoid brain-splitting
             if method_name == "on_penalty":
                 badge_to_put_on_board = "c0"
-            else:
-                self.data['board'] = self.clone_board_without_last_modified(self.data['board'])
         else:
             for counter in counters:
                 state = None
