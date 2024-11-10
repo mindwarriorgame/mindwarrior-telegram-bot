@@ -234,11 +234,8 @@ class Board {
             const targetCell = this.cells.find(cell => cell.isTarget);
             if (!targetCell) {
                 // Because projectile has nowhere to go
-                setTimeout(() => {
-                    this.showActionButton();
-                    onDone();
-                }, 250);
-                return;
+                this.showActionButton();
+                onDone();
             }
 
             const targetRect = targetCell.getElt().getBoundingClientRect();
