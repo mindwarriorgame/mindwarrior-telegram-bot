@@ -15,9 +15,14 @@
                 submittingData: 'Daten werden übermittelt...',
                 error: 'Fehler',
                 tryAgain: 'nochmals versuchen',
-                sure: "Sind Sie sicher, dass Sie alle Daten (einschließlich Ihrer Formel) löschen möchten?",
-                sureDetails: 'Diese Aktion kann nicht rückgängig gemacht werden.',
+
+                sureDelete: "Sind Sie sicher, dass Sie alle Daten (einschließlich Ihrer Formel) löschen möchten?",
+                sureDeleteDetails: 'Diese Aktion kann nicht rückgängig gemacht werden.',
                 yesDelete: "Ja, alle meine Daten löschen",
+
+                sureSetDifficulty: "Sind Sie sicher, dass Sie den Schwierigkeitsgrad des Spiels ändern möchten?",
+                sureSetDifficultyDetail: "Dies setzt Ihren Fortschritt zurück und startet das Spiel von vorne.",
+                yesSetDifficulty: "Ja, Schwierigkeitsgrad ändern",
 
                 errBackend: 'Server antwortete mit ',
                 errTelegram: 'Telegram antwortete mit ',
@@ -49,9 +54,14 @@
                 submittingData: 'Отправка данных...',
                 error: 'Ошибка',
                 tryAgain: 'попробовать снова',
-                sure: "Вы уверены, что хотите удалить все данные (включая свою Формулу)?",
-                sureDetails: 'Это действие нельзя отменить.',
+
+                sureDelete: "Вы уверены, что хотите удалить все данные (включая свою Формулу)?",
+                sureDeleteDetails: 'Это действие нельзя отменить.',
                 yesDelete: "Да, безвозвратно удалить все мои данные",
+
+                sureSetDifficulty: "Вы уверены, что хотите изменить сложность игры?",
+                sureSetDifficultyDetail: "Это обнулит ваш прогресс и начнет игру сначала.",
+                yesSetDifficulty: "Да, изменить сложность",
 
                 errBackend: 'Сервер вернул ошибку ',
                 errTelegram: 'Телеграм вернул ошибку ',
@@ -82,9 +92,14 @@
                 submittingData: 'Submitting data...',
                 error: 'Error',
                 tryAgain: 'try again',
-                sure: "Are you sure you want to delete all the data (including your Formula)?",
-                sureDetails: 'This action cannot be undone.',
+
+                sureDelete: "Are you sure you want to delete all the data (including your Formula)?",
+                sureDeleteDetails: 'This action cannot be undone.',
                 yesDelete: "Yes, erase all my data",
+
+                sureSetDifficulty: "Are you sure you want to change the game difficulty?",
+                sureSetDifficultyDetail: "This will reset your progress and start the game from the beginning.",
+                yesSetDifficulty: "Yes, change the difficulty",
 
                 errBackend: 'Server responded with ',
                 errTelegram: 'Telegram responded with ',
@@ -114,9 +129,14 @@
                 submittingData: 'Enviando datos...',
                 error: 'Error',
                 tryAgain: 'inténtalo de nuevo',
-                sure: "¿Estás seguro de que quieres borrar todos los datos (incluida tu Fórmula)?",
-                sureDetails: 'Esta acción no se puede deshacer.',
+
+                sureDelete: "¿Estás seguro de que quieres borrar todos los datos (incluida tu Fórmula)?",
+                sureDeleteDetails: 'Esta acción no se puede deshacer.',
                 yesDelete: "Sí, borrar todos mis datos",
+
+                sureSetDifficulty: "¿Estás seguro de que quieres cambiar la dificultad del juego?",
+                sureSetDifficultyDetail: "Esto restablecerá tu progreso y comenzará el juego desde el principio.",
+                yesSetDifficulty: "Sí, cambiar la dificultad",
 
                 errBackend: 'El servidor respondió con ',
                 errTelegram: 'Telegram respondió con ',
@@ -147,9 +167,14 @@
                 submittingData: 'Envoi des données...',
                 error: 'Erreur',
                 tryAgain: 'réessayer',
-                sure: "Êtes-vous sûr de vouloir supprimer toutes les données (y compris votre Formule) ?",
-                sureDetails: 'Cette action est irréversible.',
+
+                sureDelete: "Êtes-vous sûr de vouloir supprimer toutes les données (y compris votre Formule) ?",
+                sureDeleteDetails: 'Cette action est irréversible.',
                 yesDelete: "Oui, effacer toutes mes données",
+
+                sureSetDifficulty: "Êtes-vous sûr de vouloir changer la difficulté du jeu ?",
+                sureSetDifficultyDetail: "Cela réinitialisera votre progression et recommencera le jeu depuis le début.",
+                yesSetDifficulty: "Oui, changer la difficulté",
 
                 errBackend: 'Le serveur a répondu avec ',
                 errTelegram: 'Telegram a répondu avec ',
@@ -535,8 +560,8 @@
             hideEverything();
 
             show(CONTENT.text.parent);
-            CONTENT.text.title.innerHTML = lang.sure;
-            CONTENT.text.preFirst.innerHTML = lang.sureDetails;
+            CONTENT.text.title.innerHTML = lang.sureDelete;
+            CONTENT.text.preFirst.innerHTML = lang.sureDeleteDetails;
             show(CONTENT.text.button);
             CONTENT.text.button.textContent = lang.yesDelete;
             CONTENT.text.button.addEventListener("click", (e) => {
@@ -757,6 +782,24 @@
         }
     }
 
+    class SetDifficultyComponent {
+        constructor(dataSubmitter, lang, newDifficulty, nextReviewPromptMinutes) {
+            hideEverything();
+
+            show(CONTENT.text.parent);
+            CONTENT.text.title.innerHTML = lang.sureSetDifficulty;
+            CONTENT.text.preFirst.innerHTML = lang.sureSetDifficultyDetail;
+            show(CONTENT.text.button);
+            CONTENT.text.button.textContent = lang.yesSetDifficulty;
+            CONTENT.text.button.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.localStorage.clear();
+
+                dataSubmitter.submitData(() => "set_difficulty:" + newDifficulty + ";" + new NextReviewDataProvider(nextReviewPromptMinutes).calculateNextReviewsData());
+            });
+        }
+    }
+
 
     const app = window?.Telegram?.WebApp;
 
@@ -775,7 +818,8 @@
     const dataSubmitter = new DataSubmitComponent(app, window.langs[langCode]);
 
     if (newDifficulty) {
-        dataSubmitter.submitData(() => "set_difficulty:" + newDifficulty + ";" + new NextReviewDataProvider(nextReviewPromptMinutes).calculateNextReviewsData());
+        new SetDifficultyComponent(dataSubmitter, window.langs[langCode], newDifficulty, nextReviewPromptMinutes);
+        // dataSubmitter.submitData(() => "set_difficulty:" + newDifficulty + ";" + new NextReviewDataProvider(nextReviewPromptMinutes).calculateNextReviewsData());
     }
 
     if (isDeleteData) {
