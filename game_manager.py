@@ -815,7 +815,7 @@ class GameManager:
             if badges_manager.count_active_grumpy_cats_on_board() > 0:
                 return lang.kicking_out_grumpy_cat if event == 'on_review' else lang.locked_achievements, view_achievements_button
 
-            return None, view_achievements_button
+            return None, None if event == 'on_formula_updated' else view_achievements_button
 
         return lang.badge_unhappy_cat if badge == "c0" else lang.badge_new, view_achievements_button
 
