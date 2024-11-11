@@ -425,10 +425,6 @@ class GameManager:
 
     def on_render_screen(self, chat_id, user_message) -> list[Reply]:
         langs = LangProvider.get_available_languages()
-        langs = {
-            'en': en,
-            'ru': ru
-        }
 
         if user_message == "render_screen_0":
             return [self._render_list_of_langs(chat_id, langs)]

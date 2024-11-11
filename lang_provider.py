@@ -86,42 +86,44 @@ class Lang:
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
-    help_command_text=f"""👋 Bienvenue, étranger ! Bienvenue dans le jeu <a href="https://mindwarriorgame.org/faq.fr.html">MindWarrior</a> ! 🥷  
+
+    help_command_text = f"""Hey, étranger ! 👋 Bienvenue sur le bot du <a href="https://mindwarriorgame.org/faq.fr.html">jeu MindWarrior</a> ! 🥷  
 
 🧪 Créez votre "<a href="https://mindwarriorgame.org/faq.fr.html#formula">Formule de Résolution Ferme</a>", un message inspirant pour vous-même.
 
-💫 <a href="https://mindwarriorgame.org/faq.fr.html#review">Revoyez-la</a> tout au long de la journée pour rester motivé et gagnez des récompenses ! <a href="https://mindwarriorgame.org/faq.fr.html#forgot">Et si j'oublie ?</a>
+💫 <a href="https://mindwarriorgame.org/faq.fr.html#review">Révisez-le</a> tout au long de la journée pour rester motivé et gagnez des récompenses ! <a href="https://mindwarriorgame.org/faq.fr.html#forgot">Et si j'oublie ?</a>
 
  ‣ <a href="https://mindwarriorgame.org/quick-start.fr.html">Guide de démarrage rapide</a>
  ‣ <a href="https://mindwarriorgame.org/faq.fr.html">FAQ</a>
  ‣ <a href="https://mindwarriorgame.org/privacy-policy.fr.html">Politique de confidentialité</a>
 
-Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
+Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
-    menu_review="💫️réviser la Formule",
-    menu_pause="⏸️ mettre le jeu en pause",
-    menu_stats="🌟 voir les statistiques du jeu",
-    menu_formula="🧪mettre à jour la Formule",
-    menu_difficulty="💪changer la difficulté",
-    menu_data="🗂 voir vos données brutes",
+    menu_review = "💫️réviser la Formule",
+    menu_pause = "⏸️ mettre le jeu en pause",
+    menu_stats = "📊 progression du jeu",
+    menu_formula = "️🧪mettre à jour la Formule",
+    menu_difficulty = "💪changer la difficulté",
+    menu_data = "💾 voir vos données brutes",
 
-    help_command_start_playing_button="Écrivez \"Formule\" et commencez à jouer !",
+    help_command_start_playing_button = "Écrivez \"Formule\" et commencez à jouer ! 🏁",
 
-    review_command_text="Revoir votre <i>Formule</i> 💫\n"
-                        "\n"
-                        "Appuyez sur un des boutons ci-dessous pour revoir votre <i>Formule</i>.",
+    review_command_text = "Révisez votre <i> Formule</i> 💫\n"
+                          "\n"
+                          "Appuyez sur un bouton ci-dessous pour réviser votre <i>Formule</i>.",
 
-    review_command_button_yourself="S'améliorer 💪",
-    review_command_button_world="Améliorer le monde 🙌",
 
-    review_command_success_text="<i>Formula</i> has been reviewed 🎉\n"
+    review_command_button_yourself="Améliore-toi 💪",
+    review_command_button_world="Améliore le monde 🙌",
+
+    review_command_success_text="<i>Formule</i> a été consultée 🎉\n"
                                 "{maybe_achievement}"
                                 "\n"
-                                "Next review before {next_review}\n"
+                                "Prochaine consultation avant {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pause the game",
+                                " ‣ /pause - mettre le jeu en pause",
 
-    review_since_last_time="Temps écoulé depuis la dernière révision : {duration}",
+    review_since_last_time="Temps écoulé depuis la dernière consultation : {duration}",
 
     days_short="j",
     hours_short="h",
@@ -133,12 +135,12 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                              "\n"
                              "<b>{old} -> {new}</b>\n"
                              "\n"
-                             "🌟 Total d'étoiles : 0\n"
+                             "🏆 Niveau : 1\n"
                              "⏳ Temps de jeu : 0j 0h 0m\n"
                              "\n"
-                             "Prochaine révision avant {next_review}\n",
+                             "Prochaine consultation avant {next_review}\n",
 
-    formula_changed="La <i>Formule</i> a été mise à jour !",
+    formula_changed="La <i>Formule</i> a été mise à jour!",
 
     difficulties=["Débutant", "Facile", "Moyen", "Difficile", "Expert"],
 
@@ -146,24 +148,23 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
 
     paused_command="Le jeu est en pause ⏸️\n"
                    "\n"
-                   "Vous ne recevrez plus de rappels pour revoir votre <i>Formule</i> et le compteur de temps de jeu actif "
-                   "<a href=\"https://mindwarriorgame.org/faq.fr.html#pause\">est gelé</a>.\n"
+                   "Vous ne recevrez pas de rappels concernant votre <i>Formule</i>, "
+                   "et le compteur de temps de jeu actif <a href=\"https://mindwarriorgame.org/faq.fr#pause\">est gelé</a>.\n"
                    "\n"
                    "Pour reprendre le jeu, "
-                   "revoyez simplement votre <i>Formule</i> en utilisant le bouton ci-dessous.",
+                   "il vous suffit de revoir votre <i>Formule</i> en utilisant le bouton ci-dessous.",
 
-    stats_command=("🏆 Level : {level}\n"
+    stats_command=("🏆 Niveau : {level}\n"
                    "⌛ Temps de jeu actif : {time}\n"
-                   "💪 <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">Niveau de difficulté</a> : {difficulty} ({difficulty_details})\n"
+                   "💪 <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">Difficulté</a> : {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.fr.html#pause\">En pause ?</a> {paused}\n"
-                   "❄️ Temps de refroidissement avant la prochaine récompense : {cooldown}\n"
+                   "❄️ Temps de <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty:~:text=sera%20récompensé%20(-,%22règle%20de%20refroidissement%22,-).\">refroidissement</a> avant la prochaine récompense : {cooldown}\n"
                    "⏰ Temps avant le prochain <a href=\"https://mindwarriorgame.org/faq.fr.html#forgot\">rappel</a> : {punishment}"),
 
-    resumed="Le jeu a repris.",
+    resumed="Le jeu est repris.",
     already_paused="Le jeu est déjà en pause ⏸️\n"
                    "\n"
-                   "Pour reprendre le jeu, revoyez simplement votre <i>Formule</i> avec le bouton ci-dessous.",
-
+                   "Pour reprendre le jeu, il vous suffit de revoir votre <i>Formule</i> avec le bouton ci-dessous.",
     game_started="Le jeu a commencé 🏁\n"
                  "{maybe_achievement}"
                  "\n"
@@ -172,94 +173,95 @@ Appuyez sur le bouton ci-dessous pour démarrer le jeu.""",
                  "Revoir votre <i>Formule</i> avant {next_review}\n"
                  "\n"
                  " ‣ /difficulty - changer la difficulté",
+    review_btn="Passez en revue votre \"Formule\" 💫",
 
-    review_btn="Revoir votre \"Formule\"",
-
-    difficulty_command_text="Changer le niveau de difficulté 💪\n"
+    difficulty_command_text="Changer le niveau de difficulté💪\n"
                             "\n"
-                            "Sélectionnez un nouveau <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">niveau de difficulté</a> à l'aide des boutons ci-dessous.\n"
+                            "Sélectionnez un nouveau <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">niveau de difficulté</a> en utilisant les boutons ci-dessous.\n"
                             "\n"
-                            "<b>⚠️Cela réinitialisera votre progression dans le jeu !</b>",
+                            "<b>⚠️Cela réinitialisera votre progression dans le jeu !</b>\n",
 
     current_difficulty="niveau actuel",
 
-    formula_command_text="️Mettez à jour votre <i>Formule</i> 🧪\n"
+    formula_command_text="Mettre à jour votre <i>Formule</i> 🧪\n"
                          "\n"
                          "Utilisez le bouton ci-dessous pour mettre à jour votre <i><a href=\"https://mindwarriorgame.org/faq.fr.html#formula\">Formule</a></i>.",
-
-    formula_command_button="Mettre à jour votre Formule",
-    review_command_timeout="Délai dépassé, veuillez réessayer.🤷",
-    graph_header="Intervalles entre révisions (min)",
-    graph_penalty_threshold="Seuil de pénalité : {difficulty_threshold_mins} min (difficulté={difficulty_str})",
+    formula_command_button="Mettre à jour la Formule 🧪",
+    review_command_timeout="Délai expiré, veuillez réessayer.🤷",
+    graph_header="Intervalles entre les revues (min)",
+    graph_penalty_threshold="Seuil d'intervalle de révision : {difficulty_threshold_mins} min (difficulté={difficulty_str})",
     graph_mean_threshold="Médiane : {mean_mins} min",
     graph_xlabel="Temps",
-    graph_ylabel="Intervalle entre révisions (min)",
+    graph_ylabel="Intervalle entre les revues (min)",
     graph_xmax='Maintenant',
     graph_xmin='Il y a 6 jours',
     graph_paused="En pause",
 
     data_view="Vos données brutes :",
-    data_view_localstorage_button="Voir les données localStorage",
-    data_delete_button="SUPPRIMER TOUTES LES DONNÉES",
-    data_deleted="Toutes vos données ont été supprimées. Veuillez effacer l'historique de la conversation pour supprimer les données du chat Telegram.",
+    data_view_localstorage_button="Voir les données du localStorage 🔎",
+    data_delete_button="SUPPRIMER TOUTES LES DONNÉES ❌",
 
-    reminder_text="N'oubliez pas de revoir votre <i>Formule</i> ! ⏰\n"
+    data_deleted="Toutes vos données ont été supprimées. Veuillez effacer l'historique de discussion pour supprimer les données du chat Telegram.",
+
+    reminder_text="N'oubliez pas de consulter votre <i>Formule</i> ! ⏰\n"
                   "\n"
-                  "Le moment est dans 15 minutes, dépêchez-vous !",
+                  "L'heure limite est dans 15 minutes, dépêchez-vous !",
 
-    penalty_text = "Vous avez oublié de revoir votre <i>Formule</i> 🟥",
+    penalty_text = "Vous avez oublié de consulter votre <i>Formule</i> 🟥",
 
-    badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé à l'intérieur!",
-    badge_new = "🏆 Vous avez obtenu un nouveau succès!",
-    view_badges_button = "Voir les succès",
-    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
-    cooldown_msg="❄️ Early reviews are not rewarded.",
+    badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
+    badge_new = "🏆 Vous avez un nouvel accomplissement !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
+    view_badges_button = "Voir les réussites 🏆",
+    locked_achievements = "⛔🏆😾 Un chat grincheux bloque de nouvelles réussites !",
+    cooldown_msg="❄️ Les révisions anticipées ne sont pas récompensées.",
 
-    kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
-    grumpy_cat_kicked_out="🧹The grumpy cat has been kicked out!",
-    remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
-    achievements_unblocked="🏆 Achievements are unlocked!",
-    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it."
+    kicking_out_grumpy_cat="🧹😾 Expulsion du chat grincheux...",
+    grumpy_cat_kicked_out="🧹 Le chat grincheux a été expulsé !",
+    remained_grumpy_cats="😾 Chats grincheux restants : {count}",
+    achievements_unblocked="🏆 Les réussites sont débloquées !",
+    achievements_link_regenerated="Le lien vers la page des réussites a été régénéré. Veuillez utiliser le bouton ci-dessous pour l'ouvrir.",
+
 )
 
 
 es = Lang(
     lang_code='es',
     lang_name='Español',
-    help_command_text=f"""¡Hola, extraño! 👋 ¡Bienvenido al bot del juego <a href="https://mindwarriorgame.org/faq.es.html">MindWarrior</a>! 🥷
-    
+
+    help_command_text=f"""¡Hola, desconocido! 👋 ¡Bienvenido al bot del <a href="https://mindwarriorgame.org/faq.es.html">juego MindWarrior</a>! 🥷  
+
 🧪 Crea tu "<a href="https://mindwarriorgame.org/faq.es.html#formula">Fórmula de Firme Resolución</a>", un mensaje inspirador para ti mismo.
 
-💫 <a href="https://mindwarriorgame.org/faq.es.html#review">Revísala</a> a lo largo del día para mantenerte motivado y enfocado, ¡y gana recompensas! <a href="https://mindwarriorgame.org/faq.es.html#forgot">¿Qué pasa si me olvido?</a>
+💫 <a href="https://mindwarriorgame.org/faq.es.html#review">Revísala</a> a lo largo del día para mantenerte motivado y ganar recompensas. <a href="https://mindwarriorgame.org/faq.es.html#forgot">¿Qué pasa si olvido?</a>
 
- ‣ <a href="https://mindwarriorgame.org/quick-start.es.html">Guía de inicio rápido</a>
- ‣ <a href="https://mindwarriorgame.org/faq.es.html">Preguntas frecuentes</a> 
+ ‣ <a href="https://mindwarriorgame.org/quick-start.es.html">Guía rápida</a>
+ ‣ <a href="https://mindwarriorgame.org/faq.es.html">Preguntas frecuentes</a>
  ‣ <a href="https://mindwarriorgame.org/privacy-policy.es.html">Política de privacidad</a>
 
-Presiona el botón de abajo para iniciar el juego.""",
+Presiona el botón de abajo para comenzar el juego.""",
 
     menu_review="💫️revisar Fórmula",
     menu_pause="⏸️ pausar el juego",
-    menu_stats="🌟 ver progreso del juego",
-    menu_formula="️🧪actualizar Fórmula",
+    menu_stats="📊 progreso del juego",
+    menu_formula="🧪actualizar Fórmula",
     menu_difficulty="💪cambiar dificultad",
-    menu_data = "🗂 ver tus datos crudos",
+    menu_data="💾 ver tus datos sin procesar",
 
-    help_command_start_playing_button="¡Escribe \"Fórmula\" y comienza a jugar!",
+    help_command_start_playing_button="¡Escribe \"Fórmula\" y comienza a jugar! 🏁",
 
     review_command_text="Revisa tu <i>Fórmula</i> 💫\n"
                         "\n"
-                        "Presiona cualquier botón a continuación para revisar tu <i>Fórmula</i>.",
+                        "Presiona cualquier botón de abajo para revisar tu <i>Fórmula</i>.",
 
-    review_command_button_yourself="Mejórate a ti mismo 💪",
+    review_command_button_yourself="Mejora a ti mismo 💪",
     review_command_button_world="Mejora el mundo 🙌",
 
-    review_command_success_text="<i>Formula</i> has been reviewed 🎉\n"
+    review_command_success_text="<i>Fórmula</i> ha sido revisada 🎉\n"
                                 "{maybe_achievement}"
                                 "\n"
-                                "Next review before {next_review}\n"
+                                "Próxima revisión antes de {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pause the game",
+                                " ‣ /pause - pausar el juego",
 
     review_since_last_time="Tiempo desde la última revisión: {duration}",
 
@@ -268,42 +270,43 @@ Presiona el botón de abajo para iniciar el juego.""",
     minutes_short="m",
     seconds_short="s",
 
-    difficulty_level_changed="La dificultad ha sido cambiada 💪\n"
-                             "El juego se reinició debido al cambio de la dificultad.\n"
+    difficulty_level_changed="El nivel de dificultad ha cambiado 💪\n"
+                             "El juego se reinició debido al cambio de nivel de dificultad.\n"
                              "\n"
                              "<b>{old} -> {new}</b>\n"
                              "\n"
-                             "🌟 Estrellas totales: 0\n"
+                             "🏆 Nivel: 1\n"
                              "⏳ Tiempo de juego: 0d 0h 0m\n"
                              "\n"
                              "Próxima revisión antes de {next_review}\n",
 
-    formula_changed="¡La <i>Fórmula</i> ha sido actualizada!",
+    formula_changed="La <i>Fórmula</i> ha sido actualizada!",
 
-    difficulties=["Principiante", "Fácil", "Medio", "Difícil", "Experto"],
+    difficulties=["Principiante", "Fácil", "Intermedio", "Difícil", "Experto"],
 
-    review_paused_text="El juego está pausado",
+    review_paused_text="El juego está en pausa",
 
-    paused_command="El juego está pausado ⏸️\n"
+    paused_command="El juego está en pausa ⏸️\n"
                    "\n"
                    "No recibirás recordatorios sobre tu <i>Fórmula</i>, "
                    "y el contador de tiempo de juego activo <a href=\"https://mindwarriorgame.org/faq.es#pause\">está congelado</a>.\n"
                    "\n"
                    "Para reanudar el juego, "
-                   "simplemente revisa tu <i>Fórmula</i> con el botón a continuación.",
+                   "simplemente revisa tu <i>Fórmula</i> usando el botón de abajo.",
 
-    stats_command=("🏆 Level: {level}\n"
+    stats_command=("🏆 Nivel: {level}\n"
                    "⌛ Tiempo de juego activo: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Dificultad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.es.html#pause\">¿Pausado?</a> {paused}\n"
-                   "❄️ <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=ser%C3%A1%20recompensado%20(-,%22regla%20de%20enfriamiento%22,-).\">Tiempo de enfriamiento</a> antes de la próxima recompensa: {cooldown}\n"
+                   "❄️ <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Tiempo de espera</a> antes de la próxima recompensa: {cooldown}\n"
                    "⏰ Tiempo antes del próximo <a href=\"https://mindwarriorgame.org/faq.es.html#forgot\">recordatorio</a>: {punishment}"),
 
-    resumed="El juego ha sido reanudado.",
-    already_paused="El juego ya está pausado ⏸️\n"
+    resumed="El juego se ha reanudado.",
+    already_paused="El juego ya está en pausa ⏸️\n"
                    "\n"
-                   "Para reanudar el juego, simplemente revisa tu <i>Fórmula</i> con el botón a continuación.",
+                   "Para reanudar el juego, simplemente revisa tu <i>Fórmula</i> con el botón de abajo.",
     game_started="El juego ha comenzado 🏁\n"
+                 "{maybe_achievement}"
                  "\n"
                  "💪<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Nivel de dificultad</a>: {difficulty}\n"
                  "\n"
@@ -311,52 +314,54 @@ Presiona el botón de abajo para iniciar el juego.""",
                  "\n"
                  " ‣ /difficulty - cambiar la dificultad",
 
-    review_btn="Revisar tu \"Fórmula\"",
+    review_btn="Revisa tu \"Fórmula\" 💫",
 
     difficulty_command_text="Cambiar el nivel de dificultad💪\n"
                             "\n"
-                            "Selecciona un nuevo <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel de dificultad</a> usando los botones a continuación.\n"
+                            "Selecciona un nuevo <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel de dificultad</a> usando los botones de abajo.\n"
                             "\n"
                             "<b>⚠️¡Esto reiniciará tu progreso en el juego!</b>\n",
 
     current_difficulty="nivel actual",
 
-    formula_command_text="Actualizar tu <i>Fórmula</i> 🧪\n"
+    formula_command_text="Actualiza tu <i>Fórmula</i> 🧪\n"
                          "\n"
-                         "Utiliza el botón a continuación para actualizar tu <i><a href=\"https://mindwarriorgame.org/faq.es.html#formula\">Fórmula</a></i>.",
-    formula_command_button="Actualizar tu Fórmula",
-    review_command_timeout="Tiempo agotado, por favor inténtalo de nuevo.🤷",
-    graph_header="Intervalos entre revisiones (mins)",
-    graph_penalty_threshold="Umbral de penalización: {difficulty_threshold_mins} mins (dificultad={difficulty_str})",
-    graph_mean_threshold="Mediana: {mean_mins} mins",
+                         "Usa el botón de abajo para actualizar tu <i><a href=\"https://mindwarriorgame.org/faq.es.html#formula\">Fórmula</a></i>.",
+    formula_command_button="Actualiza tu Fórmula 🧪",
+    review_command_timeout="Tiempo de espera agotado, por favor intenta de nuevo.🤷",
+    graph_header="Intervalos entre revisiones (minutos)",
+    graph_penalty_threshold="Umbral de intervalo de revisión: {difficulty_threshold_mins} minutos (dificultad={difficulty_str})",
+    graph_mean_threshold="Mediana: {mean_mins} minutos",
     graph_xlabel="Tiempo",
-    graph_ylabel="Intervalo entre revisiones (mins)",
+    graph_ylabel="Intervalo entre revisiones (minutos)",
     graph_xmax='Ahora',
-    graph_xmin='Hace 6 días',
+
+    graph_xmin='hace 6 días',
     graph_paused="Pausado",
 
-    data_view="Tus datos crudos:",
-    data_view_localstorage_button="Ver datos de localStorage",
-    data_delete_button="ELIMINAR TODOS LOS DATOS",
-    data_deleted="Todos tus datos han sido eliminados. Por favor, borra el historial del chat para eliminar los datos del chat de Telegram.",
+    data_view="Tus datos en bruto:",
+    data_view_localstorage_button="Ver datos de localStorage 🔎",
+    data_delete_button="ELIMINAR TODOS LOS DATOS ❌",
+    data_deleted="Todos tus datos han sido eliminados. Por favor, limpia el historial de chat para eliminar los datos del chat de Telegram.",
 
     reminder_text="¡No olvides revisar tu <i>Fórmula</i>! ⏰\n"
                   "\n"
-                  "¡El tiempo límite es en 15 minutos, date prisa!",
+                  "La hora de revisión es en 15 minutos, ¡apúrate!",
 
-    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> a tiempo 🟥",
+    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> 🟥",
 
-    badge_unhappy_cat = "😾 ¡Ups! ¡Se coló un gato gruñón!",
-    badge_new = "🏆 ¡Has conseguido un nuevo logro!",
-    view_badges_button = "Ver logros",
-    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
-    cooldown_msg="❄️ Early reviews are not rewarded.",
+    badge_unhappy_cat = "😾 ¡Ups! ¡Un gato gruñón se coló!\nPresiona el botón \"Ver logros\" abajo.",
+    badge_new = "🏆 ¡Tienes un nuevo logro!\nPresiona el botón \"Ver logros\" abajo.",
+    view_badges_button = "Ver logros 🏆",
+    locked_achievements = "⛔🏆😾 ¡Un gato gruñón bloquea nuevos logros!",
+    cooldown_msg="❄️ Las revisiones tempranas no se recompensan.",
 
-    kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
-    grumpy_cat_kicked_out="🧹 The grumpy cat has been kicked out!",
-    remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
-    achievements_unblocked="🏆 Achievements are unlocked!",
-    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it."
+    kicking_out_grumpy_cat="🧹😾 Expulsando al gato gruñón...",
+    grumpy_cat_kicked_out="🧹 ¡El gato gruñón ha sido expulsado!",
+    remained_grumpy_cats="😾 Gatos gruñones restantes: {count}",
+    achievements_unblocked="🏆 ¡Logros desbloqueados!",
+    achievements_link_regenerated="El enlace a la página de logros ha sido regenerado. Por favor, usa el botón de abajo para abrirlo."
+
 )
 
 
@@ -502,44 +507,46 @@ Press the button below to start the game.""",
 de = Lang(
     lang_code='de',
     lang_name='Deutsch',
+
     help_command_text=f"""Hey, Fremder! 👋 Willkommen beim <a href="https://mindwarriorgame.org/faq.de.html">MindWarrior-Spiel</a> Bot! 🥷  
 
-🧪 Erstelle deine "<a href="https://mindwarriorgame.org/faq.de.html#formula">Formel des festen Entschlusses</a>", eine inspirierende Nachricht an dich selbst.
+🧪 Erstelle deine "<a href="https://mindwarriorgame.org/faq.de.html#formula">Formel der festen Entschlossenheit</a>", eine inspirierende Nachricht an dich selbst.
 
-💫 <a href="https://mindwarriorgame.org/faq.de.html#review">Überprüfe sie</a> im Laufe deines Tages, um motiviert zu bleiben, und verdiene Belohnungen! <a href="https://mindwarriorgame.org/faq.de.html#forgot">Was, wenn ich es vergesse?</a>
+💫 <a href="https://mindwarriorgame.org/faq.de.html#review">Überprüfe sie</a> im Laufe des Tages, um motiviert zu bleiben und Belohnungen zu verdienen! <a href="https://mindwarriorgame.org/faq.de.html#forgot">Was, wenn ich es vergesse?</a>
 
  ‣ <a href="https://mindwarriorgame.org/quick-start.de.html">Schnellstart-Anleitung</a>
- ‣ <a href="https://mindwarriorgame.org/faq.de.html">FAQs</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.de.html">Datenschutzrichtlinie</a>
+ ‣ <a href="https://mindwarriorgame.org/faq.de.html">Häufige Fragen</a>
+ ‣ <a href="https://mindwarriorgame.org/privacy-policy.de.html">Datenschutzerklärung</a>
 
-Drücken Sie die Taste unten, um das Spiel zu starten.""",
+Drücke den Button unten, um das Spiel zu starten.""",
 
     menu_review="💫️Formel überprüfen",
     menu_pause="⏸️ Spiel pausieren",
-    menu_stats="🌟 Spielstand anzeigen",
+    menu_stats="📊 Spielfortschritt",
     menu_formula="️🧪Formel aktualisieren",
     menu_difficulty="💪Schwierigkeitsgrad ändern",
-    menu_data = "🗂 Deine Rohdaten anzeigen",
+    menu_data = "💾 Rohdaten anzeigen",
 
-    help_command_start_playing_button="Schreibe \"Formel\" und starte das Spiel!",
+    help_command_start_playing_button="Schreibe \"Formel\" und starte das Spiel! 🏁",
 
     review_command_text="Überprüfe deine <i>Formel</i> 💫\n"
                         "\n"
-                        "Drücke einen der untenstehenden Knöpfe, um deine <i>Formel</i> zu überprüfen.",
+                        "Drücke einen Button unten, um deine <i>Formel</i> zu überprüfen.",
 
     review_command_button_yourself="Verbessere dich selbst 💪",
     review_command_button_world="Verbessere die Welt 🙌",
 
-    review_command_success_text="<i>Formula</i> has been reviewed 🎉\n"
+    review_command_success_text="<i>Formel</i> wurde überprüft 🎉\n"
                                 "{maybe_achievement}"
                                 "\n"
-                                "Next review before {next_review}\n"
+                                "Nächste Überprüfung vor {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pause the game",
+                                " ‣ /pause - Spiel pausieren",
+
 
     review_since_last_time="Zeit seit der letzten Überprüfung: {duration}",
 
-    days_short="t",
+    days_short="T",
     hours_short="h",
     minutes_short="m",
     seconds_short="s",
@@ -549,36 +556,36 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                              "\n"
                              "<b>{old} -> {new}</b>\n"
                              "\n"
-                             "🌟 Gesamtzahl der Sterne: 0\n"
-                             "⏳ Spielzeit: 0t 0h 0m\n"
+                             "🏆 Level: 1\n"
+                             "⏳ Spielzeit: 0d 0h 0m\n"
                              "\n"
                              "Nächste Überprüfung vor {next_review}\n",
 
     formula_changed="Die <i>Formel</i> wurde aktualisiert!",
 
-    difficulties=["Anfänger", "Leicht", "Mittel", "Schwer", "Experte"],
+    difficulties=["Anfänger", "Einfach", "Mittel", "Schwer", "Experte"],
 
     review_paused_text="Das Spiel ist pausiert",
 
     paused_command="Das Spiel ist pausiert ⏸️\n"
                    "\n"
                    "Du wirst keine Erinnerungen an deine <i>Formel</i> erhalten, "
-                   "und der aktive Spielzeitzähler <a href=\"https://mindwarriorgame.org/faq.de#pause\">ist eingefroren</a>.\n"
+                   "und der aktive Spielzeit-Zähler <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">ist eingefroren</a>.\n"
                    "\n"
                    "Um das Spiel fortzusetzen, "
-                   "überprüfe einfach deine <i>Formel</i> mit dem untenstehenden Knopf.",
+                   "überprüfe einfach deine <i>Formel</i> mit dem Button unten.",
 
     stats_command=("🏆 Level : {level}\n"
                    "⌛ Aktive Spielzeit: {time}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">Pausiert?</a> {paused}\n"
-                   "❄️ <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlungszeit</a> bis zur nächsten Belohnung: {cooldown}\n"
+                   "❄️ <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlzeit</a> vor der nächsten Belohnung: {cooldown}\n"
                    "⏰ Zeit bis zur nächsten <a href=\"https://mindwarriorgame.org/faq.de.html#forgot\">Erinnerung</a>: {punishment}"),
 
     resumed="Das Spiel wurde fortgesetzt.",
     already_paused="Das Spiel ist bereits pausiert ⏸️\n"
                    "\n"
-                   "Um das Spiel fortzusetzen, überprüfe einfach deine <i>Formel</i> mit dem untenstehenden Knopf.",
+                   "Um das Spiel fortzusetzen, überprüfe einfach deine <i>Formel</i> mit dem Button unten.",
     game_started="Das Spiel hat begonnen 🏁\n"
                  "{maybe_achievement}"
                  "\n"
@@ -586,25 +593,24 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
                  "\n"
                  "Überprüfe deine <i>Formel</i> vor {next_review}\n"
                  "\n"
-                 " ‣ /difficulty - Schwierigkeitsgrad ändern",
+                 " ‣ /difficulty - ändere den Schwierigkeitsgrad",
+    review_btn="Überprüfe deine \"Formel\" 💫",
 
-    review_btn="Überprüfe deine \"Formel\"",
-
-    difficulty_command_text="Ändere den Schwierigkeitsgrad 💪\n"
+    difficulty_command_text="Ändere den Schwierigkeitsgrad💪\n"
                             "\n"
-                            "Wähle einen neuen <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a> mit den untenstehenden Knöpfen aus.\n"
+                            "Wähle einen neuen <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a> mit den untenstehenden Buttons aus.\n"
                             "\n"
-                            "<b>⚠️ Dies setzt deinen Spielfortschritt zurück!</b>\n",
+                            "<b>⚠️Dies setzt deinen Spielfortschritt zurück!</b>\n",
 
-    current_difficulty="aktuelles Level",
+    current_difficulty="aktueller Level",
 
     formula_command_text="Aktualisiere deine <i>Formel</i> 🧪\n"
                          "\n"
-                         "Nutze den untenstehenden Knopf, um deine <i><a href=\"https://mindwarriorgame.org/faq.de.html#formula\">Formel</a></i> zu aktualisieren.",
-    formula_command_button="Formel aktualisieren",
+                         "Verwende den untenstehenden Button, um deine <i><a href=\"https://mindwarriorgame.org/faq.de.html#formula\">Formel</a></i> zu aktualisieren.",
+    formula_command_button="Aktualisiere deine Formel 🧪",
     review_command_timeout="Zeitüberschreitung, bitte versuche es erneut.🤷",
     graph_header="Intervalle zwischen den Überprüfungen (Minuten)",
-    graph_penalty_threshold="Strafschwelle: {difficulty_threshold_mins} Minuten (Schwierigkeitsgrad={difficulty_str})",
+    graph_penalty_threshold="Schwellenwert für das Überprüfungsintervall: {difficulty_threshold_mins} Minuten (Schwierigkeitsgrad={difficulty_str})",
     graph_mean_threshold="Median: {mean_mins} Minuten",
     graph_xlabel="Zeit",
     graph_ylabel="Intervall zwischen den Überprüfungen (Minuten)",
@@ -613,27 +619,28 @@ Drücken Sie die Taste unten, um das Spiel zu starten.""",
     graph_paused="Pausiert",
 
     data_view="Deine Rohdaten:",
-    data_view_localstorage_button="Anzeigen der localStorage-Daten",
-    data_delete_button="ALLE DATEN LÖSCHEN",
+    data_view_localstorage_button="Sieh dir die localStorage-Daten an 🔎",
+    data_delete_button="ALLE DATEN LÖSCHEN ❌",
     data_deleted="Alle deine Daten wurden gelöscht. Bitte lösche den Chatverlauf, um die Daten aus dem Telegram-Chat zu entfernen.",
 
     reminder_text="Vergiss nicht, deine <i>Formel</i> zu überprüfen! ⏰\n"
                   "\n"
-                  "Die Frist endet in 15 Minuten, beeile dich!",
+                  "Die Fälligkeitszeit ist in 15 Minuten, beeile dich!",
 
     penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥",
 
-    badge_unhappy_cat = "😾 Ups! Eine mürrische Katze hat sich eingeschlichen!",
-    badge_new = "🏆 Du hast eine neue Errungenschaft!",
-    view_badges_button = "Erfolge ansehen",
-    locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
-    cooldown_msg="❄️ Early reviews are not rewarded.",
+    badge_unhappy_cat = "😾 Ups! Eine grimmige Katze hat sich eingeschlichen!\nDrücke den Button \"Erfolge ansehen\" unten.",
+    badge_new = "🏆 Du hast einen neuen Erfolg erzielt!\nDrücke den Button \"Erfolge ansehen\" unten.",
+    view_badges_button = "Erfolge ansehen 🏆",
+    locked_achievements = "⛔🏆😾 Eine grimmige Katze blockiert neue Erfolge!",
+    cooldown_msg="❄️ Frühe Überprüfungen werden nicht belohnt.",
 
-    kicking_out_grumpy_cat="🧹😾 Kicking out the grumpy cat...",
-    grumpy_cat_kicked_out="🧹😾 The grumpy cat has been kicked out!",
-    remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
-    achievements_unblocked="🏆 Achievements are unlocked!",
-    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it."
+    kicking_out_grumpy_cat="🧹😾 Die grimmige Katze wird hinausgeworfen...",
+    grumpy_cat_kicked_out="🧹 Die grimmige Katze wurde hinausgeworfen!",
+    remained_grumpy_cats="😾 Verbliebene grimmige Katzen: {count}",
+    achievements_unblocked="🏆 Erfolge wurden freigeschaltet!",
+    achievements_link_regenerated="Der Link zur Erfolgsseite wurde neu generiert. Bitte benutze den Button unten, um ihn zu öffnen."
+
 )
 
 
