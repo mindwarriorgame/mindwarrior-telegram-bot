@@ -256,7 +256,7 @@ class GameManager:
             'buttons': [
                 {
                     'text': lang.help_command_start_playing_button,
-                    'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&new_game=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}'
+                    'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&new_game=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}&shared_key_uuid={user["shared_key_uuid"]}'
                 }
             ],
             'menu_commands': [

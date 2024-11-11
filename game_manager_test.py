@@ -331,7 +331,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data['to_chat_id'], 1)
         self.assertEqual(data['message'].index('stranger') >= 0, True)
         self.assertEqual(data['buttons'], [{'text': 'Write "Formula" and start playing! 🏁',
-                                            'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45'}])
+                                            'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45&shared_key_uuid=' + user['shared_key_uuid']}])
 
     @time_machine.travel("2022-04-22", tick=False)
     def test_set_difficulty_updates_resets_scores(self):
@@ -531,7 +531,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data['to_chat_id'], 1)
         self.assertGreater(data['message'].index(', stranger!'), 0)
         self.assertEqual(data['buttons'], [{'text': 'Write "Formula" and start playing! 🏁',
-                                            'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45'}])
+                                            'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45&shared_key_uuid=' + user['shared_key_uuid']}])
 
     def test_on_pause_puts_counter_to_pause(self):
         user = self.users_orm.get_user_by_id(1)
