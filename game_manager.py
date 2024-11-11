@@ -761,7 +761,7 @@ class GameManager:
         return {
             'to_chat_id': chat_id,
             'message': lang.reminder_text,
-            'buttons': [buttons],
+            'buttons': buttons,
             'menu_commands': [],
             'image': None
         }

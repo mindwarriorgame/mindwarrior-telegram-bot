@@ -89,10 +89,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         with time_machine.travel("2022-04-21 05:50", tick=False):
             data = self.game_manager.process_tick()
-            self.assertEqual(data, [{'buttons': [[{'text': 'Review your "Formula" 💫',
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                    'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                   {'text': 'View achievements 🏆',
-                                                   'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0&bp1=c0_0_100--s0_3_0&ts=1650484200'}]],
+                                                   'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0&bp1=c0_0_100--s0_3_0&ts=1650484200'}],
                                      'image': None,
                                      'menu_commands': [],
                                      'message': "Don't forget to review your <i>Formula</i>! ⏰\n"
