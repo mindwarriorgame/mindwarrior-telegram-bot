@@ -303,6 +303,21 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(counter.is_active(), True)
         self.assertEqual(counter.get_total_seconds(), 0)
 
+        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:13 am,,12:14 am,,12:15 am,,12:16 am,,12:17 am')
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                             {'text': 'View achievements 🏆',
+                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_s1_s3_c0&bp1=c0_0_100--s0_6_14&ts=1650463200'}],
+                                 'image': None,
+                                 'menu_commands': [],
+                                 'message': '<i>Formula</i> has been reviewed 🎉\n'
+                                            '\n'
+                                            'Next review before 12:17 am\n'
+                                            '\n'
+                                            ' ‣ /pause - pause the game',
+                                 'to_chat_id': 1}])
+
+
 
 
     @time_machine.travel("2022-04-22")

@@ -225,7 +225,7 @@ class GameManager:
 
         since_last_review_secs = int(Counter(user['review_counter_state']).get_total_seconds())
 
-        is_cooldown = (since_last_review_secs < 5*60)
+        is_cooldown = (since_last_review_secs < 5*60) and user['counters_history_serialized'] is not None
 
         self._record_counter_time(user, REVIEW_COUNTER_HISTORY_NAME, user['review_counter_state'])
         user['review_counter_state'] = Counter('').resume().serialize()
