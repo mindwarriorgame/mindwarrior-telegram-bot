@@ -22,30 +22,11 @@ class BadgeCell {
         this.item = item;
         this.progress = progress;
         this.aElt = this.elt.querySelector('a');
-        this.progressElt = this.elt.querySelector('.cell-progress') || document.createElement('div');
-        this.broomElt = this.elt.querySelector('.broom') || document.createElement('div');
         this.lockElt = this.elt.querySelector('.lock');
         this.isTarget = isTarget;
         this.elt.querySelector('img').style.transition = 'none';
 
-        if (progress) {
-            this.aElt.onclick = (e) => {
-                e.preventDefault();
-                openPopup(item.badge, progress);
-            };
-        } else {
-            this.aElt.style.display = 'none';
-            if (this.progressElt) {
-                this.progressElt.style.display = 'none';
-                this.progressElt = document.createElement('div');
-            }
-            if (this.broomElt) {
-                this.broomElt.style.display = 'none';
-                const img = document.createElement('img');
-                this.broomElt = document.createElement('div');
-                this.broomElt.appendChild(img);
-            }
-        }
+        this._configureProgressControls();
 
         if (item.badge === 'c0') {
             if (isTarget && item.active) {
@@ -68,6 +49,43 @@ class BadgeCell {
                 this.setAchievementInactiveLocked();
             }
         }
+    }
+
+    _configureProgressControls() {
+        this.progressElt = this.elt.querySelector('.cell-progress');
+        if (!this.progressElt) {
+            this.progressElt = document.createElement('div');
+        }
+
+        this.broomElt = this.elt.querySelector('.broom');
+        if (!this.broomElt) {
+            this.broomElt = document.createElement('div');
+            this.broomElt.appendChild(document.createElement('img'));
+        }
+
+        if (this.progress) {
+            this.aElt.onclick = (e) => {
+                e.preventDefault();
+                openPopup(this.item.badge, this.progress);
+            };
+            this.progressElt.style.width = this.progress.progress_pct + '%';
+            if (this.progress.progress_pct < 33) {
+                this.progressElt.classList.add('red');
+            } else if (this.progress.progress_pct < 66) {
+                this.progressElt.classList.add('yellow');
+            } else {
+                this.progressElt.classList.add('green');
+            }
+
+            this.broomElt.querySelector('img').style.clipPath = "polygon(0% 0%, " + parseInt(this.progress.progress_pct) + "% 0%, " + parseInt(this.progress.progress_pct) + "% 100%, 0% 100%)"
+
+        } else {
+            this.aElt.style.display = 'none';
+            this.progressElt.style.display = 'none';
+            this.progressElt = document.createElement('div');
+            this.broomElt.style.display = 'none';
+        }
+
     }
 
     getElt() {
@@ -106,20 +124,10 @@ class BadgeCell {
         this.lockElt.style.display = 'none';
         this.progressElt.style.display = 'block';
         this.aElt.style.display = 'flex';
-        this.progressElt.style.width = this.progress.progress_pct + '%';
-        if (this.progress.progress_pct < 33) {
-            this.progressElt.classList.add('red');
-        } else if (this.progress.progress_pct < 66) {
-            this.progressElt.classList.add('yellow');
-        } else {
-            this.progressElt.classList.add('green');
-        }
     }
 
     setGrumpyCatActive() {
         this.elt.classList.add('active');
-        const progressPct = this.progress?.progress_pct || 0;
-        this.broomElt.querySelector('img').style.clipPath = "polygon(0% 0%, " + progressPct + "% 0%, " + progressPct + "% 100%, 0% 100%)"
     }
 
     setGrumpyCatDisappears() {
@@ -219,7 +227,7 @@ class Board {
         this.placeholderElt.style.visibility = 'hidden';
 
         const actionCallback = () => {
-            const removedC0 = this.cells.find(cell => cell.item.badge === 'c0' && cell.item.last_modified);
+            const removedC0 = this.cells.find(cell => cell.item.badge === 'c0' && cell.item.last_modified && !cell.item.active);
             if (removedC0) {
                 setTimeout(() => {
                     removedC0.setGrumpyCatDisappears();
@@ -227,7 +235,6 @@ class Board {
                         this.showActionButton();
                         onDone();
                     }, 1500);
-                    return;
                 }, 750);
             }
 
