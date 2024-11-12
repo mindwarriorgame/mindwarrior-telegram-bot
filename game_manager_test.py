@@ -78,6 +78,33 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(badges.get_last_badge(), "f0")
         self.assertEqual(counter.get_total_seconds(), 0)
 
+    def test_on_invalid_input_renders_prompt(self):
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_data_provided(1, "not valid message")
+        self.assertEqual(data, [{'buttons': [{'text': 'Write "Formula" and start playing! 🏁',
+                                              'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45&shared_key_uuid=' + user["shared_key_uuid"]}],
+                                 'image': None,
+                                 'menu_commands': [],
+                                 'message': 'Please press the button below to enter your <i>Formula</i> and '
+                                            'start the game.',
+                                 'to_chat_id': 1}])
+    @time_machine.travel("2022-04-21", tick=False)
+    def test_not_generating_prompt_if_game_was_started(self):
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+
+        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
+        data = self.game_manager.on_data_provided(1, "not valid message")
+        self.assertEqual(data, [{'buttons': [],
+                                 'image': None,
+                                 'menu_commands': [],
+                                 'message': 'Invalid data',
+                                 'to_chat_id': 1}])
+
 
     @time_machine.travel("2022-04-21", tick=False)
     def test_process_tick_sends_reminders(self):
@@ -132,10 +159,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         with time_machine.travel("2022-04-21 05:50", tick=False):
             data = self.game_manager.process_tick()
-            self.assertEqual(data, [{'buttons': [[{'text': 'Review your "Formula" 💫',
-                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
-                                                  {'text': 'View achievements 🏆',
-                                                   'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0&bp1=c0_0_100--s0_3_0&ts=1650484200'}]],
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                  'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                 {'text': 'View achievements 🏆',
+                                                  'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0&bp1=c0_0_100--s0_3_0&ts=1650484200'}],
                                      'image': None,
                                      'menu_commands': [],
                                      'message': "Don't forget to review your <i>Formula</i>! ⏰\n"
@@ -178,10 +205,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         with time_machine.travel("2022-04-21 05:50", tick=False):
             data = self.game_manager.process_tick()
-            self.assertEqual(data, [{'buttons': [[{'text': 'Review your "Formula" 💫',
-                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
-                                                  {'text': 'View achievements 🏆',
-                                                   'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0a&bp1=c0_5_0--s0_3_0&ts=1650484200'}]],
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                  'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                                 {'text': 'View achievements 🏆',
+                                                  'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0a&bp1=c0_5_0--s0_3_0&ts=1650484200'}],
                                      'image': None,
                                      'menu_commands': [],
                                      'message': "Don't forget to review your <i>Formula</i>! ⏰\n"

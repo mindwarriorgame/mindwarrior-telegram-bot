@@ -36,6 +36,7 @@ class Lang:
     already_paused: str
 
     game_started: str
+    start_game_prompt: str
 
     difficulty_command_text: str
     current_difficulty: str
@@ -107,6 +108,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     menu_data = "💾 voir vos données brutes",
 
     help_command_start_playing_button = "Écrivez \"Formule\" et commencez à jouer ! 🏁",
+    start_game_prompt="Veuillez appuyer sur le bouton ci-dessous pour entrer votre <i>Formule</i> et démarrer le jeu.",
 
     review_command_text = "Révisez votre <i> Formule</i> 💫\n"
                           "\n"
@@ -248,6 +250,7 @@ Presiona el botón de abajo para comenzar el juego.""",
     menu_data="💾 ver tus datos sin procesar",
 
     help_command_start_playing_button="¡Escribe \"Fórmula\" y comienza a jugar! 🏁",
+    start_game_prompt="Por favor, presiona el botón de abajo para ingresar tu <i>Fórmula</i> y comenzar el juego.",
 
     review_command_text="Revisa tu <i>Fórmula</i> 💫\n"
                         "\n"
@@ -390,6 +393,8 @@ Press the button below to start the game.""",
 
     help_command_start_playing_button="Write \"Formula\" and start playing! 🏁",
 
+    start_game_prompt="Please press the button below to enter your <i>Formula</i> and start the game.",
+
     review_command_text="Review your <i> Formula</i> 💫\n"
                         "\n"
                         "Press any button below to review your <i>Formula</i>.",
@@ -528,6 +533,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
     menu_data = "💾 Rohdaten anzeigen",
 
     help_command_start_playing_button="Schreibe \"Formel\" und starte das Spiel! 🏁",
+    start_game_prompt="Bitte drücken Sie die Schaltfläche unten, um Ihre <i>Formel</i> einzugeben und das Spiel zu starten.",
 
     review_command_text="Überprüfe deine <i>Formel</i> 💫\n"
                         "\n"
@@ -669,6 +675,7 @@ ru = Lang(
 
 
     help_command_start_playing_button="Написать \"Формулу\" и начать игру! 🏁",
+    start_game_prompt="Нажмите на кнопку ниже для ввода <i>Формулы</i> и начала игры.",
 
     review_command_text="Просмотрите свою <i>Формулу</i> 💫\n"
                         "\n"

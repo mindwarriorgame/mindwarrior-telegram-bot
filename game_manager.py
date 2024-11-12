@@ -53,7 +53,7 @@ class GameManager:
             return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
-        return self._render_start_game_button(lang, user)
+        return self._render_start_game_screen(lang, user)
 
     def on_lang_input(self, chat_id: int, user_message: str) -> Reply:
         lang_code = user_message[1:]
@@ -104,6 +104,8 @@ class GameManager:
             self.users_orm.remove_user(chat_id)
             return [self._render_single_message(chat_id, lang.data_deleted, None, None)]
 
+        if user["active_game_counter_state"] is None:
+            return [self._render_single_message(chat_id, lang.start_game_prompt, None, self._render_start_game_button(lang, user))]
         return [self._render_single_message(chat_id, "Invalid data", None, None)]
 
     def _format_time_minutes(self, lang: Lang, time_secs: int, skip_zeros = False) -> str:
@@ -140,7 +142,7 @@ class GameManager:
 
     def _on_set_difficulty(self, lang: Lang, user: User, user_message: str) -> Reply:
         if user['active_game_counter_state'] is None:
-            return self._render_start_game_button(lang, user)
+            return self._render_start_game_screen(lang, user)
 
         new_difficulty = 0
         next_review_at = 0
@@ -186,7 +188,7 @@ class GameManager:
         lang = self._get_user_lang(user['lang_code'])
 
         if user['active_game_counter_state'] is None:
-            return self._render_start_game_button(lang, user)
+            return self._render_start_game_screen(lang, user)
 
         counter_active_game = Counter(user['active_game_counter_state'])
         counter_review_state = Counter(user['review_counter_state'])
@@ -202,7 +204,7 @@ class GameManager:
 
     def _on_reviewed(self, lang: Lang, user: User, user_message: str):
         if user['active_game_counter_state'] is None:
-            return self._render_start_game_button(lang, user)
+            return self._render_start_game_screen(lang, user)
 
         now_timestamp = time.time()
         next_review = None
@@ -249,16 +251,11 @@ class GameManager:
         counter = Counter(user['active_game_counter_state'])
         return int(counter.get_total_seconds())
 
-    def _render_start_game_button(self, lang: Lang, user: User) -> Reply:
+    def _render_start_game_screen(self, lang: Lang, user: User) -> Reply:
         return {
             'to_chat_id': user['user_id'],
             'message': lang.help_command_text.format(difficulty=lang.difficulties[user['difficulty']]),
-            'buttons': [
-                {
-                    'text': lang.help_command_start_playing_button,
-                    'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&new_game=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}&shared_key_uuid={user["shared_key_uuid"]}'
-                }
-            ],
+            'buttons': [self._render_start_game_button(lang, user)],
             'menu_commands': [
                 ["review", lang.menu_review],
                 ["pause", lang.menu_pause],
@@ -268,6 +265,12 @@ class GameManager:
                 ["data", lang.menu_data]
             ],
             'image': None
+        }
+
+    def _render_start_game_button(self, lang: Lang, user: User) -> Button:
+        return {
+            'text': lang.help_command_start_playing_button,
+            'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&new_game=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}&shared_key_uuid={user["shared_key_uuid"]}'
         }
 
     def on_data_command(self, chat_id) -> Reply:
@@ -293,7 +296,7 @@ class GameManager:
         lang = self._get_user_lang(user['lang_code'])
 
         if user['active_game_counter_state'] is None:
-            return self._render_start_game_button(lang, user)
+            return self._render_start_game_screen(lang, user)
 
         if user['paused_counter_state'] is None:
             paused_counter = Counter("")
@@ -321,7 +324,7 @@ class GameManager:
         lang = self._get_user_lang(user['lang_code'])
 
         if user['active_game_counter_state'] is None:
-            return self._render_start_game_button(lang, user)
+            return self._render_start_game_screen(lang, user)
 
         since_last_review_secs = int(Counter(user['review_counter_state']).get_total_seconds())
 
