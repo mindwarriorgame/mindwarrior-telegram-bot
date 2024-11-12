@@ -811,7 +811,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                               'url': 'http://frontend?env=prod&lang_code=en&delete_data=1'}],
                                  'image': 'fname',
                                  'menu_commands': [],
-                                 'message': 'Your data is below\n'
+                                 'message': 'Your raw data:\n'
                                             '\n'
                                             ' - shared_key_uuid: abc\n'
                                             '\n'
@@ -843,9 +843,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '"43200", "TimeBadgeCounter": "64800", "StarBadgeCounter": "0,3", '
                                             '"FeatherBadgeCounter": "64800"}, "board": [{"badge": "f0", '
                                             '"is_active": true, "is_last_modified": true}, {"badge": "s0", '
-                                            '"is_active": null}, {"badge": "c0", "is_active": null}], '
-                                            '"level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": '
-                                            '"f0", "c0_active_time_penalty": 0, "c0_lock_started_at": 0}',
+                                            '"is_active": null}, {"badge": "c0...',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)

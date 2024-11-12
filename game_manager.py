@@ -287,7 +287,7 @@ class GameManager:
             value = str(user[key])
             value_short = value
             if len(value) > 256:
-                value_sort = value[:256] + "..."
+                value_short = value[:256] + "..."
             if key != 'shared_key_uuid':
                 data.append(f" - {key}: {value}")
                 data_short.append(f" - {key}: {value_short}")
@@ -708,7 +708,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_delete_data_screen(self, lang, chat_id, data_sort, data) -> [Reply]:
+    def _render_delete_data_screen(self, lang, chat_id, data_short, data) -> [Reply]:
         random_fname = 'tmp_user_data_' + str(np.random.randint(100000, 900000)) + '.txt'
         # write message to file
         with open(random_fname, 'w') as f:
@@ -718,7 +718,7 @@ class GameManager:
             return [
                 {
                     'to_chat_id': chat_id,
-                    'message': lang.data_view + "\n\n" + "\n\n".join(data),
+                    'message': lang.data_view + "\n\n" + "\n\n".join(data_short),
                     'buttons': [
                         {
                             'text': lang.data_view_localstorage_button,
