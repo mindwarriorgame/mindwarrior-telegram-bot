@@ -3,6 +3,8 @@ import uuid
 from typing import TypedDict, Optional
 import time
 
+import numpy as np
+
 from badges_manager import BadgesManager
 from board_serializer import serialize_board, serialize_progress
 from counter import Counter
@@ -273,21 +275,24 @@ class GameManager:
             'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&new_game=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}&shared_key_uuid={user["shared_key_uuid"]}'
         }
 
-    def on_data_command(self, chat_id) -> Reply:
+    def on_data_command(self, chat_id) -> [Reply]:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
             return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
         data = [" - shared_key_uuid: " + user['shared_key_uuid']]
+        data_short = [" - shared_key_uuid: " + user['shared_key_uuid']]
         for key in user:
             value = str(user[key])
+            value_short = value
             if len(value) > 256:
-                value = value[:256] + "..."
+                value_sort = value[:256] + "..."
             if key != 'shared_key_uuid':
                 data.append(f" - {key}: {value}")
+                data_short.append(f" - {key}: {value_short}")
 
-        return self._render_delete_data_screen(lang, chat_id, data)
+        return self._render_delete_data_screen(lang, chat_id, data_short, data)
 
     def on_pause_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
@@ -703,23 +708,31 @@ class GameManager:
             'image': None
         }
 
-    def _render_delete_data_screen(self, lang, chat_id, data):
-        return {
-            'to_chat_id': chat_id,
-            'message': lang.data_view + "\n\n" + "\n\n".join(data),
-            'buttons': [
+    def _render_delete_data_screen(self, lang, chat_id, data_sort, data) -> [Reply]:
+        random_fname = 'tmp_user_data_' + str(np.random.randint(100000, 900000)) + '.txt'
+        # write message to file
+        with open(random_fname, 'w') as f:
+            f.write("\n\n".join(data))
+
+        with open(random_fname, 'rb') as file:
+            return [
                 {
-                    'text': lang.data_view_localstorage_button,
-                    'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&view_localstorage=1'
-                },
-                {
-                    'text': lang.data_delete_button,
-                    'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&delete_data=1'
-                }
-            ],
-            'menu_commands': [],
-            'image': None
-        }
+                    'to_chat_id': chat_id,
+                    'message': lang.data_view + "\n\n" + "\n\n".join(data),
+                    'buttons': [
+                        {
+                            'text': lang.data_view_localstorage_button,
+                            'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&view_localstorage=1'
+                        },
+                        {
+                            'text': lang.data_delete_button,
+                            'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&delete_data=1'
+                        }
+                    ],
+                    'menu_commands': [],
+                    'image': random_fname
+                }]
+
 
     def _render_penalty(self, lang: Lang, maybe_badge_msg: Optional[str], maybe_badge_button: Optional[Button], chat_id: int) -> Reply:
 

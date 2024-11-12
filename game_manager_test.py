@@ -802,46 +802,51 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.game_manager.on_pause_command(1)
 
         data = self.game_manager.on_data_command(1)
-        self.assertEqual(data, {'buttons': [{'text': 'View localStorage data 🔎',
-                                             'url': 'http://frontend?env=prod&lang_code=en&view_localstorage=1'},
-                                            {'text': 'DELETE ALL DATA ❌',
-                                             'url': 'http://frontend?env=prod&lang_code=en&delete_data=1'}],
-                                'image': None,
-                                'menu_commands': [],
-                                'message': 'Your raw data:\n'
-                                           '\n'
-                                           ' - shared_key_uuid: abc\n'
-                                           '\n'
-                                           ' - user_id: 1\n'
-                                           '\n'
-                                           ' - lang_code: en\n'
-                                           '\n'
-                                           ' - difficulty: 1\n'
-                                           '\n'
-                                           ' - review_counter_state: {"is_active": false, '
-                                           '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
-                                           '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
-                                           '\n'
-                                           ' - next_prompt_time: 2022-04-20 16:45:00+00:00\n'
-                                           '\n'
-                                           ' - active_game_counter_state: {"is_active": false, '
-                                           '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
-                                           '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
-                                           '\n'
-                                           ' - paused_counter_state: {"is_active": true, '
-                                           '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
-                                           '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
-                                           '\n'
-                                           ' - counters_history_serialized: None\n'
-                                           '\n'
-                                           ' - next_prompt_type: reminder\n'
-                                           '\n'
-                                           ' - badges_serialized: {"badges_state": {"CatBadgeCounter": '
-                                           '"43200", "TimeBadgeCounter": "64800", "StarBadgeCounter": "0,3", '
-                                           '"FeatherBadgeCounter": "64800"}, "board": [{"badge": "f0", '
-                                           '"is_active": true, "is_last_modified": true}, {"badge": "s0", '
-                                           '"is_active": null}, {"badge": "c0...',
-                                'to_chat_id': 1})
+        self.assertIn('tmp_user_data', data[0]['image'])
+        os.remove(data[0]['image'])
+        data[0]['image'] = 'fname'
+        self.assertEqual(data, [{'buttons': [{'text': 'View localStorage data 🔎',
+                                              'url': 'http://frontend?env=prod&lang_code=en&view_localstorage=1'},
+                                             {'text': 'DELETE ALL DATA ❌',
+                                              'url': 'http://frontend?env=prod&lang_code=en&delete_data=1'}],
+                                 'image': 'fname',
+                                 'menu_commands': [],
+                                 'message': 'Your data is below\n'
+                                            '\n'
+                                            ' - shared_key_uuid: abc\n'
+                                            '\n'
+                                            ' - user_id: 1\n'
+                                            '\n'
+                                            ' - lang_code: en\n'
+                                            '\n'
+                                            ' - difficulty: 1\n'
+                                            '\n'
+                                            ' - review_counter_state: {"is_active": false, '
+                                            '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
+                                            '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
+                                            '\n'
+                                            ' - next_prompt_time: 2022-04-20 16:45:00+00:00\n'
+                                            '\n'
+                                            ' - active_game_counter_state: {"is_active": false, '
+                                            '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
+                                            '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
+                                            '\n'
+                                            ' - paused_counter_state: {"is_active": true, '
+                                            '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
+                                            '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
+                                            '\n'
+                                            ' - counters_history_serialized: None\n'
+                                            '\n'
+                                            ' - next_prompt_type: reminder\n'
+                                            '\n'
+                                            ' - badges_serialized: {"badges_state": {"CatBadgeCounter": '
+                                            '"43200", "TimeBadgeCounter": "64800", "StarBadgeCounter": "0,3", '
+                                            '"FeatherBadgeCounter": "64800"}, "board": [{"badge": "f0", '
+                                            '"is_active": true, "is_last_modified": true}, {"badge": "s0", '
+                                            '"is_active": null}, {"badge": "c0", "is_active": null}], '
+                                            '"level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": '
+                                            '"f0", "c0_active_time_penalty": 0, "c0_lock_started_at": 0}',
+                                 'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)
     def test_expel_grumpy_cats(self):

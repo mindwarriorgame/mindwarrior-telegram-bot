@@ -60,7 +60,12 @@ async def send_reply_with_bot(ret: Reply):
             await bot.send_message(ret['to_chat_id'], ret['message'], parse_mode='HTML', reply_markup=reply_markup)
 
     if 'image' in ret and ret['image'] is not None:
-        await bot.send_photo(ret['to_chat_id'], photo=ret['image'])
+        if ret['image'].endswith('.txt'):
+            with open(ret['image'], "rb") as file:
+                await bot.send_document(ret['to_chat_id'], document=file, filename='user_data.txt')
+        else:
+            await bot.send_photo(ret['to_chat_id'], photo=ret['image'])
+
         if ret['image'].startswith('tmp_'):
             os.remove(ret['image'])
 
@@ -124,8 +129,9 @@ async def feedback_command(update: Update, context):
 async def data_command(update: Update, context):
     global game_manager
     chat_id = update.message.chat.id
-    ret = game_manager.on_data_command(chat_id)
-    await send_reply(update.message, ret)
+    rets = game_manager.on_data_command(chat_id)
+    for ret in rets:
+        await send_reply_with_bot(ret)
 
 async def fallback_command(update: Update, context):
     global game_manager
