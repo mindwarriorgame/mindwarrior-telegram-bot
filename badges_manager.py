@@ -17,6 +17,7 @@ class BoardCell(TypedDict):
 class UserBadgesData(TypedDict):
     badges_state: dict[str, str]
     last_badge: Optional[str]
+    last_badge_at: Optional[int]
     level: int # starting from 0
     board: list[BoardCell]
 
@@ -36,6 +37,7 @@ class BadgesManager:
                                        c0_hp=0,
                                        c0_hp_next_delta=3,
                                        last_badge=None,
+                                       last_badge_at=None,
                                        c0_active_time_penalty=0,
                                        c0_lock_started_at=0)
         else:
@@ -46,6 +48,9 @@ class BadgesManager:
 
         if not self.data.get("last_badge"):
             self.data["last_badge"] = None
+
+        if not self.data.get("last_badge_at"):
+            self.data["last_badge_at"] = None
 
         if not self.data.get("level"):
             self.data["level"] = 0
@@ -143,16 +148,23 @@ class BadgesManager:
         ]
 
         if self.is_level_completed():
+            last_badge_at = self.data["last_badge_at"]
             self.data["level"] += 1
             self.data["board"] = self._level_badges_to_new_board(get_level(self.difficulty, self.data["level"]))
             self.data["last_badge"] = None
+            self.data["last_badge_at"] = None
             self.data["badges_state"] = {}
             self.data["c0_hp"] = 0
             self.data["c0_hp_next_delta"] = 3
             self.data["c0_lock_started_at"] = 0
             self.data["c0_active_time_penalty"] = 0
             for counter in counters:
-                badge, new_state = counter.on_game_started(self._adjust_active_play_time_secs(active_play_time_secs), None, self.difficulty, self._get_inactive_badges_on_board(self.data['board']))
+                badge, new_state = counter.on_game_started(
+                    last_badge_at if last_badge_at is not None else active_play_time_secs,
+                    None,
+                    self.difficulty,
+                    self._get_inactive_badges_on_board(self.data['board'])
+                )
                 self.data["badges_state"][counter.__class__.__name__] = new_state
 
         self.data['board'] = self.clone_board_without_last_modified(self.data['board'])
@@ -186,6 +198,9 @@ class BadgesManager:
             if self.data["last_badge"] == "c0" and not has_old_grumpy_cat:
                 self.data["c0_lock_started_at"] = active_play_time_secs
                 self.data["c0_hp"] = self._max_grumpy_cat_healthpoints()
+
+            if self.data["last_badge"] is not None:
+                self.data["last_badge_at"] = active_play_time_secs
 
             return self.data["last_badge"]
         else:

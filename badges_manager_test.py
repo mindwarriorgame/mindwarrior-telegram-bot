@@ -26,7 +26,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                 'remaining_reviews': 5}})
 
         self.assertEqual(badges_manager.is_level_completed(), False)
-        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "57600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true, "is_last_modified": true}, {"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": "f0", "c0_active_time_penalty": 0, "c0_lock_started_at": 0}')
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "57600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true, "is_last_modified": true}, {"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": "f0", "last_badge_at": 0, "c0_active_time_penalty": 0, "c0_lock_started_at": 0}')
 
 
     def test_grumpy_cat_gets_in(self):
@@ -43,12 +43,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                              {'badge': 'c0', 'is_active': True, 'is_last_modified': True}])
 
         self.assertEqual(badges_manager.is_level_completed(), False)
-        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "118600", "TimeBadgeCounter": '
-                                                     '"86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, '
-                                                     '"board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, '
-                                                     '{"badge": "c0", "is_active": true, "is_last_modified": true}], "level": 0, '
-                                                     '"last_badge": "c0", "c0_hp_next_delta": 1, "c0_hp": 15, '
-                                                     '"c0_lock_started_at": 61000, "c0_active_time_penalty": 0}')
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "118600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, {"badge": "c0", "is_active": true, "is_last_modified": true}], "level": 0, "last_badge": "c0", "last_badge_at": 61000, "c0_hp_next_delta": 1, "c0_hp": 15, "c0_lock_started_at": 61000, "c0_active_time_penalty": 0}')
 
     def test_grumpy_spoils_everything(self):
         badges_manager = BadgesManager(2, '{"badges_state": {"CatBadgeCounter": "118600", "TimeBadgeCounter": "86400",'
@@ -61,11 +56,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(badge, None)
         self.assertEqual(badges_manager.count_active_grumpy_cats_on_board(), 1)
         self.assertEqual(badges_manager.get_grumpy_cat_healthpoints(), 12)
-        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "118600", "TimeBadgeCounter": "86400", '
-                                                     '"StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, '
-                                                     '"board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, '
-                                                     '{"badge": "c0", "is_active": true}], "level": 0, "last_badge": null, "c0_hp_next_delta": 3, '
-                                                     '"c0_hp": 12, "c0_lock_started_at": 0, "c0_active_time_penalty": 0}')
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "118600", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, {"badge": "c0", "is_active": true}], "level": 0, "last_badge": null, "last_badge_at": null, "c0_hp_next_delta": 3, "c0_hp": 12, "c0_lock_started_at": 0, "c0_active_time_penalty": 0}')
 
     def test_kicking_out_grumpy_cat(self):
         badges_manager = BadgesManager(2, '{"badges_state": {"CatBadgeCounter": "157600", '
@@ -111,6 +102,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                        '"StarBadgeCounter": "4,5", "FeatherBadgeCounter": "86400"}, "board": '
                                        '[{"badge": "f0", "is_active": true, "is_last_modified": true}, {"badge": "s0", '
                                        '"is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "last_badge": "f0"}')
+        self.assertEqual(badges_manager.is_level_completed(), False)
         badge = badges_manager.on_review(100000)
         self.assertEqual(badges_manager.is_level_completed(), True)
         self.assertEqual(badges_manager.get_next_level_board(), [{'badge': 's1'},
@@ -118,9 +110,25 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                  {'badge': 'c0'},
                                                                  {'badge': 'c1'},
                                                                  {'badge': 'c0'}])
-        badge = badges_manager.on_review(100001)
+        badge = badges_manager.on_review(102600 - 1200)
+        self.assertEqual(badges_manager.progress(102600 - 1200), {'c0': {'badge': 'c0',
+                                                                         'challenge': 'review',
+                                                                         'progress_pct': 100,
+                                                                         'remaining_reviews': 0},
+                                                                  'c1': {'badge': 'c1',
+                                                                         'challenge': 'review_regularly_no_penalty',
+                                                                         'progress_pct': 2,
+                                                                         'remaining_time_secs': 56200},
+                                                                  's1': {'badge': 's1',
+                                                                         'challenge': 'review_regularly_no_penalty',
+                                                                         'progress_pct': 10,
+                                                                         'remaining_reviews': 9},
+                                                                  't0': {'badge': 't0',
+                                                                         'challenge': 'play_time',
+                                                                         'progress_pct': 1,
+                                                                         'remaining_time_secs': 85000}}) # must be less than 86400 to accomodate time passed since level was over
         self.assertEqual(badge, None) # first review, the level has started
-        badge = badges_manager.on_review(1000001)
+        badge = badges_manager.on_review(1100001)
         self.assertEqual(badge, 'c1') # had it been same level, it would've returned None
         self.assertEqual(badges_manager.get_level(), 1)
         self.assertEqual(badges_manager.get_last_badge(), 'c1')

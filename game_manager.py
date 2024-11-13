@@ -526,7 +526,7 @@ class GameManager:
         if user_message == "render_screen_11":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_delete_data_screen(lang, chat_id, [" - shared_key_uuid: blahblah"])]
+                ret = ret + [self._render_delete_data_screen(lang, chat_id, [" - shared_key_uuid: blahblah"], [" - shared_key_uuid: blahblah"])]
             return ret
 
         if user_message == "render_screen_12":
