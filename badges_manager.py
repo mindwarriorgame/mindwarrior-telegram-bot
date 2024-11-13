@@ -239,7 +239,7 @@ class BadgesManager:
         ]
 
         all_progress = {}
-        next_level_board = self._get_inactive_badges_on_board(get_level(self.difficulty, self.data["level"] + 1))
+        next_level_board = self._get_inactive_badges_on_board(self._level_badges_to_new_board(get_level(self.difficulty, self.data["level"] + 1)))
         for counter in counters:
             for badge in badges:
                 maybe_progress = counter.progress(

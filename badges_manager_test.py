@@ -213,3 +213,18 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                'progress_pct': 99,
                                                                'remaining_time_secs': 50}})
         self.assertEqual(badges_manager.on_review(301), 't0')
+
+    def test_new_level_empty_progress(self):
+        badges_manager = BadgesManager(2, '{"badges_state": {"CatBadgeCounter": "150040", "TimeBadgeCounter": null, "StarBadgeCounter": "0,100000", "FeatherBadgeCounter": "178891"}, "board": [{"badge": "f0", "is_active": true, "is_last_modified": true}, {"badge": "s0", "is_active": true}, {"badge": "s1", "is_active": true}, {"badge": "c0", "is_active": false}], "level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": "f0", "c0_active_time_penalty": 32951, "c0_lock_started_at": 116774}')
+        self.assertEqual(badges_manager.new_level_empty_progress(), {'c1': {'badge': 'c1',
+                                                                            'challenge': 'review_regularly_no_penalty',
+                                                                            'progress_pct': 0,
+                                                                            'remaining_time_secs': 57600},
+                                                                     's1': {'badge': 's1',
+                                                                            'challenge': 'review_regularly_no_penalty',
+                                                                            'progress_pct': 0,
+                                                                            'remaining_reviews': 10},
+                                                                     't0': {'badge': 't0',
+                                                                            'challenge': 'play_time',
+                                                                            'progress_pct': 0,
+                                                                            'remaining_time_secs': 86400}});
