@@ -26,6 +26,8 @@ class UserBadgesData(TypedDict):
     c0_lock_started_at: int
     c0_active_time_penalty: int
 
+    last_progress: dict
+
 class BadgesManager:
 
     def __init__(self, difficulty, badges_serialized = None):
@@ -202,6 +204,7 @@ class BadgesManager:
             if self.data["last_badge"] is not None:
                 self.data["last_badge_at"] = active_play_time_secs
 
+            self.data["last_progress"] = self.progress(active_play_time_secs, self.data.get("last_progress"))
             return self.data["last_badge"]
         else:
             # No new badge => no changes on the board
@@ -214,8 +217,12 @@ class BadgesManager:
                 inactive_badges.append(cell["badge"])
         return inactive_badges
 
-    def progress(self, active_play_time_secs: float):
+    def progress(self, active_play_time_secs: float, last_progress: dict = None):
         badges = ["f0", "s0", "s1", "s2", "t0", "c1", "c2", "c0"]
+        if last_progress is None:
+            last_progress = self.data.get("last_progress")
+        if last_progress is None:
+            last_progress = {}
 
         counters = [
             CatBadgeCounter(),
@@ -235,8 +242,12 @@ class BadgesManager:
                         "badge": badge,
                         "progress_pct": 100 - (self.data["c0_hp"] * 100 // self._max_grumpy_cat_healthpoints())
                     }
+                    if self.count_active_grumpy_cats_on_board() > 0 and last_progress.get("c0") is not None:
+                        maybe_progress["progress_pct_delta"] = max(0, maybe_progress["progress_pct"] - last_progress["c0"]["progress_pct"])
                 else:
                     maybe_progress = counter.progress(badge, self._adjust_active_play_time_secs(int(active_play_time_secs)), self.data["badges_state"].get(counter.__class__.__name__), self.difficulty, self._get_inactive_badges_on_board(self.data['board']))
+                    if maybe_progress is not None and last_progress.get(badge) is not None:
+                        maybe_progress["progress_pct_delta"] = max(0, maybe_progress["progress_pct"] - last_progress[badge]["progress_pct"])
 
                 if maybe_progress is not None:
                     all_progress[badge] = maybe_progress
