@@ -10,8 +10,7 @@ class TestStarBadgeCounter(unittest.IsolatedAsyncioTestCase):
             { 'progress_reviews': 3, 'progress_pct': 0, 'received_badge': None },
             { 'progress_reviews': 2, 'progress_pct': 33, 'received_badge': None },
             'penalty',
-            { 'progress_reviews': 3, 'progress_pct': 0, 'received_badge': None },
-            { 'progress_reviews': 2, 'progress_pct': 33, 'received_badge': None },
+            { 'progress_reviews': 1, 'progress_pct': 66, 'received_badge': None },
             { 'progress_reviews': 1, 'progress_pct': 66, 'received_badge': 's0' },
             { 'no_progress': True, 'received_badge': None },
         ]
@@ -24,12 +23,14 @@ class TestStarBadgeCounter(unittest.IsolatedAsyncioTestCase):
         counter = StarBadgeCounter()
         state = None
         for exp in expectations:
+            print("---")
             print(board_badges)
             print(f"Expectation: {exp}")
             if exp == 'penalty':
                 print('Penalty!')
                 badge_advice = counter.on_penalty(0, state, 1, board_badges)
                 state = badge_advice[1]
+                print("State: ", state)
                 continue
             result = counter.progress(for_badge, 0, state, 1, board_badges)
             print(f"Reality: {result}")
@@ -55,10 +56,7 @@ class TestStarBadgeCounter(unittest.IsolatedAsyncioTestCase):
             { 'progress_reviews': 4, 'progress_pct': 33, 'received_badge': None },
             { 'progress_reviews': 3, 'progress_pct': 50, 'received_badge': None },
             'penalty',
-            { 'progress_reviews': 6, 'progress_pct': 0, 'received_badge': None },
-            { 'progress_reviews': 5, 'progress_pct': 16, 'received_badge': None },
-            { 'progress_reviews': 4, 'progress_pct': 33, 'received_badge': None },
-            { 'progress_reviews': 3, 'progress_pct': 50, 'received_badge': None },
+            { 'progress_reviews': 2, 'progress_pct': 66, 'received_badge': None },
             { 'progress_reviews': 2, 'progress_pct': 66, 'received_badge': None },
             { 'progress_reviews': 1, 'progress_pct': 83, 'received_badge': 's1' },
             { 'no_progress': True, 'received_badge': None },

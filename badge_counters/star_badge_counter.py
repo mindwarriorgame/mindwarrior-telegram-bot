@@ -1,5 +1,4 @@
 from typing import Optional, Tuple
-import numpy as np
 
 """
 s2 badge can be used when s1 is needed
@@ -32,15 +31,25 @@ class StarBadgeCounter:
         return None, state
 
     def on_penalty(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
-        return self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
+        if state is None:
+            game_started_result = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
+            state = game_started_result[1]
+
+        if "skip_next" in state:
+            return None, state
+
+        return None, state + ",skip_next"
 
     def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
         if "s0" not in badges_locked_on_board and "s1" not in badges_locked_on_board and "s2" not in badges_locked_on_board:
-            return None, state
+            return self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
 
         if state is None:
             game_started_result = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
             state = game_started_result[1]
+
+        if "skip_next" in state:
+            return None, state.replace(",skip_next", "")
 
         cnt, threshold = state.split(",")
 
@@ -79,7 +88,7 @@ class StarBadgeCounter:
         if min_on_board != for_badge:
             return None
 
-        cnt, threshold = state.split(",")
+        cnt, threshold = state.split(",") if "skip_next" not in state else state.replace(",skip_next", "").split(",")
         cnt = int(cnt)
         threshold = int(threshold)
 
