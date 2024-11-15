@@ -14,41 +14,70 @@ class CatBadgeCounter:
         return round(INTERVAL_SECS * koef[difficulty])
 
     def on_game_started(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
-        return None, str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+        return None, self._generate_state(0, active_play_time_secs, "game_started")
+
+    def _get_cumulative_counter_secs(self, state: str) -> int:
+        return int(state.split(",")[0].split("=")[1])
+
+    def _get_counter_last_updated(self, state: str) -> int:
+        return int(state.split(",")[1].split("=")[1])
+
+    def _get_update_reason(self, state: str) -> str:
+        return state.split(",")[2].split("=")[1]
+
+    def _generate_state(self, cumulative_counter_secs: int, counter_last_updated: int, update_reason: str) -> str:
+        return "cumulative_counter_secs=" + str(cumulative_counter_secs) + ",counter_last_updated=" + str(counter_last_updated) + ",update_reason=" + update_reason
 
     def on_formula_updated(self, active_play_time_secs: int,  state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
         return None, state
 
     def on_prompt(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str])  -> Tuple[Optional[str], Optional[str]]:
         if state is None:
-            state = str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+            _, state = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
 
         if "c1" in badges_locked_on_board:
             return None, state
 
         if "c2" in badges_locked_on_board:
-            return None, str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+            return None, self._generate_state(self._get_cumulative_counter_secs(state), active_play_time_secs, "prompt")
 
         return None, state
 
 
     def on_penalty(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
         if state is None:
-            state = str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+            _, state = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
 
-        return "c0", str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+        return "c0", self._generate_state(self._get_cumulative_counter_secs(state), active_play_time_secs, "penalty")
 
     def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
         if state is None:
-            return None, str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+            return self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
 
-        fire_at_secs = int(state)
+        cumulative_counter_secs = self._get_cumulative_counter_secs(state)
+        counter_last_updated = self._get_counter_last_updated(state)
+        last_update_reason = self._get_update_reason(state)
 
-        if "c1" in badges_locked_on_board and fire_at_secs < active_play_time_secs:
-            return "c1", str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+        if "c1" in badges_locked_on_board:
+            if last_update_reason == "penalty":
+                return None, self._generate_state(cumulative_counter_secs, active_play_time_secs, "review")
 
-        if "c2" in badges_locked_on_board and fire_at_secs < active_play_time_secs:
-            return "c2", str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+            cumulative_counter_secs += active_play_time_secs - counter_last_updated
+            if cumulative_counter_secs >= self._calculate_interval_secs(difficulty):
+                return "c1", self._generate_state(0, active_play_time_secs, "review")
+
+            return None, self._generate_state(cumulative_counter_secs, active_play_time_secs, "review")
+
+
+        if "c2" in badges_locked_on_board:
+            if last_update_reason == "prompt" or last_update_reason == "penalty":
+                return None, self._generate_state(cumulative_counter_secs, active_play_time_secs, "review")
+
+            cumulative_counter_secs += active_play_time_secs - counter_last_updated
+            if cumulative_counter_secs >= self._calculate_interval_secs(difficulty):
+                return "c2", self._generate_state(0, active_play_time_secs, "review")
+
+            return None, self._generate_state(cumulative_counter_secs, active_play_time_secs, "review")
 
         return None, state
 
@@ -57,32 +86,38 @@ class CatBadgeCounter:
             return None
 
         if state is None:
-            state = str(active_play_time_secs + self._calculate_interval_secs(difficulty))
+            _, state = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
 
-        fire_at_secs = int(state)
-        secs_before_next_badge = max(fire_at_secs - active_play_time_secs, 0)
-        secs_since_prev_badge = max(self._calculate_interval_secs(difficulty) - secs_before_next_badge, 0)
+        cumulative_counter_secs = self._get_cumulative_counter_secs(state)
 
         if "c1" in badges_locked_on_board:
+
+            remaining_time_secs = max(self._calculate_interval_secs(difficulty) - cumulative_counter_secs, 0)
+            progress_pct = 100 - 100 * remaining_time_secs // self._calculate_interval_secs(difficulty)
+
             if for_badge == "c1":
                 return {
-                    "remaining_time_secs": secs_before_next_badge,
+                    "remaining_time_secs": remaining_time_secs,
                     "challenge": "review_regularly_no_penalty",
                     "badge": "c1",
-                    "progress_pct": min(100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty), 100)
+                    "progress_pct": progress_pct
                 }
 
             if for_badge == "c2":
                 return None
 
         if "c2" in badges_locked_on_board:
+
+            remaining_time_secs = max(self._calculate_interval_secs(difficulty) - cumulative_counter_secs, 0)
+            progress_pct = 100 - 100 * remaining_time_secs // self._calculate_interval_secs(difficulty)
+
             if for_badge == "c1":
                 return None
 
             if for_badge == "c2":
                 return {
-                    "remaining_time_secs": secs_before_next_badge,
+                    "remaining_time_secs": remaining_time_secs,
                     "challenge": "review_regularly_no_prompt",
                     "badge": "c2",
-                    "progress_pct": max(min(100 * secs_since_prev_badge // self._calculate_interval_secs(difficulty), 100), 0)
+                    "progress_pct": progress_pct
                 }

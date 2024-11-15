@@ -15,24 +15,34 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 'expected_challenge': 'review_regularly_no_penalty'
             },
             {
-                'review_at': 10,
+                'review_at': 0,
+                'expected_badge': None,
+            },
+            {
+                'progress_at': 0,
+                'expected_progress_pct': 0,
+                'expected_remaining_time_secs': 57600,
+                'expected_challenge': 'review_regularly_no_penalty'
+            },
+            {
+                'review_at': 1000,
                 'expected_badge': None,
             },
 
             {
                 'progress_at': 1000,
-                'expected_progress_pct': 1,
-                'expected_remaining_time_secs': 56610,
+                'expected_progress_pct': 2,
+                'expected_remaining_time_secs': 56600,
                 'expected_challenge': 'review_regularly_no_penalty',
             },
             {
-                'review_at': 2000,
+                'review_at': 5000,
                 'expected_badge': None,
             },
             {
                 'progress_at': 5000,
-                'expected_progress_pct': 8,
-                'expected_remaining_time_secs': 52610,
+                'expected_progress_pct': 9,
+                'expected_remaining_time_secs': 52600,
                 'expected_challenge': 'review_regularly_no_penalty',
             },
             {
@@ -45,23 +55,33 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             },
             {
                 'progress_at': 61000,
-                'expected_progress_pct': 1,
-                'expected_remaining_time_secs': 56600,
+                'expected_progress_pct': 9,
+                'expected_remaining_time_secs': 52600,
                 'expected_challenge': 'review_regularly_no_penalty',
             },
             {
                 'progress_at': 200000,
-                'expected_progress_pct': 100,
-                'expected_remaining_time_secs': 0,
+                'expected_progress_pct': 9,
+                'expected_remaining_time_secs': 52600,
                 'expected_challenge': 'review_regularly_no_penalty',
             },
             {
                 'review_at': 500000,
+                'expected_badge': None,
+            },
+            {
+                'review_at': 600000,
                 'expected_badge': 'c1',
             },
             {
-                'review_at': 557600,
+                'review_at': 601000,
                 'expected_badge': None,
+            },
+            {
+                'progress_at': 601000,
+                'expected_progress_pct': 2,
+                'expected_remaining_time_secs': 56600,
+                'expected_challenge': 'review_regularly_no_penalty',
             },
         ]
 
@@ -71,24 +91,28 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter = CatBadgeCounter()
         state = None
         for exp in expectations:
+            print("----")
             print(f"Expectation: {exp}")
             if 'penalty_at' in exp:
                 print('Penalty!')
                 badge_advice = counter.on_penalty(exp['penalty_at'], state, difficulty, board_locked_items)
                 self.assertEqual(badge_advice[0], exp['expected_badge'])
                 state = badge_advice[1]
+                print("State: ", state)
                 continue
             if 'review_at' in exp:
                 print('Review!')
                 badge_advice = counter.on_review(exp['review_at'], state, difficulty, board_locked_items)
                 self.assertEqual(badge_advice[0], exp['expected_badge'])
                 state = badge_advice[1]
+                print("State: ", state)
                 continue
             if 'prompt_at' in exp:
                 print('Prompt!')
                 badge_advice = counter.on_prompt(exp['prompt_at'], state, difficulty, board_locked_items)
                 self.assertEqual(badge_advice[0], exp['expected_badge'])
                 state = badge_advice[1]
+                print("State: ", state)
                 continue
 
             result = counter.progress(for_badge, exp['progress_at'], state, difficulty, board_locked_items)
@@ -111,14 +135,23 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 'expected_challenge': 'review_regularly_no_prompt'
             },
             {
-                'review_at': 10,
+                'review_at': 0,
                 'expected_badge': None,
             },
-
+            {
+                'progress_at': 0,
+                'expected_progress_pct': 0,
+                'expected_remaining_time_secs': 72000,
+                'expected_challenge': 'review_regularly_no_prompt'
+            },
+            {
+                'review_at': 1000,
+                'expected_badge': None,
+            },
             {
                 'progress_at': 1000,
-                'expected_progress_pct': 1,
-                'expected_remaining_time_secs': 71010,
+                'expected_progress_pct': 2,
+                'expected_remaining_time_secs': 71000,
                 'expected_challenge': 'review_regularly_no_prompt',
             },
             {
@@ -126,9 +159,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 'expected_badge': None,
             },
             {
-                'progress_at': 5000,
-                'expected_progress_pct': 6,
-                'expected_remaining_time_secs': 67010,
+                'progress_at': 2000,
+                'expected_progress_pct': 3,
+                'expected_remaining_time_secs': 70000,
                 'expected_challenge': 'review_regularly_no_prompt',
             },
             {
@@ -137,23 +170,49 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             },
             {
                 'progress_at': 7100,
-                'expected_progress_pct': 2,
-                'expected_remaining_time_secs': 70400,
+                'expected_progress_pct': 3,
+                'expected_remaining_time_secs': 70000,
                 'expected_challenge': 'review_regularly_no_prompt',
             },
             {
-                'penalty_at': 7200,
+                'review_at': 7200,
+                'expected_badge': None,
+            },
+            {
+                'progress_at': 7200,
+                'expected_progress_pct': 3,
+                'expected_remaining_time_secs': 70000,
+                'expected_challenge': 'review_regularly_no_prompt',
+            },
+            {
+                'penalty_at': 7400,
                 'expected_badge': 'c0',
             },
             {
-                'progress_at': 7300,
-                'expected_progress_pct': 0,
-                'expected_remaining_time_secs': 71900,
+                'progress_at': 7400,
+                'expected_progress_pct': 3,
+                'expected_remaining_time_secs': 70000,
                 'expected_challenge': 'review_regularly_no_prompt',
             },
             {
-                'review_at': 557600,
+                'review_at': 100000,
+                'expected_badge': None,
+            },
+            {
+                'progress_at': 7400,
+                'expected_progress_pct': 3,
+                'expected_remaining_time_secs': 70000,
+                'expected_challenge': 'review_regularly_no_prompt',
+            },
+            {
+                'review_at': 180000,
                 'expected_badge': 'c2',
+            },
+            {
+                'progress_at': 180000,
+                'expected_progress_pct': 0,
+                'expected_remaining_time_secs': 72000,
+                'expected_challenge': 'review_regularly_no_prompt',
             },
         ]
         self._test_runner('c2', expectations, 3, ['c2', 's0', 'c0', 't0'])
