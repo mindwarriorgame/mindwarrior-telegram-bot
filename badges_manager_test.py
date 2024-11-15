@@ -22,12 +22,11 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                 'remaining_reviews': 0},
                                                          's0': {'badge': 's0',
                                                                 'challenge': 'review_regularly_no_penalty',
-                                                                'progress_pct_delta': 0,
                                                                 'progress_pct': 0,
                                                                 'remaining_reviews': 5}})
 
         self.assertEqual(badges_manager.is_level_completed(), False)
-        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "cumulative_counter_secs=0,counter_last_updated=0,update_reason=game_started", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true, "is_last_modified": true}, {"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": "f0", "last_badge_at": 0, "c0_active_time_penalty": 0, "c0_lock_started_at": 0, "last_progress": {"c0": {"remaining_reviews": 0, "challenge": "review", "badge": "c0", "progress_pct": 100}, "s0": {"remaining_reviews": 5, "challenge": "review_regularly_no_penalty", "badge": "s0", "progress_pct": 0}}}')
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "cumulative_counter_secs=0,counter_last_updated=0,update_reason=game_started", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true, "is_last_modified": true}, {"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, {"badge": "c0", "is_active": null}], "level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": "f0", "last_badge_at": 0, "c0_active_time_penalty": 0, "c0_lock_started_at": 0}')
 
 
     def test_grumpy_cat_gets_in(self):
@@ -47,7 +46,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                              {'badge': 'c0', 'is_active': True, 'is_last_modified': True}])
 
         self.assertEqual(badges_manager.is_level_completed(), False)
-        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "cumulative_counter_secs=0,counter_last_updated=61000,update_reason=penalty", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5,skip_next", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, {"badge": "c0", "is_active": true, "is_last_modified": true}], "level": 0, "c0_hp": 15, "c0_hp_next_delta": 1, "last_badge": "c0", "last_badge_at": 61000, "c0_active_time_penalty": 0, "c0_lock_started_at": 61000, "last_progress": {"c0": {"remaining_reviews": 15, "challenge": "review", "badge": "c0", "progress_pct": 0}, "s0": {"remaining_reviews": 5, "challenge": "review_regularly_no_penalty", "badge": "s0", "progress_pct": 0}}}')
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "cumulative_counter_secs=0,counter_last_updated=61000,update_reason=penalty", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5,skip_next", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, {"badge": "c0", "is_active": true, "is_last_modified": true}], "level": 0, "c0_hp": 15, "c0_hp_next_delta": 1, "last_badge": "c0", "last_badge_at": 61000, "c0_active_time_penalty": 0, "c0_lock_started_at": 61000}')
 
     def test_grumpy_spoils_everything(self):
         badges_state = ('{"CatBadgeCounter": '
@@ -170,12 +169,10 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(badge, 'c0')
         self.assertEqual(badges_manager.progress(50), {'c0': {'badge': 'c0',
                                                               'challenge': 'review',
-                                                              'progress_pct_delta': 0,
                                                               'progress_pct': 0,
                                                               'remaining_reviews': 15},
                                                        't0': {'badge': 't0',
                                                               'challenge': 'play_time',
-                                                              'progress_pct_delta': 0,
                                                               'progress_pct': 0,
                                                               'remaining_time_secs': 86400}})
         badges_manager.on_review(600)
@@ -193,12 +190,10 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(badges_manager.get_grumpy_cat_healthpoints(), 13)
         self.assertEqual(badges_manager.progress(800), {'c0': {'badge': 'c0',
                                                                'challenge': 'review',
-                                                               'progress_pct_delta': 7,
                                                                'progress_pct': 14,
                                                                'remaining_reviews': 13},
                                                         't0': {'badge': 't0',
                                                                'challenge': 'play_time',
-                                                               'progress_pct_delta': 0,
                                                                'progress_pct': 0,
                                                                'remaining_time_secs': 86400}})
         badges_manager.on_review(900)
@@ -210,12 +205,10 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(badges_manager.get_grumpy_cat_healthpoints(), 15)
         self.assertEqual(badges_manager.progress(2000), {'c0': {'badge': 'c0',
                                                                 'challenge': 'review',
-                                                                'progress_pct_delta': 0,
                                                                 'progress_pct': 0,
                                                                 'remaining_reviews': 15},
                                                          't0': {'badge': 't0',
                                                                 'challenge': 'play_time',
-                                                                'progress_pct_delta': 0,
                                                                 'progress_pct': 0,
                                                                 'remaining_time_secs': 86400}})
         self.assertEqual(badges_manager.get_board(), [{'badge': 't0', 'is_active': False},
@@ -235,7 +228,6 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                 'remaining_reviews': 0},
                                                          't0': {'badge': 't0',
                                                                 'challenge': 'play_time',
-                                                                'progress_pct_delta': 0,
                                                                 'progress_pct': 0,
                                                                 'remaining_time_secs': 86400}})
         badges_manager.on_review(3500)
@@ -248,7 +240,6 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
                                                                 'remaining_reviews': 0},
                                                          't0': {'badge': 't0',
                                                                 'challenge': 'play_time',
-                                                                'progress_pct_delta': 1,
                                                                 'progress_pct': 1,
                                                                 'remaining_time_secs': 85150}})
         self.assertEqual(badges_manager.on_review(100000), 't0')

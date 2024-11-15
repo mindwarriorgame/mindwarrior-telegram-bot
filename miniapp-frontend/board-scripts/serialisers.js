@@ -39,29 +39,16 @@ const badgeProgressKey= {
     'c0': "remaining_reviews"
 };
 
-
-function serializeProgressMap(progressMap) {
-    const badges = Object.keys(badgeProgressKey);
-    return badges.map((badge) => {
-        const progressItems = progressMap[badge];
-        let ret = badge + "_" + progressItems.length;
-        progressItems.forEach(progressItem => {
-            ret += "_" + progressItem[badgeProgressKey[badge]];
-            ret += "_" + progressItem['progress_pct'];
-        });
-        return ret;
-    }).join("--");
-}
-
 function deserializeProgressMap(str) {
     const ret = {};
     str.split("--").forEach((chunk, chunkIdx) =>  {
         const [badge, ...progressItems] = chunk.split("_");
-        const items = [];
         ret[badge] = {
             [badgeProgressKey[badge]]: parseInt(progressItems[0]),
-            progress_pct: parseInt(progressItems[1])
+            progress_pct: parseInt(progressItems[1]),
+            progress_pct_delta: parseInt(progressItems.length > 2 ? progressItems[2] : 0),
         };
     });
+    console.log(JSON.stringify(ret, null, 2));
     return ret;
 }

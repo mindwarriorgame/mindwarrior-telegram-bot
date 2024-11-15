@@ -1,3 +1,4 @@
+import copy
 import datetime
 import uuid
 from typing import TypedDict, Optional
@@ -35,6 +36,9 @@ NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM  = 'next_review_prompt_minutes=' + ",".jo
 
 NEXT_PROMPT_TYPE_REMINDER = "reminder"
 NEXT_PROMPT_TYPE_PENALTY = "penalty"
+
+# Too much effort to keep it in the Db, and too low value. Let's do in-memory instead
+LAST_PROGRESS_CACHE = {}
 
 def now_utc() -> datetime.datetime:
     return datetime.datetime.now(tz=datetime.timezone.utc)
@@ -96,7 +100,7 @@ class GameManager:
         if "achievements_button" in user_message:
             return [self._render_single_message(chat_id, lang.achievements_link_regenerated, None, {
                 "text": lang.view_badges_button,
-                "url": self._render_board_url(lang, BadgesManager(user['difficulty'], user['badges_serialized']), Counter(user['active_game_counter_state']).get_total_seconds())
+                "url": self._render_board_url(chat_id, lang, BadgesManager(user['difficulty'], user['badges_serialized']), Counter(user['active_game_counter_state']).get_total_seconds())
             })]
         if "regenerate_shared_key_uuid" in user_message:
             user['shared_key_uuid'] = str(uuid.uuid4())
@@ -642,7 +646,7 @@ class GameManager:
             ),
             'buttons': [{
                 'text': lang.view_badges_button,
-                'url': self._render_board_url(lang, badges_manager, active_play_time_seconds)
+                'url': self._render_board_url(chat_id, lang, badges_manager, active_play_time_seconds)
             }],
             'menu_commands': [],
             'image': fname
@@ -782,7 +786,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_board_url(self, lang: Lang, badges_manager: BadgesManager, active_play_time_secs) -> str:
+    def _render_board_url(self, chat_id: int, lang: Lang, badges_manager: BadgesManager, active_play_time_secs) -> str:
         button_url = self.frontend_base_url.replace("index.html", "board.html")
         button_url += '?lang=' + lang.lang_code + '&env=' + self.env
         if badges_manager.get_last_badge() is not None:
@@ -790,7 +794,10 @@ class GameManager:
 
         button_url += "&level=" + str(badges_manager.get_level() + 1)
         button_url += "&b1=" + serialize_board(badges_manager.get_board())
-        button_url += "&bp1=" + serialize_progress(badges_manager.progress(active_play_time_secs))
+
+        progress = badges_manager.progress(active_play_time_secs)
+        self._enrich_with_progress_pct_delta(chat_id, progress)
+        button_url += "&bp1=" + serialize_progress(progress)
 
         if badges_manager.is_level_completed():
             button_url += "&b2=" + serialize_board(badges_manager.get_next_level_board())
@@ -811,7 +818,7 @@ class GameManager:
         self.users_orm.upsert_user(user)
 
         lang = self._get_user_lang(user['lang_code'])
-        button_url = self._render_board_url(lang, badges_manager, active_play_time_secs)
+        button_url = self._render_board_url(user['user_id'], lang, badges_manager, active_play_time_secs)
 
         view_achievements_button = {
             'text': lang.view_badges_button,
@@ -830,6 +837,23 @@ class GameManager:
             return None, None if event == 'on_formula_updated' else view_achievements_button
 
         return lang.badge_unhappy_cat if badge == "c0" else lang.badge_new, view_achievements_button
+
+    def _enrich_with_progress_pct_delta(self, chat_id, progress):
+        last_progress = None
+        if chat_id in LAST_PROGRESS_CACHE.keys():
+            last_progress = LAST_PROGRESS_CACHE[chat_id]
+
+        for badge in progress.keys():
+            item = progress[badge]
+            last_progress_pct = 0
+            if last_progress is not None and badge in last_progress.keys():
+                last_progress_pct = last_progress[badge]['progress_pct']
+            item['progress_pct_delta'] = max(item['progress_pct'] - last_progress_pct, 0)
+
+        LAST_PROGRESS_CACHE[chat_id] = copy.deepcopy(progress)
+
+    def clean_last_progress_cache(self):
+        LAST_PROGRESS_CACHE.clear()
 
 
 

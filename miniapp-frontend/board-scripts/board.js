@@ -68,7 +68,6 @@ class BadgeCell {
                 e.preventDefault();
                 openPopup(this.item.badge, this.progress);
             };
-            this.progressElt.style.width = this.progress.progress_pct + '%';
             if (this.progress.progress_pct < 33) {
                 this.progressElt.classList.add('red');
             } else if (this.progress.progress_pct < 66) {
@@ -77,7 +76,7 @@ class BadgeCell {
                 this.progressElt.classList.add('green');
             }
 
-            this.broomElt.querySelector('img').style.clipPath = "polygon(0% 0%, " + parseInt(this.progress.progress_pct) + "% 0%, " + parseInt(this.progress.progress_pct) + "% 100%, 0% 100%)"
+            this._syncProgressUI(this.progress.progress_pct - this.progress.progress_pct_delta);
 
         } else {
             this.aElt.style.display = 'none';
@@ -86,6 +85,31 @@ class BadgeCell {
             this.broomElt.style.display = 'none';
         }
 
+    }
+
+    _syncProgressUI(pct) {
+        this.progressElt.style.width = (pct) + '%';
+        this.broomElt.querySelector('img').style.clipPath = "polygon(0% 0%, "
+            + (pct) + "% 0%, "
+            + (pct) + "% 100%, 0% 100%)"
+    }
+
+    onFinishMovement() {
+        if (this.progress && this.progress.progress_pct_delta > 0) {
+            let interval = undefined;
+            const progress = JSON.parse(JSON.stringify(this.progress))
+            progress.progress_pct -= progress.progress_pct_delta;
+            interval = setInterval(() => {
+                if (progress.progress_pct_delta > 0) {
+                    progress.progress_pct_delta -= 1;
+                    progress.progress_pct = Math.min(progress.progress_pct + 1, 100);
+                    this._syncProgressUI(progress.progress_pct);
+                } else {
+                    clearInterval(interval);
+                }
+            }, 750 / progress.progress_pct_delta);
+
+        }
     }
 
     getElt() {
@@ -232,8 +256,8 @@ class Board {
                 setTimeout(() => {
                     removedC0.setGrumpyCatDisappears();
                     setTimeout(() => {
-                        this.showActionButton();
-                        onDone();
+                        this._onMoveFinished();
+                        return onDone();
                     }, 1500);
                 }, 750);
             }
@@ -241,8 +265,8 @@ class Board {
             const targetCell = this.cells.find(cell => cell.isTarget);
             if (!targetCell) {
                 // Because projectile has nowhere to go
-                this.showActionButton();
-                onDone();
+                this._onMoveFinished();
+                return onDone();
             }
 
             const targetRect = targetCell.getElt().getBoundingClientRect();
@@ -266,8 +290,8 @@ class Board {
                     targetCell.setAchievementActive();
                     this.projectileElt.style.display = 'none';
                     setTimeout(() => {
-                        this.showActionButton();
-                        onDone();
+                        this._onMoveFinished();
+                        return onDone();
                     }, 250);
                 }, {once: true});
             }, 0);
@@ -279,6 +303,11 @@ class Board {
             actionCallback();
         }
 
+    }
+
+    _onMoveFinished() {
+        this.showActionButton();
+        this.cells.forEach(cell => cell.onFinishMovement());
     }
 
     newBoardMode() {
