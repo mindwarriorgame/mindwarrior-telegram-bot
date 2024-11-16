@@ -46,7 +46,6 @@ function deserializeProgressMap(str) {
         ret[badge] = {
             [badgeProgressKey[badge]]: parseInt(progressItems[0]),
             progress_pct: parseInt(progressItems[1]),
-            progress_pct_delta: parseInt(progressItems.length > 2 ? progressItems[2] : 0),
         };
     });
     console.log(JSON.stringify(ret, null, 2));

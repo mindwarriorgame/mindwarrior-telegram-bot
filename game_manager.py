@@ -796,7 +796,6 @@ class GameManager:
         button_url += "&b1=" + serialize_board(badges_manager.get_board())
 
         progress = badges_manager.progress(active_play_time_secs)
-        self._enrich_with_progress_pct_delta(chat_id, progress)
         button_url += "&bp1=" + serialize_progress(progress)
 
         if badges_manager.is_level_completed():
@@ -837,23 +836,6 @@ class GameManager:
             return None, None if event == 'on_formula_updated' else view_achievements_button
 
         return lang.badge_unhappy_cat if badge == "c0" else lang.badge_new, view_achievements_button
-
-    def _enrich_with_progress_pct_delta(self, chat_id, progress):
-        last_progress = None
-        if chat_id in LAST_PROGRESS_CACHE.keys():
-            last_progress = LAST_PROGRESS_CACHE[chat_id]
-
-        for badge in progress.keys():
-            item = progress[badge]
-            last_progress_pct = 0
-            if last_progress is not None and badge in last_progress.keys():
-                last_progress_pct = last_progress[badge]['progress_pct']
-            item['progress_pct_delta'] = max(item['progress_pct'] - last_progress_pct, 0)
-
-        LAST_PROGRESS_CACHE[chat_id] = copy.deepcopy(progress)
-
-    def clean_last_progress_cache(self):
-        LAST_PROGRESS_CACHE.clear()
 
 
 

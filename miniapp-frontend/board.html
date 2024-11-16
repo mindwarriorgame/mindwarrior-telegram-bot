@@ -11,6 +11,7 @@
     <script src="board-scripts/board.js"></script>
     <script src="board-scripts/fireworks.js"></script>
     <script src="board-scripts/progress-popup.js"></script>
+    <script src="board-scripts/progress-registry.js"></script>
     <script src="server-time.js"></script>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -549,6 +550,12 @@
     const board1Items = deserializeBoard(urlParams.get('b1'));
     const board2Items = urlParams.get('b2') ? deserializeBoard(urlParams.get('b2')) : null;
     const boardProgress1 = deserializeProgressMap(urlParams.get('bp1'));
+    const ts = urlParams.get("ts") || "0";
+    {
+        const registry = new ProgressRegistry();
+        registry.register(level, boardProgress1, ts);
+        registry.enrichWithProgressPctDelta(level, boardProgress1, ts);
+    }
 
     let newBadge = urlParams.get('new_badge');
     let c0removed = (newBadge == 'c0_removed')
@@ -620,7 +627,7 @@
         window?.Telegram?.WebApp?.ready();
         window?.Telegram?.WebApp?.expand();
 
-        if (Math.abs(parseInt(urlParams.get("ts") || 0) * 1000 - serverTime.now()) > 5 * 60 * 1000) {
+        if (Math.abs(parseInt(ts || 0) * 1000 - serverTime.now()) > 5 * 60 * 1000) {
             console.log("Old page detected");
             document.getElementById('outdated').style.display = 'block';
             document.querySelector('#outdated button').addEventListener('click', async () => {
