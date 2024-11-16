@@ -76,6 +76,10 @@ class BadgeCell {
                 this.progressElt.classList.add('green');
             }
 
+            if (this.progress.progress_pct_delta == 0) {
+                this.progressElt.classList.add('grey');
+            }
+
             this._syncProgressUI(this.progress.progress_pct - this.progress.progress_pct_delta);
 
         } else {

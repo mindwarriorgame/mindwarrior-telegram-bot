@@ -4,20 +4,20 @@ function toTimeInterval(secs) {
     return `${hours}${window.lang.hour_one_letter} ${minutes}${window.lang.minute_one_letter}`;
 }
 
-function renderProgressBar(pct) {
+function renderProgressBar(pct, pctDelta) {
     return `<div class="progress-container">
-            <div class="progress-bar" style="width: ${pct}%;"></div>
-            <span class="progress-text">${pct}%</span>
+            <div class="progress-bar" id="progress-bar" style="width: ${pct - pctDelta}%;"></div>
+            <span class="progress-text" id="progress-text">${pct - pctDelta}%</span>
         </div>`;
 }
 
-function renderReviewWithoutSomething(template, pct, counter, counterIsTime= true)  {
+function renderSimpleTemplate(template, pct, pctDelta, counter, counterIsTime= true)  {
     const ret = [
         '<p>',
         template.replace('###', counterIsTime ? toTimeInterval(counter) : counter),
         '</p>'
     ];
-    ret.push(renderProgressBar(pct));
+    ret.push(renderProgressBar(pct, pctDelta));
     return ret.join(' ');
 }
 
@@ -38,7 +38,7 @@ function openPopup(badge, progress) {
     }
 
     if (timeBadges[badge]) {
-        content += renderReviewWithoutSomething(timeBadges[badge], progress.progress_pct, progress.remaining_time_secs);
+        content += renderSimpleTemplate(timeBadges[badge], progress.progress_pct, progress.progress_pct_delta, progress.remaining_time_secs);
     } else if (badge === 'c0') {
         const message = window.lang.review_times
             .replace("##1", Math.ceil(progress.remaining_reviews / 3))
@@ -49,10 +49,10 @@ function openPopup(badge, progress) {
             message,
             '</p>'
         ];
-        ret.push(renderProgressBar(progress.progress_pct || 0));
+        ret.push(renderProgressBar(progress.progress_pct || 0, progress.progress_pct_delta || 0));
         content += ret.join(' ');
     } else {
-        content += renderReviewWithoutSomething(reviewBadges[badge], progress.progress_pct, progress.remaining_reviews, false);
+        content += renderSimpleTemplate(reviewBadges[badge], progress.progress_pct, progress.progress_pct_delta, progress.remaining_reviews, false);
     }
 
     content += `<p><button class='action-btn' onclick='closePopup()'>${window.lang.close}</button></p>`;
@@ -61,6 +61,25 @@ function openPopup(badge, progress) {
 
     document.getElementById('popup').classList.add('show');
     document.getElementById('overlay').classList.add('show');
+
+    let pctStart = progress.progress_pct - progress.progress_pct_delta;
+    let pctEnd = progress.progress_pct;
+    if (pctStart < pctEnd) {
+        let intervalId = 0;
+        setTimeout(() => {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            intervalId = setInterval(() => {
+                if (pctStart >= pctEnd) {
+                    clearInterval(intervalId);
+                    return;
+                }
+                pctStart += 1;
+                progressBar.style.width = `${pctStart}%`;
+                progressText.innerText = `${pctStart}%`;
+            }, 1000 / (pctEnd - pctStart));
+        }, 10);
+    }
 }
 
 function closePopup() {
