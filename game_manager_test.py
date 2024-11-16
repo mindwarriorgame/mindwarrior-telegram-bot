@@ -124,7 +124,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                      'menu_commands': [],
                                      'message': "Don't forget to review your <i>Formula</i>! ⏰\n"
                                                 '\n'
-                                                'The due time is in 15 minutes, hurry up!',
+                                                'The due time is in 15 minutes, hurry up!\n'
+                                                '\n'
+                                                ' ‣ /pause - pause the game',
                                      'to_chat_id': 1}])
             user = self.users_orm.get_user_by_id(1)
             self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 6, 5).astimezone(datetime.timezone.utc))
@@ -167,7 +169,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                      'menu_commands': [],
                                      'message': "Don't forget to review your <i>Formula</i>! ⏰\n"
                                                 '\n'
-                                                'The due time is in 15 minutes, hurry up!',
+                                                'The due time is in 15 minutes, hurry up!\n'
+                                                '\n'
+                                                ' ‣ /pause - pause the game',
                                      'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
@@ -180,7 +184,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                          'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                                     '\n'
                                                     '😾 Oops! A grumpy cat sneaked in!\n'
-                                                    'Press "View achievements" button below.',
+                                                    'Press "View achievements" button below.\n'
+                                                    '\n'
+                                                    ' ‣ /pause - pause the game',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
                 self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
@@ -213,7 +219,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                      'menu_commands': [],
                                      'message': "Don't forget to review your <i>Formula</i>! ⏰\n"
                                                 '\n'
-                                                'The due time is in 15 minutes, hurry up!',
+                                                'The due time is in 15 minutes, hurry up!\n'
+                                                '\n'
+                                                ' ‣ /pause - pause the game',
                                      'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
@@ -225,7 +233,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                          'menu_commands': [],
                                          'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                                     '\n'
-                                                    '⛔🏆😾 A grumpy cat is blocking new achievements!',
+                                                    '⛔🏆😾 A grumpy cat is blocking new achievements!\n'
+                                                    '\n'
+                                                    ' ‣ /pause - pause the game',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
                 self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
@@ -877,7 +887,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                      'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                                 '\n'
                                                 '😾 Oops! A grumpy cat sneaked in!\n'
-                                                'Press "View achievements" button below.',
+                                                'Press "View achievements" button below.\n'
+                                                '\n'
+                                                ' ‣ /pause - pause the game',
                                      'to_chat_id': 1}])
             user = self.users_orm.get_user_by_id(1)
             badge_manager = BadgesManager(user['difficulty'], user['badges_serialized'])

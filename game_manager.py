@@ -747,7 +747,7 @@ class GameManager:
                 }]
 
 
-    def _render_penalty(self, lang: Lang, maybe_badge_msg: Optional[str], maybe_badge_button: Optional[Button], chat_id: int) -> Reply:
+    def _render_penalty(self, lang: Lang, maybe_badge_message: Optional[str], maybe_badge_button: Optional[Button], chat_id: int) -> Reply:
 
         buttons = [self._render_review_button(lang)]
         if maybe_badge_button is not None:
@@ -755,7 +755,7 @@ class GameManager:
 
         return {
             'to_chat_id': chat_id,
-            'message': lang.penalty_text + (("\n\n" + maybe_badge_msg) if maybe_badge_msg is not None else ""),
+            'message': lang.penalty_text.format(maybe_achievement=("\n" + maybe_badge_message + "\n") if maybe_badge_message is not None else ""),
             'buttons': buttons,
             'menu_commands': [],
             'image': None

@@ -215,9 +215,14 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     reminder_text="N'oubliez pas de consulter votre <i>Formule</i> ! ⏰\n"
                   "\n"
-                  "L'heure limite est dans 15 minutes, dépêchez-vous !",
+                  "L'heure limite est dans 15 minutes, dépêchez-vous !\n"
+                  "\n"
+                  " ‣ /pause - mettre le jeu en pause",
 
-    penalty_text = "Vous avez oublié de consulter votre <i>Formule</i> 🟥",
+    penalty_text = "Vous avez oublié de consulter votre <i>Formule</i> 🟥\n"
+                   "{maybe_achievement}"
+                   "\n"
+                   " ‣ /pause - mettre le jeu en pause",
 
     badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
     badge_new = "🏆 Vous avez un nouvel accomplissement !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
@@ -361,9 +366,14 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     reminder_text="¡No olvides revisar tu <i>Fórmula</i>! ⏰\n"
                   "\n"
-                  "La hora de revisión es en 15 minutos, ¡apúrate!",
+                  "La hora de revisión es en 15 minutos, ¡apúrate!\n"
+                  "\n"
+                  " ‣ /pause - pausar el juego",
 
-    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> 🟥",
+    penalty_text = "Olvidaste revisar tu <i>Fórmula</i> 🟥\n"
+                   "{maybe_achievement}"
+                   "\n"
+                   " ‣ /pause - pausar el juego",
 
     badge_unhappy_cat = "😾 ¡Ups! ¡Un gato gruñón se coló!\nPresiona el botón \"Ver logros\" abajo.",
     badge_new = "🏆 ¡Tienes un nuevo logro!\nPresiona el botón \"Ver logros\" abajo.",
@@ -508,9 +518,14 @@ Press the button below to start the game.""",
 
     reminder_text="Don't forget to review your <i>Formula</i>! ⏰\n"
                   "\n"
-                  "The due time is in 15 minutes, hurry up!",
+                  "The due time is in 15 minutes, hurry up!\n"
+                  "\n"
+                  " ‣ /pause - pause the game",
 
-    penalty_text = "You forgot to review your <i>Formula</i> 🟥",
+    penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
+                   "{maybe_achievement}"
+                   "\n"
+                   " ‣ /pause - pause the game",
 
     badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!\nPress \"View achievements\" button below.",
     badge_new = "🏆 You've got a new achievement!\nPress \"View achievements\" button below.",
@@ -651,9 +666,14 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     reminder_text="Vergiss nicht, deine <i>Formel</i> zu überprüfen! ⏰\n"
                   "\n"
-                  "Die Fälligkeitszeit ist in 15 Minuten, beeile dich!",
+                  "Die Fälligkeitszeit ist in 15 Minuten, beeile dich!\n"
+                  "\n"
+                  " ‣ /pause - Spiel pausieren",
 
-    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥",
+    penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥\n"
+                   "{maybe_achievement}"
+                   "\n"
+                   " ‣ /pause - Spiel pausieren",
 
     badge_unhappy_cat = "😾 Ups! Eine grimmige Katze hat sich eingeschlichen!\nDrücke den Button \"Erfolge ansehen\" unten.",
     badge_new = "🏆 Du hast einen neuen Erfolg erzielt!\nDrücke den Button \"Erfolge ansehen\" unten.",
@@ -798,9 +818,14 @@ ru = Lang(
 
     reminder_text="Не забудьте просмотреть свою <i>Формулу</i>! ⏰\n"
                   "\n"
-                  "Время истекает через 15 минут, поторопитесь!",
+                  "Время истекает через 15 минут, поторопитесь!\n"
+                  "\n"
+                  " ‣ /pause - игру на паузу",
 
-    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥",
+    penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n"
+                   "{maybe_achievement}"
+                   "\n"
+                   " ‣ /pause - игру на паузу",
 
     badge_unhappy_cat = "😾 Ой! Похоже, к вам забрался недовольный кот!\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     badge_new = "🏆 Вы получили новое достижение\nНажмите кнопку \"Посмотреть достижения\" снизу.",
