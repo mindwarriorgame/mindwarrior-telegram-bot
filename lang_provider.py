@@ -50,6 +50,10 @@ class Lang:
     menu_formula: str
     menu_difficulty: str
     menu_data: str
+    menu_feedback: str
+
+    feedback_text: str
+
     review_command_timeout: str
 
     graph_header: str
@@ -106,6 +110,10 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     menu_formula = "️🧪mettre à jour la Formule",
     menu_difficulty = "💪changer la difficulté",
     menu_data = "💾 voir vos données brutes",
+    menu_feedback = "📢 envoyer des commentaires",
+
+    feedback_text = "Des questions, des suggestions ou des commentaires? "
+                    "N'hésitez pas à créer un <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">problème GitHub</a> pour en discuter! 😉",
 
     help_command_start_playing_button = "Écrivez \"Formule\" et commencez à jouer ! 🏁",
     start_game_prompt="Veuillez appuyer sur le bouton ci-dessous pour entrer votre <i>Formule</i> et démarrer le jeu.",
@@ -248,6 +256,10 @@ Presiona el botón de abajo para comenzar el juego.""",
     menu_formula="🧪actualizar Fórmula",
     menu_difficulty="💪cambiar dificultad",
     menu_data="💾 ver tus datos sin procesar",
+    menu_feedback = "📢 enviar comentarios",
+
+    feedback_text = "¿Tienes preguntas, sugerencias o comentarios?"
+                    "¡No dudes en plantear un <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">problema de GitHub</a> para discutirlo! 😉",
 
     help_command_start_playing_button="¡Escribe \"Fórmula\" y comienza a jugar! 🏁",
     start_game_prompt="Por favor, presiona el botón de abajo para ingresar tu <i>Fórmula</i> y comenzar el juego.",
@@ -390,6 +402,10 @@ Press the button below to start the game.""",
     menu_formula="️🧪update Formula",
     menu_difficulty="💪change difficulty",
     menu_data = "💾 view your raw data",
+    menu_feedback = "📢 send feedback",
+
+    feedback_text = "Questions, suggestions, or feedback? "
+                    "Please feel free to raise a <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub issue</a> to discuss! 😉",
 
     help_command_start_playing_button="Write \"Formula\" and start playing! 🏁",
 
@@ -531,6 +547,10 @@ Drücke den Button unten, um das Spiel zu starten.""",
     menu_formula="️🧪Formel aktualisieren",
     menu_difficulty="💪Schwierigkeitsgrad ändern",
     menu_data = "💾 Rohdaten anzeigen",
+    menu_feedback = "📢 Feedback senden",
+
+    feedback_text = "Fragen, Vorschläge oder Feedback? "
+                    "Bitte melden Sie gerne ein <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub-Problem</a> zur Diskussion! 😉",
 
     help_command_start_playing_button="Schreibe \"Formel\" und starte das Spiel! 🏁",
     start_game_prompt="Bitte drücken Sie die Schaltfläche unten, um Ihre <i>Formel</i> einzugeben und das Spiel zu starten.",
@@ -672,6 +692,10 @@ ru = Lang(
     menu_formula="🧪 изменить Формулу",
     menu_difficulty="💪 изменить сложность",
     menu_data = "💾 просмотреть свои данные",
+    menu_feedback = "📢 обратная связь",
+
+    feedback_text = "Вопросы? Предложения? Обратная связь? "
+                    "Давайте обсудим это в <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub-е</a>! 😉",
 
 
     help_command_start_playing_button="Написать \"Формулу\" и начать игру! 🏁",

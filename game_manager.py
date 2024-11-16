@@ -268,7 +268,8 @@ class GameManager:
                 ["formula", lang.menu_formula],
                 ["stats", lang.menu_stats],
                 ["difficulty", lang.menu_difficulty],
-                ["data", lang.menu_data]
+                ["data", lang.menu_data],
+                ["feedback", lang.menu_feedback]
             ],
             'image': None
         }
@@ -297,6 +298,14 @@ class GameManager:
                 data_short.append(f" - {key}: {value_short}")
 
         return self._render_delete_data_screen(lang, chat_id, data_short, data)
+
+    def on_feedback_command(self, chat_id) -> [Reply]:
+        user = self.users_orm.get_user_by_id(chat_id)
+        if user['lang_code'] is None:
+            return self.on_start_command(chat_id)
+        lang = self._get_user_lang(user['lang_code'])
+
+        return self._render_single_message(chat_id, lang.feedback_text, None, None)
 
     def on_pause_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
