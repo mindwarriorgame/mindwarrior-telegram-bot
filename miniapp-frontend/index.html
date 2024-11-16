@@ -793,7 +793,6 @@
             CONTENT.text.button.textContent = lang.yesSetDifficulty;
             CONTENT.text.button.addEventListener("click", (e) => {
                 e.preventDefault();
-                window.localStorage.clear();
 
                 dataSubmitter.submitData(() => "set_difficulty:" + newDifficulty + ";" + new NextReviewDataProvider(nextReviewPromptMinutes).calculateNextReviewsData());
             });
