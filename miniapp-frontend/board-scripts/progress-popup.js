@@ -77,7 +77,7 @@ function openPopup(badge, progress) {
                 pctStart += 1;
                 progressBar.style.width = `${pctStart}%`;
                 progressText.innerText = `${pctStart}%`;
-            }, 1000 / (pctEnd - pctStart));
+            }, 750 / (pctEnd - pctStart));
         }, 10);
     }
 }
