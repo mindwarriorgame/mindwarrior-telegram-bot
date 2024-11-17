@@ -9,6 +9,7 @@
     <script>
         window.langs = {
             de: {
+                code: 'de',
                 applyChange: 'Änderung anwenden',
                 startNewGame: 'Spiel starten',
                 reward: 'Überprüfung abschließen',
@@ -48,6 +49,7 @@
 
             },
             ru: {
+                code: 'ru',
                 applyChange: 'Применить изменения',
                 startNewGame: 'Начать игру',
                 reward: 'Завершить просмотр',
@@ -86,6 +88,7 @@
                     'поэтому мы не можем синхронизировать ее автоматически.'
             },
             en: {
+                code: 'en',
                 applyChange: 'Apply Change',
                 startNewGame: 'Start Game',
                 reward: 'Finish Review',
@@ -123,6 +126,7 @@
                     'to <a href="https://mindwarriorgame.org/privacy-policy.en">our strict privacy policy</a>, therefore it cannot be synchronised automatically.'
             },
             es: {
+                code: 'es',
                 applyChange: 'Aplicar Cambio',
                 startNewGame: 'Iniciar Juego',
                 reward: 'Finalizar la revisión',
@@ -161,6 +165,7 @@
 
             },
             fr: {
+                code: 'fr',
                 applyChange: 'Appliquer le changement',
                 startNewGame: 'Démarrer le jeu',
                 reward: 'Terminer l\'examen',
@@ -407,6 +412,7 @@
     </div>
 
     <div id="footer">
+        <img src="font.png" height="32" />
         <img src="lock.png" height="32" />
         <img src="share.png" height="32" />
         <div style="flex-grow: 1">&nbsp;</div>
@@ -453,8 +459,9 @@
 
     const FOOTER = {
         parent: document.querySelector('#footer'),
-        lock: document.querySelector('#footer img:first-child'),
-        share: document.querySelector('#footer img:nth-child(2)')
+        font: document.querySelector('#footer img:nth-child(1)'),
+        lock: document.querySelector('#footer img:nth-child(2)'),
+        share: document.querySelector('#footer img:nth-child(3)')
     };
 
     function hide(elt) {
@@ -471,6 +478,7 @@
         hide(HEADER.actionButton);
         hide(HEADER.close);
 
+        hide(FOOTER.font);
         hide(FOOTER.parent);
         hide(FOOTER.lock);
         hide(FOOTER.share);
@@ -651,13 +659,9 @@
         constructor(dataSubmitter, isNewGame, lang, nextReviewPromptMinutes) {
             this.dataSubmitter = dataSubmitter;
 
-            hideEverything();
-
             const nextReviewsDataProvider = nextReviewPromptMinutes ? new NextReviewDataProvider(nextReviewPromptMinutes) : null;
 
-            show(CONTENT.textarea);
-            show(HEADER.eye);
-            show(HEADER.actionButton);
+            this._showEditorLayout();
 
             HEADER.actionButton.textContent = isNewGame ? lang.startNewGame : lang.applyChange;
 
@@ -718,9 +722,12 @@
                 hide(CONTENT.review);
             });
 
-            show(FOOTER.parent);
-            show(FOOTER.lock);
-            show(FOOTER.share);
+            FOOTER.font.addEventListener("click", (e) => {
+               const a = document.createElement("a");
+                a.href = `https://mindwarriorgame.org/faq.${lang.code}#formula-formatting`;
+                a.target = "_blank";
+                a.click();
+            });
 
             FOOTER.lock.addEventListener("click", (e) => {
                 hideEverything();
@@ -730,16 +737,10 @@
                 show(CONTENT.text.parent);
                 show(CONTENT.text.link);
 
-                function backToEditor(e) {
+                const backToEditor = (e) => {
                     e.preventDefault();
-                    hideEverything();
 
-                    show(HEADER.eye);
-                    show(HEADER.actionButton);
-                    show(CONTENT.textarea);
-                    show(FOOTER.parent);
-                    show(FOOTER.lock);
-                    show(FOOTER.share);
+                    this._showEditorLayout();
 
                     CONTENT.text.link.removeEventListener("click", backToEditor);
                 }
@@ -759,16 +760,10 @@
                 const shared_key_uuid = new URLSearchParams(window.location.search).get('shared_key_uuid') || 'undefined';
                 CONTENT.text.input.value = shared_key_uuid;
 
-                function backToEditor(e) {
+                const backToEditor = (e) => {
                     e.preventDefault();
-                    hideEverything();
 
-                    show(HEADER.eye);
-                    show(HEADER.actionButton);
-                    show(CONTENT.textarea);
-                    show(FOOTER.parent);
-                    show(FOOTER.lock);
-                    show(FOOTER.share);
+                    this._showEditorLayout();
 
                     CONTENT.text.link.removeEventListener("click", backToEditor);
                 }
@@ -779,6 +774,18 @@
             CONTENT.textarea.focus();
 
 
+        }
+
+        _showEditorLayout() {
+            hideEverything();
+
+            show(HEADER.eye);
+            show(HEADER.actionButton);
+            show(CONTENT.textarea);
+            show(FOOTER.parent);
+            show(FOOTER.font);
+            show(FOOTER.lock);
+            show(FOOTER.share);
         }
     }
 

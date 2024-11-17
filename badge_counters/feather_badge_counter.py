@@ -33,6 +33,8 @@ class FeatherBadgeCounter:
         return None, state
 
     def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+        if state is None and "f0" in badges_locked_on_board:
+            return None, self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)[1]
         return None, state
 
     def progress(self, for_badge, active_play_time_secs, state, difficulty, badges_locked_on_board: [str]):
