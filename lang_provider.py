@@ -120,7 +120,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     review_command_text = "Révisez votre <i> Formule</i> 💫\n"
                           "\n"
-                          "Appuyez sur un bouton ci-dessous pour réviser votre <i>Formule</i>.",
+                          "<a href='https://mindwarriorgame.org/faq.fr#name.betterworld'>Appuyez sur un bouton ci-dessous</a> pour réviser votre <i>Formule</i>.",
 
 
     review_command_button_yourself="Améliore-toi 💪",
@@ -271,7 +271,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     review_command_text="Revisa tu <i>Fórmula</i> 💫\n"
                         "\n"
-                        "Presiona cualquier botón de abajo para revisar tu <i>Fórmula</i>.",
+                        "<a href='https://mindwarriorgame.org/faq.es#name.betterworld'>Presiona cualquier botón de abajo</a> para revisar tu <i>Fórmula</i>.",
 
     review_command_button_yourself="Mejora a ti mismo 💪",
     review_command_button_world="Mejora el mundo 🙌",
@@ -423,7 +423,7 @@ Press the button below to start the game.""",
 
     review_command_text="Review your <i> Formula</i> 💫\n"
                         "\n"
-                        "Press any button below to review your <i>Formula</i>.",
+                        "<a href='https://mindwarriorgame.org/faq.en#name.betterworld'>Press any button below</a> to review your <i>Formula</i>.",
 
     review_command_button_yourself="Improve yourself 💪",
     review_command_button_world="Improve the world 🙌",
@@ -572,7 +572,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     review_command_text="Überprüfe deine <i>Formel</i> 💫\n"
                         "\n"
-                        "Drücke einen Button unten, um deine <i>Formel</i> zu überprüfen.",
+                        "<a href='https://mindwarriorgame.org/faq.de#name.betterworld'>Drücke einen Button unten</a>, um deine <i>Formel</i> zu überprüfen.",
 
     review_command_button_yourself="Verbessere dich selbst 💪",
     review_command_button_world="Verbessere die Welt 🙌",
@@ -723,7 +723,7 @@ ru = Lang(
 
     review_command_text="Просмотрите свою <i>Формулу</i> 💫\n"
                         "\n"
-                        "Нажмите любую кнопку ниже, чтобы просмотреть свою <i>Формулу</i>.",
+                        "<a href='https://mindwarriorgame.org/faq.ru#name.betterworld'>Нажмите любую кнопку ниже</a>, чтобы просмотреть свою <i>Формулу</i>.",
 
     review_command_button_yourself="Улучшить себя 💪",
     review_command_button_world="Улучшить мир 🙌",
