@@ -41,6 +41,15 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(next_event.minute, 0)
         self.assertEqual(next_event.day, now.day)
 
-
-
         pass
+
+    @time_machine.travel("2022-04-21", tick=True)
+    def test_in_interval(self):
+        now = datetime.now(tz=ZoneInfo("Australia/Sydney"))
+        self.assertEqual(now.astimezone(tz=ZoneInfo("Asia/Novosibirsk")).hour, 21)
+        manager = AutopauseManager(None)
+        manager.update(True, "novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60)
+
+        self.assertFalse(manager.is_in_interval(datetime.now().timestamp()))
+        self.assertTrue(manager.is_in_interval(datetime.now().timestamp() + 3 * 3600))
+        self.assertFalse(manager.is_in_interval(datetime.now().timestamp() + 12 * 3600))

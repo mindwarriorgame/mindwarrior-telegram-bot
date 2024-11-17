@@ -74,6 +74,7 @@ class AutopauseManager:
     def get_next_autopause_event_at_timestamp(self):
         if not self.data["is_enabled"]:
             return None
+        self._refresh_calculated_intervals()
 
         now_timestamp = int(datetime.datetime.now().timestamp())
 
@@ -82,6 +83,13 @@ class AutopauseManager:
 
         return self.data["calculated_next_or_current_interval_stop_at"]
 
+    def is_in_interval(self, timestamp):
+        if not self.data["is_enabled"]:
+            return False
+        self._refresh_calculated_intervals()
+
+        return self.data["calculated_next_or_current_interval_start_at"] <= timestamp <= self.data["calculated_next_or_current_interval_stop_at"]
+
 
     def _refresh_calculated_intervals(self):
         if not self.data["is_enabled"]:
@@ -89,12 +97,12 @@ class AutopauseManager:
 
         tz = self.data["timezone"]
 
-        start_timestamp = datetime.datetime.now().timestamp() - 24 * 3600 * 3
+        iter_timestamp = datetime.datetime.now().timestamp() - 24 * 3600 * 3
         now_timestamp = datetime.datetime.now().timestamp()
         now_in_tz = datetime.datetime.fromtimestamp(now_timestamp, ZoneInfo(tz))
 
         while True:
-            beginning_of_day_in_tz = datetime.datetime.fromtimestamp(start_timestamp, ZoneInfo(tz)).replace(hour=0, minute=0, second=0, microsecond=0)
+            beginning_of_day_in_tz = datetime.datetime.fromtimestamp(iter_timestamp, ZoneInfo(tz)).replace(hour=0, minute=0, second=0, microsecond=0)
             beginning_of_next_day_in_tz = datetime.datetime.fromtimestamp(beginning_of_day_in_tz.timestamp() + 36 * 3600, ZoneInfo(tz)).replace(hour=0, minute=0, second=0, microsecond=0)
 
             interval_start_in_tz = beginning_of_day_in_tz + datetime.timedelta(minutes=self.data["start_at_mins_in_user_tz"])
@@ -102,17 +110,12 @@ class AutopauseManager:
                 if self.data["stop_at_mins_in_user_tz"] < 24 * 60
                 else (beginning_of_next_day_in_tz + datetime.timedelta(minutes=self.data["stop_at_mins_in_user_tz"] - 24 * 60)))
 
-            if int(interval_start_in_tz.timestamp()) <= int(now_in_tz.timestamp()) <= int(interval_stop_in_tz.timestamp()):
+            if int(now_in_tz.timestamp()) <= int(interval_stop_in_tz.timestamp()):
                 self.data["calculated_next_or_current_interval_start_at"] = int(interval_start_in_tz.timestamp())
                 self.data["calculated_next_or_current_interval_stop_at"] = int(interval_stop_in_tz.timestamp())
                 break
 
-            if now_in_tz.day == beginning_of_day_in_tz.day:
-                self.data["calculated_next_or_current_interval_start_at"] = int(interval_start_in_tz.timestamp())
-                self.data["calculated_next_or_current_interval_stop_at"] = int(interval_stop_in_tz.timestamp())
-                break
-
-            start_timestamp += 20 * 3600
+            iter_timestamp += 20 * 3600
 
 
 
