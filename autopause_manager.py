@@ -10,7 +10,7 @@ class AutopauseConfig(TypedDict):
     is_enabled: bool
     start_at_mins_in_user_tz: int
     stop_at_mins_in_user_tz: int # may be more than 24 hours to indicate next day
-    user_timezone: str # correct timezone string; use detect_timezone() to find it from user's input
+    user_timezone: str # correct timezone string; use detect_timezone() to figure it out from user's input
 
 # Quite expensive operation, use only to sanitize user input
 # utcoffset_secs is a positive offset (that is, Sydney's time is either +10*3600 or +11*3600)
@@ -53,7 +53,6 @@ class AutopauseManager:
                 "start_at_mins_in_user_tz": 0,
                 "stop_at_mins_in_user_tz": 0,
                 "timezone": "UTC",
-                "utcoffset_secs" : 0
             }
         self._calculate_next_interval_timestamps()
 
