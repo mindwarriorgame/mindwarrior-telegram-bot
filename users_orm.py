@@ -31,6 +31,9 @@ class User(TypedDict):
 
     badges_serialized: str
 
+    next_autopause_event_time: Optional[datetime]
+    autopause_config_serialized: Optional[str]
+
 class UsersOrm:
 
     def __del__(self) -> None:
@@ -65,16 +68,21 @@ class UsersOrm:
                 
                 badges_serialized TEXT NOT NULL DEFAULT "",
                 
+                next_autopause_event_time TEXT,
+                autopause_config_serialized TEXT,
+                
                 PRIMARY KEY (user_id)
             )
         ''')
-        #TODO: add cooldown timer
         self.conn.commit()
 
         self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_prompt_time ON users (difficulty, active_game_counter_state_is_null, paused_counter_state_is_null, next_prompt_time)')
         self.conn.commit()
 
         self.cursor.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_shared_key_uuid ON users (shared_key_uuid)')
+        self.conn.commit()
+
+        self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_autopause_event_time ON users (next_autopause_event_time)')
         self.conn.commit()
 
     def get_user_by_id(self, user_id: int) -> User:
@@ -95,7 +103,9 @@ class UsersOrm:
             counters_history_serialized,
             shared_key_uuid,
             next_prompt_type,
-            badges_serialized 
+            badges_serialized,
+            next_autopause_event_time,
+            autopause_config_serialized
                 FROM users WHERE user_id = ?""", (user_id,))
         return self._to_user_obj(self.cursor.fetchone(), user_id)
 
@@ -114,7 +124,9 @@ class UsersOrm:
             counters_history_serialized,
             shared_key_uuid,
             next_prompt_type,
-            badges_serialized 
+            badges_serialized,
+            next_autopause_event_time,
+            autopause_config_serialized 
                 FROM users WHERE difficulty = ? AND active_game_counter_state_is_null = 0 AND paused_counter_state_is_null = 1 AND next_prompt_time < ? LIMIT ?""",
                             (difficulty, cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -154,7 +166,9 @@ class UsersOrm:
                 counters_history_serialized=None,
                 shared_key_uuid=str(uuid.uuid4()),
                 next_prompt_type="",
-                badges_serialized=""
+                badges_serialized="",
+                next_autopause_event_time=None,
+                autopause_config_serialized=None
             )
         return User(
             user_id=param[0],
@@ -167,7 +181,9 @@ class UsersOrm:
             counters_history_serialized=param[9],
             shared_key_uuid=param[10],
             next_prompt_type=param[11],
-            badges_serialized=param[12]
+            badges_serialized=param[12],
+            next_autopause_event_time=safe_convert_to_datetime(param[13]),
+            autopause_config_serialized=param[14]
         )
     def remove_user(self, user_id: int):
         self.cursor.execute('DELETE FROM users WHERE user_id = ?', (user_id,))
@@ -188,8 +204,10 @@ class UsersOrm:
                 counters_history_serialized,
                 shared_key_uuid,
                 next_prompt_type,
-                badges_serialized
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                badges_serialized,
+                next_autopause_event_time,
+                autopause_config_serialized
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 lang_code = excluded.lang_code,
                 difficulty = excluded.difficulty,
@@ -202,7 +220,9 @@ class UsersOrm:
                 counters_history_serialized = excluded.counters_history_serialized,
                 shared_key_uuid = excluded.shared_key_uuid,
                 next_prompt_type = excluded.next_prompt_type,
-                badges_serialized = excluded.badges_serialized
+                badges_serialized = excluded.badges_serialized,
+                next_autopause_event_time = excluded.next_autopause_event_time,
+                autopause_config_serialized = excluded.autopause_config_serialized
         ''', (
             user['user_id'],
             user['lang_code'],
@@ -220,7 +240,10 @@ class UsersOrm:
             user['counters_history_serialized'],
             user['shared_key_uuid'],
             user['next_prompt_type'],
-            user['badges_serialized']
+            user['badges_serialized'],
+
+            user['next_autopause_event_time'].astimezone(ZoneInfo('UTC')).isoformat() if user['next_autopause_event_time'] is not None else None,
+            user['autopause_config_serialized']
         ))
         self.conn.commit()
 
