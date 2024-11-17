@@ -124,6 +124,29 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [user])
 
     @time_machine.travel("2023-04-21 05:00:00")
+    def test_get_next_autopause_events_fetch_eligible_users(self):
+        user = User(
+            user_id=124,
+            lang_code='ru',
+            difficulty=1,
+            review_counter_state='my_review_counter_state',
+            next_prompt_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
+            active_game_counter_state='my_active_game_counter_state',
+            paused_counter_state=None,
+            counters_history_serialized='my_counters_history_serialized',
+            shared_key_uuid='abcd',
+            next_prompt_type='prompt_type',
+            badges_serialized='badges_serialized',
+            next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
+            autopause_config_serialized='blah'
+        )
+        self.users_orm.upsert_user(user)
+        self.assertEqual(self.users_orm.get_some_next_autopause_events(10), [user])
+        user['next_autopause_event_time'] = datetime.datetime(2023, 4, 23, 2, 0, 0).astimezone(datetime.timezone.utc)
+        self.users_orm.upsert_user(user)
+        self.assertEqual(self.users_orm.get_some_next_autopause_events(10), [])
+
+    @time_machine.travel("2023-04-21 05:00:00")
     def test_get_users_for_prompt_not_fetches_not_started_users(self):
         user = User(
             user_id=124,

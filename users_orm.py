@@ -131,6 +131,28 @@ class UsersOrm:
                             (difficulty, cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
 
+    def get_some_next_autopause_events(self, limit: int) -> list[User]:
+        cutoff_time = datetime.now(tz=timezone.utc).isoformat()
+        self.cursor.execute("""SELECT
+            user_id,
+            lang_code,
+            difficulty,
+            review_counter_state,
+            next_prompt_time,
+            active_game_counter_state,
+            active_game_counter_state_is_null,
+            paused_counter_state,
+            paused_counter_state_is_null,
+            counters_history_serialized,
+            shared_key_uuid,
+            next_prompt_type,
+            badges_serialized,
+            next_autopause_event_time,
+            autopause_config_serialized 
+                FROM users WHERE next_autopause_event_time < ? LIMIT ?""",
+                            (cutoff_time, limit))
+        return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
+
     def count_active_users(self, difficulty: int) -> int:
         self.cursor.execute('SELECT COUNT(*) FROM users WHERE difficulty = ? AND active_game_counter_state_is_null = 0 AND paused_counter_state_is_null = 1',
                             (difficulty,))
