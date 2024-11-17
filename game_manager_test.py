@@ -5,6 +5,7 @@ import unittest
 import time_machine
 import time
 
+from autopause_manager import AutopauseManager
 from badges_manager import BadgesManager
 from counter import Counter
 from game_manager import GameManager
@@ -126,7 +127,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 'The due time is in 15 minutes, hurry up!\n'
                                                 '\n'
-                                                ' ‣ /pause - pause the game',
+                                                ' ‣ /pause - pause the game\n'
+                                                ' ‣ /sleep - configure sleep scheduler',
                                      'to_chat_id': 1}])
             user = self.users_orm.get_user_by_id(1)
             self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 6, 5).astimezone(datetime.timezone.utc))
@@ -171,7 +173,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 'The due time is in 15 minutes, hurry up!\n'
                                                 '\n'
-                                                ' ‣ /pause - pause the game',
+                                                ' ‣ /pause - pause the game\n'
+                                                ' ‣ /sleep - configure sleep scheduler',
                                      'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
@@ -186,7 +189,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                     '😾 Oops! A grumpy cat sneaked in!\n'
                                                     'Press "View achievements" button below.\n'
                                                     '\n'
-                                                    ' ‣ /pause - pause the game',
+                                                    ' ‣ /pause - pause the game\n'
+                                                    ' ‣ /sleep - configure sleep scheduler',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
                 self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
@@ -221,7 +225,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 'The due time is in 15 minutes, hurry up!\n'
                                                 '\n'
-                                                ' ‣ /pause - pause the game',
+                                                ' ‣ /pause - pause the game\n'
+                                                ' ‣ /sleep - configure sleep scheduler',
                                      'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
@@ -235,7 +240,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                     '\n'
                                                     '⛔🏆😾 A grumpy cat is blocking new achievements!\n'
                                                     '\n'
-                                                    ' ‣ /pause - pause the game',
+                                                    ' ‣ /pause - pause the game\n'
+                                                    ' ‣ /sleep - configure sleep scheduler',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
                 self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
@@ -355,10 +361,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'
-                                            ' ‣ /pause - pause the game',
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /sleep - configure sleep scheduler',
                                  'to_chat_id': 1}])
-
-
 
 
     @time_machine.travel("2022-04-22")
@@ -640,7 +645,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'
-                                            ' ‣ /pause - pause the game',
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /sleep - configure sleep scheduler',
                                  'to_chat_id': 1}])
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['counters_history_serialized'], '['
@@ -650,6 +656,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(badges.is_level_completed(), False)
         self.assertEqual(user['next_prompt_type'], 'reminder')
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 1, 15).astimezone(datetime.timezone.utc))
+
 
     @time_machine.travel("2022-04-21", tick=False)
     def test_on_formula_reviewed_adds_badges(self):
@@ -683,6 +690,38 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             "🏆 You've got a new achievement!\n"
                                             'Press "View achievements" button below.\n'
+                                            '\n'
+                                            'Next review before 12:15 am\n'
+                                            '\n'
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /sleep - configure sleep scheduler',
+                                 'to_chat_id': 1}])
+
+    @time_machine.travel("2022-04-21", tick=False)
+    def test_not_rendering_sleep_prompt_if_autopause_enabled(self):
+        user = self.users_orm.get_user_by_id(1)
+        counter = Counter("")
+        counter.resume()
+        counter.move_time_back(15)
+        user['difficulty']  = 0
+        user['active_game_counter_state'] = counter.serialize()
+        user['review_counter_state'] = counter.serialize()
+        user['lang_code'] = 'en'
+        user['next_prompt_type'] = 'reminder'
+        autopause_manager = AutopauseManager(user['autopause_config_serialized'])
+        autopause_manager.update(True, 'Asia/Tokyo', 12 * 3600, 5, 15)
+        user['autopause_config_serialized'] = autopause_manager.serialize()
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
+                                             {'text': 'View achievements 🏆',
+                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_c0&bp1=c0_0_100--s0_2_33--f0_43200_0&ts=1650463200'}],
+                                 'image': None,
+                                 'menu_commands': [],
+                                 'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             'Next review before 12:15 am\n'
                                             '\n'
@@ -722,7 +761,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:15 am\n'
                                             '\n'
-                                            ' ‣ /pause - pause the game',
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /sleep - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -750,7 +790,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:18 am\n'
                                             '\n'
-                                            ' ‣ /pause - pause the game',
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /sleep - configure sleep scheduler',
                                  'to_chat_id': 1}])
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['counters_history_serialized'], '[{"counter_name": "review", "counter_stopped_duration_secs": 1500, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}]')
@@ -784,7 +825,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'
-                                            ' ‣ /pause - pause the game',
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /sleep - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
     def test_formula_command_renders_set_letter_button(self):
@@ -900,7 +942,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '😾 Oops! A grumpy cat sneaked in!\n'
                                                 'Press "View achievements" button below.\n'
                                                 '\n'
-                                                ' ‣ /pause - pause the game',
+                                                ' ‣ /pause - pause the game\n'
+                                                ' ‣ /sleep - configure sleep scheduler',
                                      'to_chat_id': 1}])
             user = self.users_orm.get_user_by_id(1)
             badge_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
@@ -933,7 +976,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 'Next review before 12:16 am\n'
                                                 '\n'
-                                                ' ‣ /pause - pause the game',
+                                                ' ‣ /pause - pause the game\n'
+                                                ' ‣ /sleep - configure sleep scheduler',
                                      'to_chat_id': 1}])
 
         user = self.users_orm.get_user_by_id(1)
@@ -956,7 +1000,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:16 am\n'
                                             '\n'
-                                            ' ‣ /pause - pause the game',
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /sleep - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
         achievement_urls = [
@@ -985,7 +1030,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 'Next review before 12:16 am\n'
                                                 '\n'
-                                                ' ‣ /pause - pause the game',
+                                                ' ‣ /pause - pause the game\n'
+                                                ' ‣ /sleep - configure sleep scheduler',
                                      'to_chat_id': 1}])
 
         user = self.users_orm.get_user_by_id(1)
@@ -1008,7 +1054,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             'Next review before 12:16 am\n'
                                             '\n'
-                                            ' ‣ /pause - pause the game',
+                                            ' ‣ /pause - pause the game\n'
+                                            ' ‣ /sleep - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
 

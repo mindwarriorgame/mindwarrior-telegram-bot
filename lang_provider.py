@@ -91,6 +91,9 @@ class Lang:
     autopause_on_msg: str
     autopause_resumed_msg: str
 
+    pause_prompt: str
+    autopause_prompt: str
+
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
@@ -133,8 +136,10 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                                 "{maybe_achievement}"
                                 "\n"
                                 "Prochaine consultation avant {next_review}\n"
-                                "\n"
-                                " ‣ /pause - mettre le jeu en pause",
+                                "{pause_prompt}",
+
+    pause_prompt = " ‣ /pause - mettre le jeu en pause",
+    autopause_prompt=" ‣ /sleep - configurer le planificateur de sommeil",
 
     review_since_last_time="Temps écoulé depuis la dernière consultation : {duration}",
 
@@ -222,12 +227,12 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                   "\n"
                   "L'heure limite est dans 15 minutes, dépêchez-vous !\n"
                   "\n"
-                  " ‣ /pause - mettre le jeu en pause",
+                  "{pause_prompt}",
 
     penalty_text = "Vous avez oublié de consulter votre <i>Formule</i> 🟥\n"
                    "{maybe_achievement}"
                    "\n"
-                   " ‣ /pause - mettre le jeu en pause",
+                   "{pause_prompt}",
 
     badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
     badge_new = "🏆 Vous avez un nouvel accomplissement !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
@@ -298,7 +303,9 @@ Presiona el botón de abajo para comenzar el juego.""",
                                 "\n"
                                 "Próxima revisión antes de {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pausar el juego",
+                                "{pause_prompt}",
+    pause_prompt=" ‣ /pause - pausar el juego",
+    autopause_prompt = " ‣ /sleep - configurar el programador de sueño",
 
     review_since_last_time="Tiempo desde la última revisión: {duration}",
 
@@ -388,12 +395,12 @@ Presiona el botón de abajo para comenzar el juego.""",
                   "\n"
                   "La hora de revisión es en 15 minutos, ¡apúrate!\n"
                   "\n"
-                  " ‣ /pause - pausar el juego",
+                  "{pause_prompt}",
 
     penalty_text = "Olvidaste revisar tu <i>Fórmula</i> 🟥\n"
                    "{maybe_achievement}"
                    "\n"
-                   " ‣ /pause - pausar el juego",
+                   "{pause_prompt}",
 
     badge_unhappy_cat = "😾 ¡Ups! ¡Un gato gruñón se coló!\nPresiona el botón \"Ver logros\" abajo.",
     badge_new = "🏆 ¡Tienes un nuevo logro!\nPresiona el botón \"Ver logros\" abajo.",
@@ -465,7 +472,10 @@ Press the button below to start the game.""",
                                 "\n"
                                 "Next review before {next_review}\n"
                                 "\n"
-                                " ‣ /pause - pause the game",
+                                "{pause_prompt}",
+
+    pause_prompt = " ‣ /pause - pause the game",
+    autopause_prompt=" ‣ /sleep - configure sleep scheduler",
 
 
     review_since_last_time="Time since the last review: {duration}",
@@ -554,12 +564,12 @@ Press the button below to start the game.""",
                   "\n"
                   "The due time is in 15 minutes, hurry up!\n"
                   "\n"
-                  " ‣ /pause - pause the game",
+                  "{pause_prompt}",
 
     penalty_text = "You forgot to review your <i>Formula</i> 🟥\n"
                    "{maybe_achievement}"
                    "\n"
-                   " ‣ /pause - pause the game",
+                   "{pause_prompt}",
 
     badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!\nPress \"View achievements\" button below.",
     badge_new = "🏆 You've got a new achievement!\nPress \"View achievements\" button below.",
@@ -628,7 +638,10 @@ Drücke den Button unten, um das Spiel zu starten.""",
                                 "\n"
                                 "Nächste Überprüfung vor {next_review}\n"
                                 "\n"
-                                " ‣ /pause - Spiel pausieren",
+                                "{pause_prompt}",
+
+    pause_prompt = " ‣ /pause - Spiel pausieren",
+    autopause_prompt=" ‣ /sleep - Schlafplaner konfigurieren",
 
 
     review_since_last_time="Zeit seit der letzten Überprüfung: {duration}",
@@ -717,12 +730,12 @@ Drücke den Button unten, um das Spiel zu starten.""",
                   "\n"
                   "Die Fälligkeitszeit ist in 15 Minuten, beeile dich!\n"
                   "\n"
-                  " ‣ /pause - Spiel pausieren",
+                  "{pause_prompt}",
 
     penalty_text = "Du hast vergessen, deine <i>Formel</i> zu überprüfen 🟥\n"
                    "{maybe_achievement}"
                    "\n"
-                   " ‣ /pause - Spiel pausieren",
+                   "{pause_prompt}",
 
     badge_unhappy_cat = "😾 Ups! Eine grimmige Katze hat sich eingeschlichen!\nDrücke den Button \"Erfolge ansehen\" unten.",
     badge_new = "🏆 Du hast einen neuen Erfolg erzielt!\nDrücke den Button \"Erfolge ansehen\" unten.",
@@ -794,7 +807,10 @@ ru = Lang(
                                 "\n"
                                 "Следующий просмотр не позже {next_review}\n"
                                 "\n"
-                                " ‣ /pause - игру на паузу",
+                                "{pause_prompt}",
+
+    pause_prompt = " ‣ /pause - игру на паузу",
+    autopause_prompt=" ‣ /sleep - настроить планировщик сна",
 
 
     review_since_last_time="Прошло с последнего просмотра: {duration}",
@@ -883,12 +899,12 @@ ru = Lang(
                   "\n"
                   "Время истекает через 15 минут, поторопитесь!\n"
                   "\n"
-                  " ‣ /pause - игру на паузу",
+                  "{pause_prompt}",
 
     penalty_text = "Вы забыли вовремя просмотреть свою <i>Формулу</i> 🟥\n"
                    "{maybe_achievement}"
                    "\n"
-                   " ‣ /pause - игру на паузу",
+                   "{pause_prompt}",
 
     badge_unhappy_cat = "😾 Ой! Похоже, к вам забрался недовольный кот!\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     badge_new = "🏆 Вы получили новое достижение\nНажмите кнопку \"Посмотреть достижения\" снизу.",

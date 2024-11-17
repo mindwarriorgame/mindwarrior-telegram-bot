@@ -134,6 +134,11 @@ class AutopauseManager:
 
             iter_timestamp += 20 * 3600
 
+    def is_enabled(self):
+        if not self.data["is_enabled"]:
+            return False
+        return self.data["is_enabled"]
+
 
 
 

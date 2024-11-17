@@ -244,16 +244,20 @@ class GameManager:
         self._reset_user_next_prompt(user)
         self.users_orm.upsert_user(user)
 
+        autopause_manager = AutopauseManager(user['autopause_config_serialized'])
+
         if is_cooldown:
             return self._render_review_command_success(lang.cooldown_msg, None, next_review,
                                                        lang=lang,
-                                                       chat_id=user['user_id'], is_resumed=is_resumed)
+                                                       chat_id=user['user_id'], is_resumed=is_resumed,
+                                                       is_autopause_enabled=autopause_manager.is_enabled())
 
         else:
             maybe_badge_msg, maybe_badge_button =  self._handle_badge_event(user, 'on_review')
             return self._render_review_command_success(maybe_badge_msg, maybe_badge_button, next_review,
                                                        lang=lang,
-                                                       chat_id=user['user_id'], is_resumed=is_resumed)
+                                                       chat_id=user['user_id'], is_resumed=is_resumed,
+                                                       is_autopause_enabled=autopause_manager.is_enabled())
 
 
     def _calculate_active_play_time_seconds(self, user: User) -> int:
@@ -422,7 +426,8 @@ class GameManager:
         maybe_badge_msg, maybe_badge_button = self._handle_badge_event(user, 'on_penalty')
 
         lang = self._get_user_lang(user['lang_code'])
-        return self._render_penalty(lang, maybe_badge_msg, maybe_badge_button, user['user_id'])
+        autopause_manager = AutopauseManager(user['autopause_config_serialized'])
+        return self._render_penalty(lang, maybe_badge_msg, maybe_badge_button, user['user_id'], autopause_manager.is_enabled())
 
     def _record_counter_time(self, user: User, counter_name: str, serialized_counter: str):
         counter = Counter(serialized_counter)
@@ -453,8 +458,9 @@ class GameManager:
             'image': None
         }
 
-    def _render_review_command_success(self, maybe_achievement_msg: Optional[str], maybe_achievement_button: Optional[Button], next_review: str, lang: Lang, chat_id: int, is_resumed: bool) -> Reply:
+    def _render_review_command_success(self, maybe_achievement_msg: Optional[str], maybe_achievement_button: Optional[Button], next_review: str, lang: Lang, chat_id: int, is_resumed: bool, is_autopause_enabled: bool) -> Reply:
         message = lang.review_command_success_text.format(next_review=next_review, time=time,
+                                                          pause_prompt=self._render_pause_prompt(lang, is_autopause_enabled),
                                                           maybe_achievement=("\n" + maybe_achievement_msg + "\n") if maybe_achievement_msg is not None else "")
         buttons = [self._render_review_button(lang)]
         if maybe_achievement_button is not None:
@@ -489,30 +495,30 @@ class GameManager:
             ret = []
             for is_resumed in [True, False]:
                 for lang_code, lang in langs.items():
-                    ret = ret + [self._render_review_command_success(None, None, "10:00", lang, chat_id, is_resumed)]
+                    ret = ret + [self._render_review_command_success(None, None, "10:00", lang, chat_id, is_resumed, True)]
                     ret = ret + [self._render_review_command_success(lang.badge_new, {
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
-                    }, "10:00", lang, chat_id, is_resumed)]
+                    }, "10:00", lang, chat_id, is_resumed, False)]
                     ret = ret + [self._render_review_command_success(lang.kicking_out_grumpy_cat, {
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
-                    }, "10:00", lang, chat_id, is_resumed)]
+                    }, "10:00", lang, chat_id, is_resumed, True)]
                     ret = ret + [self._render_review_command_success(lang.grumpy_cat_kicked_out + "\n" + lang.achievements_unblocked, {
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
-                    }, "10:00", lang, chat_id, is_resumed)]
-                    ret = ret + [self._render_review_command_success(lang.cooldown_msg, None, "10:00", lang, chat_id, is_resumed)]
+                    }, "10:00", lang, chat_id, is_resumed, False)]
+                    ret = ret + [self._render_review_command_success(lang.cooldown_msg, None, "10:00", lang, chat_id, is_resumed, True)]
             return ret
 
         if user_message == "render_screen_3":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_penalty(lang, None, None, chat_id)]
+                ret = ret + [self._render_penalty(lang, None, None, chat_id, True)]
                 ret = ret + [self._render_penalty(lang, lang.badge_unhappy_cat, {
                     "text": lang.view_badges_button,
                     "url": "https://google.com"
-                }, chat_id)]
+                }, chat_id, False)]
             return ret
 
         if user_message == "render_screen_4":
@@ -585,11 +591,12 @@ class GameManager:
 
         if user_message == "render_screen_14":
             ret = []
-            for lang_code, lang in langs.items():
-                ret = ret + [self._render_reminder_prompt(lang, chat_id, {
-                    "text": lang.view_badges_button,
-                    "url": "https://google.com"
-                })]
+            for is_autopause_enabled in [True, False]:
+                for lang_code, lang in langs.items():
+                    ret = ret + [self._render_reminder_prompt(lang, chat_id, {
+                        "text": lang.view_badges_button,
+                        "url": "https://google.com"
+                    }, is_autopause_enabled)]
             return ret
         return []
 
@@ -772,7 +779,7 @@ class GameManager:
                 }]
 
 
-    def _render_penalty(self, lang: Lang, maybe_badge_message: Optional[str], maybe_badge_button: Optional[Button], chat_id: int) -> Reply:
+    def _render_penalty(self, lang: Lang, maybe_badge_message: Optional[str], maybe_badge_button: Optional[Button], chat_id: int, is_autopause_enabled: bool) -> Reply:
 
         buttons = [self._render_review_button(lang)]
         if maybe_badge_button is not None:
@@ -780,7 +787,10 @@ class GameManager:
 
         return {
             'to_chat_id': chat_id,
-            'message': lang.penalty_text.format(maybe_achievement=("\n" + maybe_badge_message + "\n") if maybe_badge_message is not None else ""),
+            'message': lang.penalty_text.format(
+                maybe_achievement=("\n" + maybe_badge_message + "\n") if maybe_badge_message is not None else "",
+                pause_prompt=self._render_pause_prompt(lang, is_autopause_enabled)
+            ),
             'buttons': buttons,
             'menu_commands': [],
             'image': None
@@ -796,7 +806,9 @@ class GameManager:
 
         _, maybe_badge_button = self._handle_badge_event(user, 'on_prompt')
 
-        return self._render_reminder_prompt(lang, user['user_id'], maybe_badge_button)
+        autopause_manager = AutopauseManager(user['autopause_config_serialized'])
+
+        return self._render_reminder_prompt(lang, user['user_id'], maybe_badge_button, autopause_manager.is_enabled())
 
     def _reset_user_next_prompt(self, user: User):
         difficulty = user['difficulty']
@@ -808,13 +820,13 @@ class GameManager:
             user['next_prompt_time'] -= datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
             user['next_prompt_type'] = NEXT_PROMPT_TYPE_REMINDER
 
-    def _render_reminder_prompt(self, lang, chat_id, maybe_badge_button: Button):
+    def _render_reminder_prompt(self, lang, chat_id, maybe_badge_button: Button, is_autopause_enabled):
         buttons = [self._render_review_button(lang)]
         if maybe_badge_button is not None:
             buttons.append(maybe_badge_button)
         return {
             'to_chat_id': chat_id,
-            'message': lang.reminder_text,
+            'message': lang.reminder_text.format(pause_prompt=self._render_pause_prompt(lang, is_autopause_enabled)),
             'buttons': buttons,
             'menu_commands': [],
             'image': None
@@ -883,6 +895,12 @@ class GameManager:
         review_counter = Counter(user['review_counter_state'])
         review_counter.pause()
         user['review_counter_state'] = review_counter.serialize()
+
+    def _render_pause_prompt(self, lang, is_autopause_enabled):
+        pause_prompt = lang.pause_prompt
+        if not is_autopause_enabled:
+            pause_prompt += "\n" + lang.autopause_prompt
+        return pause_prompt
 
 
 
