@@ -46,6 +46,7 @@ class Lang:
 
     menu_review: str
     menu_pause: str
+    menu_sleep: str
     menu_stats: str
     menu_formula: str
     menu_difficulty: str
@@ -112,6 +113,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     menu_review = "💫️réviser la Formule",
     menu_pause = "⏸️ mettre le jeu en pause",
+    menu_sleep = "💤 planificateur de sommeil",
     menu_stats = "📊 progression du jeu",
     menu_formula = "️🧪mettre à jour la Formule",
     menu_difficulty = "💪changer la difficulté",
@@ -279,6 +281,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     menu_review="💫️revisar Fórmula",
     menu_pause="⏸️ pausar el juego",
+    menu_sleep="💤 programador de sueño",
     menu_stats="📊 progreso del juego",
     menu_formula="🧪actualizar Fórmula",
     menu_difficulty="💪cambiar dificultad",
@@ -447,6 +450,7 @@ Press the button below to start the game.""",
 
     menu_review="💫️review Formula",
     menu_pause="⏸️ pause the game",
+    menu_sleep="💤 sleep scheduler",
     menu_stats="📊 game progress",
     menu_formula="️🧪update Formula",
     menu_difficulty="💪change difficulty",
@@ -614,6 +618,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     menu_review="💫️Formel überprüfen",
     menu_pause="⏸️ Spiel pausieren",
+    menu_sleep="💤 Schlafplaner",
     menu_stats="📊 Spielfortschritt",
     menu_formula="️🧪Formel aktualisieren",
     menu_difficulty="💪Schwierigkeitsgrad ändern",
@@ -782,6 +787,7 @@ ru = Lang(
 
     menu_review="💫️просмотреть Формулу",
     menu_pause="⏸️ поставить игру на паузу",
+    menu_sleep="💤 настроить планировщик сна",
     menu_stats="📊 статистика игры",
     menu_formula="🧪 изменить Формулу",
     menu_difficulty="💪 изменить сложность",

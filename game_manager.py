@@ -272,6 +272,7 @@ class GameManager:
             'menu_commands': [
                 ["review", lang.menu_review],
                 ["pause", lang.menu_pause],
+                ["sleep", lang.menu_sleep],
                 ["formula", lang.menu_formula],
                 ["stats", lang.menu_stats],
                 ["difficulty", lang.menu_difficulty],
