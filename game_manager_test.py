@@ -264,7 +264,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'menu_commands': [],
                                 'message': 'Review your <i> Formula</i> 💫\n'
                                            '\n'
-                                           'Press any button below to review your <i>Formula</i>.',
+                                           '<a '
+                                           "href='https://mindwarriorgame.org/faq.en#name.betterworld'>Press "
+                                           'any button below</a> to review your <i>Formula</i>.',
                                 'to_chat_id': 1})
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -291,7 +293,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'message': 'Time since the last review: 0d 1h 5m\n'
                                            'Review your <i> Formula</i> 💫\n'
                                            '\n'
-                                           'Press any button below to review your <i>Formula</i>.',
+                                           '<a '
+                                           "href='https://mindwarriorgame.org/faq.en#name.betterworld'>Press "
+                                           'any button below</a> to review your <i>Formula</i>.',
                                 'to_chat_id': 1})
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -671,7 +675,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&env=prod&new_badge=s0&level=1&b1=f0_s0am_c0&bp1=c0_0_100--f0_43200_0&ts=1650463200'}],
+                                              'url': 'http://frontend?lang=en&env=prod&new_badge=s0&level=1&b1=f0_s0am_c0&bp1=c0_0_100--f0_41700_3&ts=1650463200'}],
                                  'image': None,
                                  'menu_commands': [],
                                  'message': 'The game is resumed.\n'
@@ -821,9 +825,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                               'url': 'http://frontend?env=prod&lang_code=en&delete_data=1'}],
                                  'image': 'fname',
                                  'menu_commands': [],
-                                 'message': 'Your raw data:\n'
+                                 'message': '<a href="https://mindwarriorgame.org/privacy-policy.en">We '
+                                            'respect your privacy</a> and want to treat your data as '
+                                            'transparent as possible. Below you can find all your data that '
+                                            'the game stores on its server:\n'
                                             '\n'
-                                            ' - shared_key_uuid: abc\n'
+                                            '<code> - shared_key_uuid: abc\n'
                                             '\n'
                                             ' - user_id: 1\n'
                                             '\n'
@@ -853,7 +860,11 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '"cumulative_counter_secs=0,counter_last_updated=0,update_reason=game_started", '
                                             '"TimeBadgeCounter": "64800", "StarBadgeCounter": "0,3", '
                                             '"FeatherBadgeCounter": "64800"}, "board": [{"badge": "f0", '
-                                            '"is_active": true, "is_la...',
+                                            '"is_active": true, "is_la...\n'
+                                            '\n'
+                                            ' - next_autopause_event_time: None\n'
+                                            '\n'
+                                            ' - autopause_config_serialized: None</code>',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)
