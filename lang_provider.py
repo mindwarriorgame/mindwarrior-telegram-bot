@@ -88,6 +88,9 @@ class Lang:
     achievements_unblocked: str
     achievements_link_regenerated: str
 
+    autopause_on_msg: str
+    autopause_resumed_msg: str
+
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
@@ -237,6 +240,18 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     remained_grumpy_cats="😾 Chats grincheux restants : {count}",
     achievements_unblocked="🏆 Les réussites sont débloquées !",
     achievements_link_regenerated="Le lien vers la page des réussites a été régénéré. Veuillez utiliser le bouton ci-dessous pour l'ouvrir.",
+
+    autopause_on_msg = "Il est temps de dormir 💤\n"
+                       "\n"
+                       "Le jeu est automatiquement mis en pause jusqu'à {until_time}. Faites de beaux rêves! 🌙\n"
+                       "\n"
+                       " ‣ /sleep - configurer le planificateur de sommeil",
+
+    autopause_resumed_msg = "Bonjour! ☀️\n"
+                            "\n"
+                            "Le jeu reprend. Passez une bonne journée! 🌞\n"
+                            "\n"
+                            " ‣ /sleep - configurer le planificateur de sommeil",
 
 )
 
@@ -390,7 +405,19 @@ Presiona el botón de abajo para comenzar el juego.""",
     grumpy_cat_kicked_out="🧹 ¡El gato gruñón ha sido expulsado!",
     remained_grumpy_cats="😾 Gatos gruñones restantes: {count}",
     achievements_unblocked="🏆 ¡Logros desbloqueados!",
-    achievements_link_regenerated="El enlace a la página de logros ha sido regenerado. Por favor, usa el botón de abajo para abrirlo."
+    achievements_link_regenerated="El enlace a la página de logros ha sido regenerado. Por favor, usa el botón de abajo para abrirlo.",
+
+    autopause_on_msg = "Hora de dormir 💤\n"
+                       "\n"
+                       "El juego se pausa automáticamente hasta {until_time}. ¡Dulces sueños! 🌙\n"
+                       "\n"
+                       " ‣ /sleep - configurar el programador de sueño",
+
+    autopause_resumed_msg = "¡Buenos días! ☀️\n"
+                            "\n"
+                            "El juego se reanuda. ¡Que tengas un buen día! 🌞\n"
+                            "\n"
+                            " ‣ /sleep - configurar el programador de sueño",
 
 )
 
@@ -544,7 +571,19 @@ Press the button below to start the game.""",
     grumpy_cat_kicked_out="🧹 The grumpy cat has been kicked out!",
     remained_grumpy_cats="😾 Grumpy cats remaining: {count}",
     achievements_unblocked="🏆 Achievements are unlocked!",
-    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it."
+    achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it.",
+
+    autopause_on_msg = "Time to sleep 💤\n"
+                       "\n"
+                       "The game is automatically paused until {until_time}. Sweet dreams! 🌙\n"
+                       "\n"
+                       " ‣ /sleep - configure sleep scheduler",
+
+    autopause_resumed_msg = "Good morning! ☀️\n"
+                            "\n"        
+                            "The game is resumed. Have a great day! 🌞\n"
+                            "\n"    
+                            " ‣ /sleep - configure sleep scheduler",
 )
 
 de = Lang(
@@ -695,7 +734,19 @@ Drücke den Button unten, um das Spiel zu starten.""",
     grumpy_cat_kicked_out="🧹 Die grimmige Katze wurde hinausgeworfen!",
     remained_grumpy_cats="😾 Verbliebene grimmige Katzen: {count}",
     achievements_unblocked="🏆 Erfolge wurden freigeschaltet!",
-    achievements_link_regenerated="Der Link zur Erfolgsseite wurde neu generiert. Bitte benutze den Button unten, um ihn zu öffnen."
+    achievements_link_regenerated="Der Link zur Erfolgsseite wurde neu generiert. Bitte benutze den Button unten, um ihn zu öffnen.",
+
+    autopause_on_msg = "Zeit zum Schlafen 💤\n"
+                       "\n"
+                       "Das Spiel wird automatisch bis {until_time} pausiert. Süße Träume! 🌙\n"
+                       "\n"
+                       " ‣ /sleep - Schlafplaner konfigurieren",
+
+    autopause_resumed_msg = "Guten Morgen! ☀️\n"
+                            "\n"
+                            "Das Spiel wird fortgesetzt. Hab einen schönen Tag! 🌞\n"
+                            "\n"
+                            " ‣ /sleep - Schlafplaner konfigurieren",
 
 )
 
@@ -849,7 +900,19 @@ ru = Lang(
     grumpy_cat_kicked_out="🧹 Вы выгнали недовольного кота!",
     remained_grumpy_cats="😾 Осталось недовольных котов: {count}",
     achievements_unblocked="🏆 Достижения разблокированы!",
-    achievements_link_regenerated="Ссылка на страницу с достижениями обновлена. Нажмите на кнопку ниже, чтобы открыть ее."
+    achievements_link_regenerated="Ссылка на страницу с достижениями обновлена. Нажмите на кнопку ниже, чтобы открыть ее.",
+
+    autopause_on_msg = "Пора спать 💤\n"
+                       "\n"
+                       "Игра автоматически поставлена на паузу до {until_time}. Сладких снов! 🌙\n"
+                       "\n"
+                       " ‣ /sleep - настроить планировщик сна",
+
+    autopause_resumed_msg = "Доброе утро! ☀️\n"
+                            "\n"
+                            "Игра возобновлена. Хорошего дня! 🌞\n"
+                            "\n"
+                            " ‣ /sleep - настроить планировщик сна",
 )
 
 

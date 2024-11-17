@@ -6,6 +6,7 @@ import time
 
 import numpy as np
 
+from autopause_manager import AutopauseManager
 from badges_manager import BadgesManager
 from board_serializer import serialize_board, serialize_progress
 from counter import Counter
@@ -168,7 +169,7 @@ class GameManager:
         if old_difficulty is None:
             old_difficulty = 0
 
-        is_resumed = self._maybe_resume(user, lang)
+        is_resumed = self._maybe_resume(user)
 
         user['difficulty'] = new_difficulty
         self._restart_user_game(user)
@@ -231,7 +232,7 @@ class GameManager:
                 'menu_commands': []
             }
 
-        is_resumed = self._maybe_resume(user, lang)
+        is_resumed = self._maybe_resume(user)
 
         since_last_review_secs = int(Counter(user['review_counter_state']).get_total_seconds())
 
@@ -319,17 +320,7 @@ class GameManager:
             return self._render_start_game_screen(lang, user)
 
         if user['paused_counter_state'] is None:
-            paused_counter = Counter("")
-            paused_counter.resume()
-            user['paused_counter_state'] = paused_counter.serialize()
-
-            active_counter = Counter(user['active_game_counter_state'])
-            active_counter.pause()
-            user['active_game_counter_state'] = active_counter.serialize()
-
-            review_counter = Counter(user['review_counter_state'])
-            review_counter.pause()
-            user['review_counter_state'] = review_counter.serialize()
+            self._pause_user(user)
 
             self.users_orm.upsert_user(user)
 
@@ -382,15 +373,47 @@ class GameManager:
 
     def process_tick(self) -> list[Reply]:
         replies: list[Reply] = []
+        quota = 20
         for difficulty in range(0, 5):
-            users = self.users_orm.get_some_users_for_prompt(20, difficulty)
+            if quota <= 0:
+                break
+            users = self.users_orm.get_some_users_for_prompt(quota, difficulty)
             for user in users:
+                quota -= 3
                 if user['next_prompt_type'] == NEXT_PROMPT_TYPE_PENALTY:
                     replies += [self._process_penalty_prompt(user)]
                 else:
                     replies += [self._process_reminder_prompt(user)]
 
+        autopaused_events = self.users_orm.get_some_next_autopause_events(quota)
+        for user in autopaused_events:
+            replies += self._process_autopause(user)
+
         return replies
+
+    def _process_autopause(self, user: User) -> [Reply]:
+        autopause_manager = AutopauseManager(user['autopause_config_serialized'])
+        user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_manager.get_next_autopause_event_at_timestamp() + 1, tz=datetime.timezone.utc)
+        self.users_orm.upsert_user(user)
+
+        if autopause_manager.is_in_interval(now_utc()):
+            if user['paused_counter_state'] is None:
+                self._pause_user(user)
+                self.users_orm.upsert_user(user)
+
+                lang = self._get_user_lang(user['lang_code'])
+                return [self._render_single_message(user['user_id'], lang.autopause_on_msg.format(until_time=autopause_manager.get_wakep_time()), None, None)]
+            else:
+                return []
+        else:
+            is_resumed = self._maybe_resume(user)
+            self.users_orm.upsert_user(user)
+
+            if is_resumed:
+                lang = self._get_user_lang(user['lang_code'])
+                return [self._render_single_message(user['user_id'], lang.autopause_resumed_msg, None, None)]
+            else:
+                return []
 
     def _process_penalty_prompt(self, user: User) -> Reply:
         self._reset_user_next_prompt(user)
@@ -570,7 +593,7 @@ class GameManager:
             return ret
         return []
 
-    def _maybe_resume(self, user: User, lang: Lang) -> bool:
+    def _maybe_resume(self, user: User) -> bool:
         if user['paused_counter_state']:
             active_play_time_counter = Counter(user['active_game_counter_state'])
             active_play_time_counter.resume()
@@ -847,6 +870,19 @@ class GameManager:
             return None, None if event == 'on_formula_updated' else view_achievements_button
 
         return lang.badge_unhappy_cat if badge == "c0" else lang.badge_new, view_achievements_button
+
+    def _pause_user(self, user: User):
+        paused_counter = Counter("")
+        paused_counter.resume()
+        user['paused_counter_state'] = paused_counter.serialize()
+
+        active_counter = Counter(user['active_game_counter_state'])
+        active_counter.pause()
+        user['active_game_counter_state'] = active_counter.serialize()
+
+        review_counter = Counter(user['review_counter_state'])
+        review_counter.pause()
+        user['review_counter_state'] = review_counter.serialize()
 
 
 
