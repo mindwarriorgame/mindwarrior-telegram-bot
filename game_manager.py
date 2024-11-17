@@ -80,6 +80,8 @@ class GameManager:
         return lang
 
     def on_data_provided(self, chat_id: int, user_message: str) -> list[Reply]:
+        user_message = user_message.replace('<code>', '').replace('</code>', '')
+        user_message = user_message.replace('<tg-spoiler>', '').replace('</tg-spoiler>', '')
         if "render_screen_" in user_message:
             return self.on_render_screen(chat_id, user_message)
 
@@ -731,7 +733,7 @@ class GameManager:
             return [
                 {
                     'to_chat_id': chat_id,
-                    'message': lang.data_view + "\n\n" + "\n\n".join(data_short),
+                    'message': lang.data_view + "\n\n<code>" + "\n\n".join(data_short) + "</code>",
                     'buttons': [
                         {
                             'text': lang.data_view_localstorage_button,

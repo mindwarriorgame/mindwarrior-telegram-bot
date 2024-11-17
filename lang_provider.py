@@ -207,7 +207,9 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     graph_xmin='Il y a 6 jours',
     graph_paused="En pause",
 
-    data_view="Vos données brutes :",
+    data_view="<a href=\"https://mindwarriorgame.org/privacy-policy.fr\">Nous respectons votre vie privée</a> et souhaitons traiter vos "
+              "données de la manière la plus transparente possible. Ci-dessous, vous pouvez trouver toutes vos données "
+              "que le jeu stocke sur son serveur:",
     data_view_localstorage_button="Voir les données du localStorage 🔎",
     data_delete_button="SUPPRIMER TOUTES LES DONNÉES ❌",
 
@@ -359,7 +361,10 @@ Presiona el botón de abajo para comenzar el juego.""",
     graph_xmin='hace 6 días',
     graph_paused="Pausado",
 
-    data_view="Tus datos en bruto:",
+    data_view="<a href=\"https://mindwarriorgame.org/privacy-policy.es\">Respetamos tu privacidad</a> y queremos tratar tus "
+              "datos de la manera más transparente posible. A continuación, puedes encontrar todos los datos que "
+              "el juego almacena en su servidor:",
+
     data_view_localstorage_button="Ver datos de localStorage 🔎",
     data_delete_button="ELIMINAR TODOS LOS DATOS ❌",
     data_deleted="Todos tus datos han sido eliminados. Por favor, limpia el historial de chat para eliminar los datos del chat de Telegram.",
@@ -511,7 +516,9 @@ Press the button below to start the game.""",
     graph_xmin='6 days ago',
     graph_paused="Paused",
 
-    data_view="Your raw data:",
+    data_view="<a href=\"https://mindwarriorgame.org/privacy-policy.en\">We respect your privacy</a> and want to treat your "
+              "data as transparent as possible. Below you can find all your data that "
+              "the game stores on its server:",
     data_view_localstorage_button="View localStorage data 🔎",
     data_delete_button="DELETE ALL DATA ❌",
     data_deleted="All your data has been deleted. Please clear the chat history to remove the data from Telegram chat.",
@@ -659,7 +666,10 @@ Drücke den Button unten, um das Spiel zu starten.""",
     graph_xmin='Vor 6 Tagen',
     graph_paused="Pausiert",
 
-    data_view="Deine Rohdaten:",
+    data_view = "<a href=\"https://mindwarriorgame.org/privacy-policy.de\">Wir respektieren Ihre Privatsphäre</a> "
+                "und möchten Ihre Daten so transparent wie möglich behandeln. Unten finden Sie alle Daten, die das "
+                "Spiel auf seinem Server speichert:",
+
     data_view_localstorage_button="Sieh dir die localStorage-Daten an 🔎",
     data_delete_button="ALLE DATEN LÖSCHEN ❌",
     data_deleted="Alle deine Daten wurden gelöscht. Bitte lösche den Chatverlauf, um die Daten aus dem Telegram-Chat zu entfernen.",
@@ -811,7 +821,9 @@ ru = Lang(
     graph_xmin='6 дней назад',
     graph_paused="Пауза",
 
-    data_view="Ваши данные:",
+    data_view="<a href=\"https://mindwarriorgame.org/privacy-policy.ru\">Мы уважаем вашу конфиденциальность</a> и "
+              "стремимся максимально прозрачно обрабатывать ваши данные. Ниже вы можете найти все ваши данные, "
+              "которые игра хранит на своем сервере:",
     data_view_localstorage_button="Посмотреть данные localStorage 🔎",
     data_delete_button="УДАЛИТЬ ВСЕ ДАННЫЕ ❌",
     data_deleted="Все ваши данные удалены. Пожалуйста, удалите историю чата, чтобы удалить данные из Telegram-а.",
