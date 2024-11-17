@@ -102,6 +102,12 @@ async def pause_command(update: Update, context):
     ret = game_manager.on_pause_command(chat_id)
     await send_reply(update.message, ret)
 
+async def sleep_command(update: Update, context):
+    global game_manager
+    chat_id = update.message.chat.id
+    ret = game_manager.on_sleep_command(chat_id)
+    await send_reply(update.message, ret)
+
 async def stats_command(update: Update, context):
     global game_manager
     chat_id = update.message.chat.id
@@ -167,6 +173,7 @@ async def main():
     app.add_handler(CommandHandler('start', start_command))
     app.add_handler(CommandHandler('review', review_command))
     app.add_handler(CommandHandler('pause', pause_command))
+    app.add_handler(CommandHandler('sleep', sleep_command))
     app.add_handler(CommandHandler('stats', stats_command))
     app.add_handler(CommandHandler('formula', formula_command))
     app.add_handler(CommandHandler('difficulty', difficulty_command))

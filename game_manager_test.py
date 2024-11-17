@@ -1062,3 +1062,44 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
     def test_render_screens(self):
         for screenIdx in range(0, 20):
             self.game_manager.on_data_provided(1, 'render_screen_' + str(screenIdx))
+
+    @time_machine.travel("2023-04-20", tick=False)
+    def test_sleep_command_no_autosleep(self):
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
+        self.assertEqual(self.game_manager.on_sleep_command(1), {'buttons': [{'text': 'Configure sleep scheduler 💤',
+                                                                              'url': 'http://frontend?env=prod&lang_code=en&sleep=1&bed_time=None&wakeup_time=None'}],
+                                                                 'image': None,
+                                                                 'menu_commands': [],
+                                                                 'message': 'Configure sleep scheduler 💤\n'
+                                                                            '\n'
+                                                                            'Press the button below to set up your sleep time. The game will '
+                                                                            'be automatically paused for this period.\n'
+                                                                            '\n'
+                                                                            'Enabled? ⚪️\n'
+                                                                            'Sleep time: N/A - N/A\n',
+                                                                 'to_chat_id': 1})
+
+    @time_machine.travel("2023-04-20", tick=False)
+    def test_sleep_command_with_autosleep(self):
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        autopause_manager = AutopauseManager(user['autopause_config_serialized'])
+        autopause_manager.update(True, 'Asia/Tokyo', 12 * 3600, 22 * 60 + 30, 24 * 60 + 6 * 60)
+        user['autopause_config_serialized'] = autopause_manager.serialize()
+        self.users_orm.upsert_user(user)
+        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
+        self.assertEqual(self.game_manager.on_sleep_command(1), {'buttons': [{'text': 'Configure sleep scheduler 💤',
+                                                                              'url': 'http://frontend?env=prod&lang_code=en&sleep=1&bed_time=22:30&wakeup_time=06:00'}],
+                                                                 'image': None,
+                                                                 'menu_commands': [],
+                                                                 'message': 'Configure sleep scheduler 💤\n'
+                                                                            '\n'
+                                                                            'Press the button below to set up your sleep time. The game will '
+                                                                            'be automatically paused for this period.\n'
+                                                                            '\n'
+                                                                            'Enabled? 🟢\n'
+                                                                            'Sleep time: 22:30 - 06:00\n',
+                                                                 'to_chat_id': 1})

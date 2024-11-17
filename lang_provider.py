@@ -95,6 +95,9 @@ class Lang:
     pause_prompt: str
     autopause_prompt: str
 
+    sleep_command_button: str
+    sleep_command_text: str
+
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
@@ -259,6 +262,15 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                             "Le jeu reprend. Passez une bonne journée! 🌞\n"
                             "\n"
                             " ‣ /sleep - configurer le planificateur de sommeil",
+
+    sleep_command_text="Configurer le planificateur de sommeil 💤\n"
+                       "\n"
+                       "Appuyez sur le bouton ci-dessous pour configurer votre heure de sommeil. Le jeu sera automatiquement mis en pause pendant cette période.\n"
+                       "\n"
+                       "Activé? {is_enabled}\n"
+                       "Heure de sommeil: {bed_time} - {wakeup_time}\n",
+
+    sleep_command_button="Configurer le planificateur de sommeil 💤",
 
 )
 
@@ -429,6 +441,15 @@ Presiona el botón de abajo para comenzar el juego.""",
                             "\n"
                             " ‣ /sleep - configurar el programador de sueño",
 
+    sleep_command_text="Configurar el programador de sueño 💤\n"
+                        "\n"
+                        "Presiona el botón de abajo para configurar tu hora de dormir. El juego se pausará automáticamente durante este tiempo.\n"
+                        "\n"    
+                        "Activado? {is_enabled}\n"
+                        "Hora de dormir: {bed_time} - {wakeup_time}\n",
+
+    sleep_command_button="Configurar el programador de sueño 💤",
+
 )
 
 
@@ -598,6 +619,15 @@ Press the button below to start the game.""",
                             "The game is resumed. Have a great day! 🌞\n"
                             "\n"    
                             " ‣ /sleep - configure sleep scheduler",
+
+    sleep_command_text="Configure sleep scheduler 💤\n"
+                         "\n"
+                         "Press the button below to set up your sleep time. The game will be automatically paused for this period.\n"
+                         "\n"
+                         "Enabled? {is_enabled}\n"
+                         "Sleep time: {bed_time} - {wakeup_time}\n",
+
+    sleep_command_button="Configure sleep scheduler 💤",
 )
 
 de = Lang(
@@ -765,6 +795,15 @@ Drücke den Button unten, um das Spiel zu starten.""",
                             "Das Spiel wird fortgesetzt. Hab einen schönen Tag! 🌞\n"
                             "\n"
                             " ‣ /sleep - Schlafplaner konfigurieren",
+
+    sleep_command_text="Schlafplaner konfigurieren 💤\n"
+                        "\n"
+                        "Drücke den Button unten, um deine Schlafenszeit einzustellen. Das Spiel wird automatisch für diesen Zeitraum pausiert.\n"
+                        "\n"    
+                        "Aktiviert? {is_enabled}\n" 
+                        "Schlafenszeit: {bed_time} - {wakeup_time}\n",
+
+    sleep_command_button="Schlafplaner konfigurieren 💤",
 
 )
 
@@ -935,6 +974,14 @@ ru = Lang(
                             "Игра возобновлена. Хорошего дня! 🌞\n"
                             "\n"
                             " ‣ /sleep - настроить планировщик сна",
+
+    sleep_command_text="Настроить планировщик сна 💤\n"
+                        "\n"
+                        "Нажмите на кнопку ниже, чтобы установить время сна. Игра будет автоматически поставлена на паузу на это время.\n"
+                        "\n"
+                        "Включено? {is_enabled}\n"  
+                        "Время сна: {bed_time} - {wakeup_time}\n",
+    sleep_command_button = "Настроить планировщик сна 💤",
 )
 
 

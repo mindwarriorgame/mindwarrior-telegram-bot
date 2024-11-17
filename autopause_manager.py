@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import TypedDict
+from typing import TypedDict, Optional
 from zoneinfo import ZoneInfo
 from fuzzywuzzy import fuzz
 import zoneinfo
@@ -8,9 +8,9 @@ import zoneinfo
 
 class AutopauseConfig(TypedDict):
     is_enabled: bool
-    start_at_mins_in_user_tz: int
-    stop_at_mins_in_user_tz: int # may be more than 24 hours to indicate next day
-    user_timezone: str # correct timezone string; use detect_timezone() to figure it out from user's input
+    start_at_mins_in_user_tz: Optional[int]
+    stop_at_mins_in_user_tz: Optional[int] # may be more than 24 hours to indicate next day
+    user_timezone: Optional[str] # correct timezone string; use detect_timezone() to figure it out from user's input
 
 # Quite expensive operation, use only to sanitize user input
 # utcoffset_secs is a positive offset (that is, Sydney's time is either +10*3600 or +11*3600)
@@ -50,9 +50,9 @@ class AutopauseManager:
         else:
             self.data = {
                 "is_enabled": False,
-                "start_at_mins_in_user_tz": 0,
-                "stop_at_mins_in_user_tz": 0,
-                "timezone": "UTC",
+                "start_at_mins_in_user_tz": None,
+                "stop_at_mins_in_user_tz": None,
+                "timezone": None,
             }
         self._calculate_next_interval_timestamps()
 
@@ -94,21 +94,16 @@ class AutopauseManager:
         return start_ts <= timestamp <= stop_ts
 
     def get_wakep_time(self):
-        if not self.data["is_enabled"]:
+        if self.data["stop_at_mins_in_user_tz"] is None:
             return None
-        self._calculate_next_interval_timestamps()
 
-        ret = ""
-        wakeup_at_mins = (self.data['stop_at_mins_in_user_tz'] - 24 * 60) if self.data['stop_at_mins_in_user_tz'] > 24 * 60 else self.data['stop_at_mins_in_user_tz']
-        wakeup_hours = wakeup_at_mins // 60
-        wakeup_mins = wakeup_at_mins % 60
-        if wakeup_hours < 10:
-            ret += "0"
-        ret += str(wakeup_hours) + ":"
-        if wakeup_mins < 10:
-            ret += "0"
-        ret += str(wakeup_mins)
-        return ret
+        return self._get_user_time(self.data['stop_at_mins_in_user_tz'])
+
+    def get_bed_time(self):
+        if self.data["start_at_mins_in_user_tz"] is None:
+            return None
+
+        return self._get_user_time(self.data['start_at_mins_in_user_tz'])
 
     def _calculate_next_interval_timestamps(self):
         if not self.data["is_enabled"]:
@@ -138,6 +133,20 @@ class AutopauseManager:
         if not self.data["is_enabled"]:
             return False
         return self.data["is_enabled"]
+
+    def _get_user_time(self, time_in_mins):
+        ret = ""
+        at_mins = (time_in_mins - 24 * 60) if time_in_mins >= 24 * 60 else time_in_mins
+        hours = at_mins // 60
+        mins = at_mins % 60
+        if hours < 10:
+            ret += "0"
+        ret += str(hours) + ":"
+        if mins < 10:
+            ret += "0"
+        ret += str(mins)
+        return ret
+        pass
 
 
 

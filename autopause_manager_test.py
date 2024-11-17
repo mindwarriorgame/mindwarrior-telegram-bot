@@ -67,8 +67,9 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(manager2.is_in_interval(datetime.now().timestamp() + 3 * 3600))
 
     def test_get_wakeup_time(self):
-        now = datetime.now(tz=ZoneInfo("Australia/Sydney"))
         manager = AutopauseManager(None)
+
+        self.assertEqual(manager.get_wakep_time(), None)
 
         manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60 + 30)
         self.assertEqual(manager.get_wakep_time(), "08:30")
@@ -84,3 +85,14 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
 
         manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, 0 * 60)
         self.assertEqual(manager.get_wakep_time(), "00:00")
+
+    def test_get_bed_time(self):
+        manager = AutopauseManager(None)
+
+        self.assertEqual(manager.get_bed_time(), None)
+
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60 + 30)
+        self.assertEqual(manager.get_bed_time(), "22:00")
+
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 3*60 + 25, (24 + 18) * 60)
+        self.assertEqual(manager.get_bed_time(), "03:25")

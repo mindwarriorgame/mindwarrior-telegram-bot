@@ -333,6 +333,24 @@ class GameManager:
         else:
             return self._render_already_on_pause(lang, chat_id)
 
+    def on_sleep_command(self, chat_id) -> Reply:
+        user = self.users_orm.get_user_by_id(chat_id)
+        if user['lang_code'] is None:
+            return self.on_start_command(chat_id)
+        lang = self._get_user_lang(user['lang_code'])
+
+        autopause_manager = AutopauseManager(user['autopause_config_serialized'])
+        return self._render_single_message(
+            chat_id,
+            lang.sleep_command_text.format(
+                is_enabled='🟢' if autopause_manager.is_enabled() else '⚪️',
+                bed_time=autopause_manager.get_bed_time() if autopause_manager.get_bed_time() is not None else 'N/A',
+                wakeup_time=autopause_manager.get_wakep_time() if autopause_manager.get_wakep_time() is not None else 'N/A',
+            ), None, {
+                "text": lang.sleep_command_button,
+                "url": self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&sleep=1&bed_time={autopause_manager.get_bed_time()}&wakeup_time={autopause_manager.get_wakep_time()}'
+            })
+
     def on_stats_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
