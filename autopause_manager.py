@@ -11,8 +11,6 @@ class AutopauseConfig(TypedDict):
     start_at_mins_in_user_tz: int
     stop_at_mins_in_user_tz: int # may be more than 24 hours to indicate next day
     user_timezone: str # correct timezone string; use detect_timezone() to find it from user's input
-    calculated_next_or_current_interval_start_at: int
-    calculated_next_or_current_interval_stop_at: int
 
 # Quite expensive operation, use only to sanitize user input
 # utcoffset_secs is a positive offset (that is, Sydney's time is either +10*3600 or +11*3600)
@@ -57,7 +55,7 @@ class AutopauseManager:
                 "timezone": "UTC",
                 "utcoffset_secs" : 0
             }
-        self._refresh_calculated_intervals()
+        self._calculate_next_interval_timestamps()
 
     def serialize(self) -> str:
         return json.dumps(self.data)
@@ -69,31 +67,53 @@ class AutopauseManager:
             self.data["timezone"] = tz
             self.data["start_at_mins_in_user_tz"] = start_at_mins_in_user_tz
             self.data["stop_at_mins_in_user_tz"] = stop_at_mins_in_user_tz
-            self._refresh_calculated_intervals()
+            return self._calculate_next_interval_timestamps()
+
+        return None, None
 
     def get_next_autopause_event_at_timestamp(self):
         if not self.data["is_enabled"]:
             return None
-        self._refresh_calculated_intervals()
+        start_ts, stop_ts = self._calculate_next_interval_timestamps()
+        if not start_ts:
+            return None
 
         now_timestamp = int(datetime.datetime.now().timestamp())
 
-        if now_timestamp < self.data["calculated_next_or_current_interval_start_at"]:
-            return self.data["calculated_next_or_current_interval_start_at"]
+        if now_timestamp < start_ts:
+            return start_ts
 
-        return self.data["calculated_next_or_current_interval_stop_at"]
+        return stop_ts
 
     def is_in_interval(self, timestamp):
         if not self.data["is_enabled"]:
             return False
-        self._refresh_calculated_intervals()
+        start_ts, stop_ts = self._calculate_next_interval_timestamps()
+        if not start_ts:
+            return None
 
-        return self.data["calculated_next_or_current_interval_start_at"] <= timestamp <= self.data["calculated_next_or_current_interval_stop_at"]
+        return start_ts <= timestamp <= stop_ts
 
-
-    def _refresh_calculated_intervals(self):
+    def get_wakep_time(self):
         if not self.data["is_enabled"]:
-            return
+            return None
+        self._calculate_next_interval_timestamps()
+
+        ret = ""
+        wakeup_at_mins = (self.data['stop_at_mins_in_user_tz'] - 24 * 60) if self.data['stop_at_mins_in_user_tz'] > 24 * 60 else self.data['stop_at_mins_in_user_tz']
+        wakeup_hours = wakeup_at_mins // 60
+        wakeup_mins = wakeup_at_mins % 60
+        if wakeup_hours < 10:
+            ret += "0"
+        ret += str(wakeup_hours) + ":"
+        if wakeup_mins < 10:
+            ret += "0"
+        ret += str(wakeup_mins)
+        return ret
+
+    def _calculate_next_interval_timestamps(self):
+        if not self.data["is_enabled"]:
+            return None, None
 
         tz = self.data["timezone"]
 
@@ -111,9 +131,7 @@ class AutopauseManager:
                 else (beginning_of_next_day_in_tz + datetime.timedelta(minutes=self.data["stop_at_mins_in_user_tz"] - 24 * 60)))
 
             if int(now_in_tz.timestamp()) <= int(interval_stop_in_tz.timestamp()):
-                self.data["calculated_next_or_current_interval_start_at"] = int(interval_start_in_tz.timestamp())
-                self.data["calculated_next_or_current_interval_stop_at"] = int(interval_stop_in_tz.timestamp())
-                break
+                return int(interval_start_in_tz.timestamp()), int(interval_stop_in_tz.timestamp())
 
             iter_timestamp += 20 * 3600
 

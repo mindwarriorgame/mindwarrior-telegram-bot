@@ -48,7 +48,7 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
         now = datetime.now(tz=ZoneInfo("Australia/Sydney"))
         self.assertEqual(now.astimezone(tz=ZoneInfo("Asia/Novosibirsk")).hour, 21)
         manager = AutopauseManager(None)
-        manager.update(True, "novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60)
 
         self.assertFalse(manager.is_in_interval(datetime.now().timestamp()))
         self.assertTrue(manager.is_in_interval(datetime.now().timestamp() + 3 * 3600))
@@ -59,9 +59,28 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
         now = datetime.now(tz=ZoneInfo("Australia/Sydney"))
         self.assertEqual(now.astimezone(tz=ZoneInfo("Asia/Novosibirsk")).hour, 21)
         manager = AutopauseManager(None)
-        manager.update(True, "novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60)
 
         serialized = manager.serialize()
         manager2 = AutopauseManager(serialized)
         self.assertFalse(manager2.is_in_interval(datetime.now().timestamp()))
         self.assertTrue(manager2.is_in_interval(datetime.now().timestamp() + 3 * 3600))
+
+    def test_get_wakeup_time(self):
+        now = datetime.now(tz=ZoneInfo("Australia/Sydney"))
+        manager = AutopauseManager(None)
+
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60 + 30)
+        self.assertEqual(manager.get_wakep_time(), "08:30")
+
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 18) * 60)
+        self.assertEqual(manager.get_wakep_time(), "18:00")
+
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, 8 * 60)
+        self.assertEqual(manager.get_wakep_time(), "08:00")
+
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, 18 * 60)
+        self.assertEqual(manager.get_wakep_time(), "18:00")
+
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, 0 * 60)
+        self.assertEqual(manager.get_wakep_time(), "00:00")
