@@ -45,7 +45,11 @@
                     '<br /><br />' +
                     'Falls Sie auf einem anderen Gerät gespielt haben, kopieren Sie sie bitte manuell von dort. Das Spiel hat aufgrund ' +
                     '<a href="https://mindwarriorgame.org/privacy-policy.de">unserer strengen Datenschutzrichtlinie</a> keinen Zugriff darauf, ' +
-                    'deshalb kann sie nicht automatisch synchronisiert werden.'
+                    'deshalb kann sie nicht automatisch synchronisiert werden.',
+                sleepDisabled: 'Deaktiviert',
+                sleepTimeHeader: 'Schlafzeit',
+                sleepTimeDescription: 'Das Spiel wird während des ausgewählten Intervalls automatisch pausiert.',
+
 
             },
             ru: {
@@ -85,7 +89,11 @@
                     '<br /><br />' +
                     'Если вы играли на другом устройстве, пожалуйста, скопируйте ее оттуда вручную. Игра не имеет до нее доступа ' +
                     'в силу <a href="https://mindwarriorgame.org/privacy-policy.ru">своей строгой политики конфиденциальности</a>, ' +
-                    'поэтому мы не можем синхронизировать ее автоматически.'
+                    'поэтому мы не можем синхронизировать ее автоматически.',
+
+                sleepDisabled: 'Выключено',
+                sleepTimeHeader: 'Время сна',
+                sleepTimeDescription: 'Игра будет автоматически ставиться на паузу на этот промежуток времени, ежедневно.',
             },
             en: {
                 code: 'en',
@@ -123,7 +131,10 @@
                     '<a href="https://mindwarriorgame.org/faq.en#formula">Formula of Firm Resolution</a></i>.' +
                     '<br /><br />' +
                     'If you were playing on some other device, please copy it manually from there. The game does not have access to it due ' +
-                    'to <a href="https://mindwarriorgame.org/privacy-policy.en">our strict privacy policy</a>, therefore it cannot be synchronised automatically.'
+                    'to <a href="https://mindwarriorgame.org/privacy-policy.en">our strict privacy policy</a>, therefore it cannot be synchronised automatically.',
+                sleepDisabled: 'Disabled',
+                sleepTimeHeader: 'Sleep Time',
+                sleepTimeDescription: 'The game will be automatically paused during the selected interval, daily.',
             },
             es: {
                 code: 'es',
@@ -161,7 +172,10 @@
                     '<a href="https://mindwarriorgame.org/faq.es#formula">Fórmula de Resolución Firme</a></i>.' +
                     '<br /><br />' +
                     'Si estaba jugando en otro dispositivo, por favor cópiela manualmente desde allí. El juego no tiene acceso a ella ' +
-                    'debido a <a href="https://mindwarriorgame.org/privacy-policy.es">nuestra estricta política de privacidad</a>, por lo tanto no puede sincronizarse automáticamente.'
+                    'debido a <a href="https://mindwarriorgame.org/privacy-policy.es">nuestra estricta política de privacidad</a>, por lo tanto no puede sincronizarse automáticamente.',
+                sleepDisabled: 'Desactivado',
+                sleepTimeHeader: 'Tiempo de sueño',
+                sleepTimeDescription: 'El juego se pausará automáticamente durante el intervalo seleccionado.',
 
             },
             fr: {
@@ -200,7 +214,10 @@
                     '<a href="https://mindwarriorgame.org/faq.fr#formula">Formule de Résolution Ferme</a></i>.' +
                     '<br /><br />' +
                     'Si vous jouiez sur un autre appareil, veuillez la copier manuellement depuis cet appareil. Le jeu n\'y a pas accès en raison de ' +
-                    '<a href="https://mindwarriorgame.org/privacy-policy.fr">notre politique de confidentialité stricte</a>, par conséquent, elle ne peut pas être synchronisée automatiquement.'
+                    '<a href="https://mindwarriorgame.org/privacy-policy.fr">notre politique de confidentialité stricte</a>, par conséquent, elle ne peut pas être synchronisée automatiquement.',
+                sleepDisabled: 'Désactivé',
+                sleepTimeHeader: 'Temps de sommeil',
+                sleepTimeDescription: 'Le jeu sera automatiquement mis en pause pendant l\'intervalle sélectionné.',
             }
 
 
@@ -305,6 +322,12 @@
             color: white;
         }
 
+        #text button.green {
+            background-color: #184725;
+            padding: 8px;
+            color: white;
+        }
+
         #text .title {
             font-size: large;
         }
@@ -400,8 +423,11 @@
             <pre></pre>
             <pre></pre>
             <input type="text" /> <br />
+            <span>Go to bed at: </span><select></select> <br />
+            <span>Wake up at: </span><select></select> <br />
             <a href="#">try again</a><br />
             <button>Yes, delete all data</button>
+            <button class="green">Yes, delete all data</button>
         </div>
         <div id="review" class="hidden"> asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
             asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd
@@ -455,8 +481,15 @@
             title: document.querySelector('#content #text .title'),
             preFirst: document.querySelectorAll('#content #text pre')[0],
             preSecond: document.querySelectorAll('#content #text pre')[1],
+            span1: document.querySelectorAll('#content #text span')[0],
+            span2: document.querySelectorAll('#content #text span')[1],
+            select1: document.querySelectorAll('#content #text select')[0],
+            select1Disabled: document.querySelectorAll('#content #text select')[0].querySelector('option.disabled'),
+            select2: document.querySelectorAll('#content #text select')[1],
+            select2Disabled: document.querySelectorAll('#content #text select')[1].querySelector('option.disabled'),
             link: document.querySelector('#content #text a'),
-            button: document.querySelector('#content #text button'),
+            buttonConfirm: document.querySelectorAll('#content #text button')[0],
+            buttonSubmit: document.querySelectorAll('#content #text button')[1],
             input: document.querySelector('#content #text input')
         }
     };
@@ -493,8 +526,14 @@
         hide(CONTENT.text.parent);
         hide(CONTENT.text.preSecond);
         hide(CONTENT.text.link);
-        hide(CONTENT.text.button);
+        hide(CONTENT.text.buttonConfirm);
+        hide(CONTENT.text.buttonSubmit);
         hide(CONTENT.text.input);
+
+        hide(CONTENT.text.span1);
+        hide(CONTENT.text.span2);
+        hide(CONTENT.text.select1);
+        hide(CONTENT.text.select2);
     }
 
 
@@ -574,9 +613,9 @@
             show(CONTENT.text.parent);
             CONTENT.text.title.innerHTML = lang.sureDelete;
             CONTENT.text.preFirst.innerHTML = lang.sureDeleteDetails;
-            show(CONTENT.text.button);
-            CONTENT.text.button.textContent = lang.yesDelete;
-            CONTENT.text.button.addEventListener("click", (e) => {
+            show(CONTENT.text.buttonConfirm);
+            CONTENT.text.buttonConfirm.textContent = lang.yesDelete;
+            CONTENT.text.buttonConfirm.addEventListener("click", (e) => {
                 e.preventDefault();
                 window.localStorage.clear();
 
@@ -615,6 +654,96 @@
             return "next_review:" + nextReviewTimes.join(',,');
         }
 
+    }
+
+    class SleepConfigScreen {
+        constructor(dataSubmitter, lang, enabled, bedTime, wakeUpTime) {
+            hideEverything();
+
+            show(CONTENT.text.parent);
+            show(CONTENT.text.preFirst);
+            show(CONTENT.text.span1);
+            show(CONTENT.text.span2);
+            show(CONTENT.text.select1);
+            show(CONTENT.text.select2);
+            show(CONTENT.text.buttonSubmit);
+
+            CONTENT.text.title.innerHTML = lang.sleepTimeHeader;
+            CONTENT.text.preFirst.innerHTML = lang.sleepTimeDescription;
+            CONTENT.text.buttonSubmit.innerHTML = lang.applyChange;
+
+
+            const selects = [CONTENT.text.select1, CONTENT.text.select2];
+            let isDisabled = false;
+            for (let select of selects) {
+                {
+                    const option = document.createElement('option');
+                    option.value = 'disabled';
+                    option.textContent = lang.sleepDisabled;
+                    select.appendChild(option);
+                }
+
+                for (let idx = 0; idx < 48; idx++) {
+                    const hours = (Math.floor(idx / 2) < 10 ? "0" : "" ) + Math.floor(idx / 2);
+                    const mins = idx % 2 === 0 ? '00' : '30';
+                    const option = document.createElement('option');
+                    option.value = hours + ':' + mins;
+                    option.textContent = hours + ':' + mins;
+                    select.appendChild(option);
+                }
+                select.onchange = (e) => {
+                    let nDisabledSelects = 0;
+                    for (let select of selects) {
+                        if (select.value === 'disabled') {
+                            nDisabledSelects++;
+                        }
+                    }
+                    if (nDisabledSelects === 1) {
+                        if (isDisabled) {
+                            isDisabled = false;
+                            for (let select of selects) {
+                                if (select.value === 'disabled') {
+                                    select.value = '00:00';
+                                }
+                            }
+                        } else {
+                            isDisabled = true;
+                            for (let select of selects) {
+                                if (select.value !== 'disabled') {
+                                    select.value = 'disabled';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (enabled) {
+                CONTENT.text.select1.value = bedTime;
+                CONTENT.text.select2.value = wakeUpTime;
+            } else {
+                CONTENT.text.select1.value = 'disabled';
+                CONTENT.text.select2.value = 'disabled';
+                isDisabled = true;
+            }
+
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const offsetSecs = -(new Date().getTimezoneOffset()) * 60;
+            console.log(timeZone, offsetSecs);
+
+            CONTENT.text.buttonSubmit.onclick = (e) => {
+                e.preventDefault();
+                if (!isDisabled && CONTENT.text.select1.value === CONTENT.text.select2.value) {
+                    return;
+                }
+                const bedTime = isDisabled ? '22:00' : CONTENT.text.select1.value;
+                const wakeUpTime = isDisabled ? '06:00' : CONTENT.text.select2.value;
+                dataSubmitter.submitData(() => {
+                    return `sleep_config:${isDisabled ? "False" : "True"},,${timeZone},,${offsetSecs},,${bedTime},,${wakeUpTime}`;
+                });
+            }
+
+        }
     }
 
     class ReviewComponent {
@@ -800,9 +929,9 @@
             show(CONTENT.text.parent);
             CONTENT.text.title.innerHTML = lang.sureSetDifficulty;
             CONTENT.text.preFirst.innerHTML = lang.sureSetDifficultyDetail;
-            show(CONTENT.text.button);
-            CONTENT.text.button.textContent = lang.yesSetDifficulty;
-            CONTENT.text.button.addEventListener("click", (e) => {
+            show(CONTENT.text.buttonConfirm);
+            CONTENT.text.buttonConfirm.textContent = lang.yesSetDifficulty;
+            CONTENT.text.buttonConfirm.addEventListener("click", (e) => {
                 e.preventDefault();
 
                 dataSubmitter.submitData(() => "set_difficulty:" + newDifficulty + ";" + new NextReviewDataProvider(nextReviewPromptMinutes).calculateNextReviewsData());
@@ -823,6 +952,12 @@
     const newDifficulty = urlParams.get('set_difficulty') || null;
 
 
+    const sleep = urlParams.get('sleep') || null;
+    const sleepEnabled = (urlParams.get('enabled') || null) === 'true';
+    const sleepBedTime = urlParams.get('bed_time') || null;
+    const sleepWakeUpTime = urlParams.get('wakeup_time') || null;
+
+
     const nextReviewPromptMinutes = urlParams.get('next_review_prompt_minutes') || null;
 
     const dataSubmitter = new DataSubmitComponent(app, window.langs[langCode]);
@@ -838,6 +973,10 @@
 
     if (isViewLocalstorageData) {
         new ViewLocalstorageDataComponent();
+    }
+
+    if (sleep) {
+        new SleepConfigScreen(dataSubmitter, window.langs[langCode], sleepEnabled, sleepBedTime, sleepWakeUpTime);
     }
 
     class EnterFormulaPrompt {

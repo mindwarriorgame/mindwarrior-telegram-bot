@@ -354,8 +354,8 @@ class GameManager:
                                                 f'&lang_code={lang.lang_code}'
                                                 f'&sleep=1'
                                                 f'&enabled={"true" if autopause_manager.is_enabled() else "false"}'
-                                                f'&bed_time={autopause_manager.get_bed_time()}'
-                                                f'&wakeup_time={autopause_manager.get_wakep_time()}'
+                                                f'&bed_time={"22:00" if autopause_manager.get_bed_time() is None else autopause_manager.get_bed_time()}'
+                                                f'&wakeup_time={"06:00" if autopause_manager.get_wakep_time() is None else autopause_manager.get_wakep_time()}'
             })
 
     def on_stats_command(self, chat_id) -> Reply:

@@ -1070,7 +1070,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.users_orm.upsert_user(user)
         self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
         self.assertEqual(self.game_manager.on_sleep_command(1), {'buttons': [{'text': 'Configure sleep scheduler 💤',
-                                                                              'url': 'http://frontend?env=prod&lang_code=en&sleep=1&enabled=false&bed_time=None&wakeup_time=None'}],
+                                                                              'url': 'http://frontend?env=prod&lang_code=en&sleep=1&enabled=false&bed_time=22:00&wakeup_time=06:00'}],
                                                                  'image': None,
                                                                  'menu_commands': [],
                                                                  'message': 'Configure sleep scheduler 💤\n'
