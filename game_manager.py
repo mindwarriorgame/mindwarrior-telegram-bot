@@ -271,16 +271,7 @@ class GameManager:
             'to_chat_id': user['user_id'],
             'message': lang.help_command_text.format(difficulty=lang.difficulties[user['difficulty']]),
             'buttons': [self._render_start_game_button(lang, user)],
-            'menu_commands': [
-                ["review", lang.menu_review],
-                ["pause", lang.menu_pause],
-                ["sleep", lang.menu_sleep],
-                ["formula", lang.menu_formula],
-                ["stats", lang.menu_stats],
-                ["difficulty", lang.menu_difficulty],
-                ["data", lang.menu_data],
-                ["feedback", lang.menu_feedback]
-            ],
+            'menu_commands': self._render_menu_commands(lang),
             'image': None
         }
 
@@ -497,7 +488,7 @@ class GameManager:
             'to_chat_id': chat_id,
             'message': message,
             'buttons': buttons,
-            'menu_commands': [],
+            'menu_commands': self._render_menu_commands(lang),
             'image': None
         }
 
@@ -757,7 +748,7 @@ class GameManager:
                            f'?env={self.env}&lang_code={lang.lang_code}&review=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}'
                 }
             ],
-            'menu_commands': [],
+            'menu_commands': self._render_menu_commands(lang),
             'image': None
         }
 
@@ -800,7 +791,7 @@ class GameManager:
                             'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&delete_data=1'
                         }
                     ],
-                    'menu_commands': [],
+                    'menu_commands': self._render_menu_commands(lang),
                     'image': random_fname
                 }]
 
@@ -925,7 +916,7 @@ class GameManager:
     def _render_pause_prompt(self, lang, is_autopause_enabled):
         pause_prompt = lang.pause_prompt
         if not is_autopause_enabled:
-            pause_prompt += "\n" + lang.autopause_prompt
+            pause_prompt += "\n\n" + lang.autopause_prompt
         return pause_prompt
 
     def _on_sleep_config(self, lang: Lang, user: User, user_message: str) -> Reply:
@@ -951,6 +942,18 @@ class GameManager:
             bed_time=autopause_manager.get_bed_time() if autopause_manager.get_bed_time() is not None else 'N/A',
             wakeup_time=autopause_manager.get_wakep_time() if autopause_manager.get_wakep_time() is not None else 'N/A'
         ), None, None)
+
+    def _render_menu_commands(self, lang):
+        return [
+            ["review", lang.menu_review],
+            ["pause", lang.menu_pause],
+            ["sleep", lang.menu_sleep],
+            ["formula", lang.menu_formula],
+            ["stats", lang.menu_stats],
+            ["difficulty", lang.menu_difficulty],
+            ["data", lang.menu_data],
+            ["feedback", lang.menu_feedback]
+        ]
 
 
 

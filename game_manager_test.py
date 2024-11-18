@@ -11,6 +11,15 @@ from counter import Counter
 from game_manager import GameManager
 from users_orm import UsersOrm
 
+MENU_COMMANDS = [['review', '💫️review Formula'],
+                 ['pause', '⏸️ pause the game'],
+                 ['sleep', '💤 sleep scheduler'],
+                 ['formula', '️🧪update Formula'],
+                 ['stats', '📊 game progress'],
+                 ['difficulty', '💪change difficulty'],
+                 ['data', '💾 view your raw data'],
+                 ['feedback', '📢 send feedback']]
+
 
 class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
@@ -267,7 +276,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             {'text': 'Improve the world 🙌',
                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                 'image': None,
-                                'menu_commands': [],
+                                'menu_commands': MENU_COMMANDS,
                                 'message': 'Review your <i> Formula</i> 💫\n'
                                            '\n'
                                            '<a '
@@ -295,7 +304,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             {'text': 'Improve the world 🙌',
                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                 'image': None,
-                                'menu_commands': [],
+                                'menu_commands': MENU_COMMANDS,
                                 'message': 'Time since the last review: 0d 1h 5m\n'
                                            'Review your <i> Formula</i> 💫\n'
                                            '\n'
@@ -356,7 +365,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_s1_s2_c0&bp1=c0_0_100--s0_6_14&ts=1650463200'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             'Next review before 12:17 am\n'
@@ -639,7 +648,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_s1_c0&bp1=c0_0_100--s0_4_20--f0_86400_0&ts=1650463200'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': 'The game is resumed.\n'
                                             '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
@@ -684,7 +693,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&new_badge=s0&level=1&b1=f0_s0am_c0&bp1=c0_0_100--f0_41700_3&ts=1650463200'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': 'The game is resumed.\n'
                                             '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
@@ -720,7 +729,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_c0&bp1=c0_0_100--s0_2_33--f0_43200_0&ts=1650463200'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             'Next review before 12:15 am\n'
@@ -753,7 +762,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_c0a&bp1=c0_4_20--s0_3_0--f0_43200_0&ts=1650463200'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': 'The game is resumed.\n'
                                             '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
@@ -785,7 +794,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_s1_c0&bp1=c0_0_100--s0_4_20--f0_108000_0&ts=1650463200'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             'Next review before 12:18 am\n'
@@ -818,7 +827,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             '❄️ Early reviews are not rewarded.\n'
@@ -866,7 +875,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'DELETE ALL DATA ❌',
                                               'url': 'http://frontend?env=prod&lang_code=en&delete_data=1'}],
                                  'image': 'fname',
-                                 'menu_commands': [],
+                                 'menu_commands': [['review', '💫️review Formula'],
+                                                   ['pause', '⏸️ pause the game'],
+                                                   ['sleep', '💤 sleep scheduler'],
+                                                   ['formula', '️🧪update Formula'],
+                                                   ['stats', '📊 game progress'],
+                                                   ['difficulty', '💪change difficulty'],
+                                                   ['data', '💾 view your raw data'],
+                                                   ['feedback', '📢 send feedback']],
                                  'message': '<a href="https://mindwarriorgame.org/privacy-policy.en">We '
                                             'respect your privacy</a> and want to treat your data as '
                                             'transparent as possible. Below you can find all your data that '
@@ -969,7 +985,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                  {'text': 'View achievements 🏆',
                                                   'url': achievement_urls[reviewIdx]}],
                                      'image': None,
-                                     'menu_commands': [],
+                                     'menu_commands': MENU_COMMANDS,
                                      'message': '<i>Formula</i> has been reviewed 🎉\n'
                                                 '\n'
                                                 '🧹😾 Kicking out the grumpy cat...\n'
@@ -992,7 +1008,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&new_badge=c0_removed&level=1&b1=c0m_c0a_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             '🧹 The grumpy cat has been kicked out!\n'
@@ -1023,7 +1039,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                  {'text': 'View achievements 🏆',
                                                   'url': achievement_urls[reviewIdx]}],
                                      'image': None,
-                                     'menu_commands': [],
+                                     'menu_commands': MENU_COMMANDS,
                                      'message': '<i>Formula</i> has been reviewed 🎉\n'
                                                 '\n'
                                                 '🧹😾 Kicking out the grumpy cat...\n'
@@ -1046,7 +1062,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&new_badge=c0_removed&level=1&b1=c0_c0m_c1&bp1=c1_43200_0--c0_0_100&ts=1681912800'}],
                                  'image': None,
-                                 'menu_commands': [],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             '🧹 The grumpy cat has been kicked out!\n'
