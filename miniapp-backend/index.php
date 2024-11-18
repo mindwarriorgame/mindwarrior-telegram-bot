@@ -36,7 +36,8 @@ function checkStringFormat($str) {
         'formula_updated' => '/^formula_updated$/',
         'set_difficulty:POSITIVE_INT_NUMBER' => '/^set_difficulty:\d+;next_review:.*$/',
         'delete_data_confirmed' => '/^delete_data_confirmed$/',
-        'regenerate_achievements_button' => '/^regenerate_achievements_button$/'
+        'regenerate_achievements_button' => '/^regenerate_achievements_button$/',
+        'sleep_config' => '/^sleep_config:.*$/',
     ];
 
     // Check the string against each pattern
@@ -63,7 +64,7 @@ $postFields = [
         'id' => uniqid(),
         'title' => 'Data Transfer',
         'input_message_content' => [
-            'message_text' => $lang[$_GET['lang_code']] . $userData,
+            'message_text' => $lang[$_GET['lang_code']] . '<tg-spoiler>' . $userData . '</tg-spoiler>',
             "parse_mode" => "HTML"
         ]
     ]),
