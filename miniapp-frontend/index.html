@@ -49,7 +49,8 @@
                 sleepDisabled: 'Deaktiviert',
                 sleepTimeHeader: 'Schlafzeit',
                 sleepTimeDescription: 'Das Spiel wird während des ausgewählten Intervalls automatisch pausiert.',
-
+                sleepStart: 'Geh schlafen um:',
+                sleepEnd: 'Wach auf um:',
 
             },
             ru: {
@@ -94,6 +95,8 @@
                 sleepDisabled: 'Выключено',
                 sleepTimeHeader: 'Время сна',
                 sleepTimeDescription: 'Игра будет автоматически ставиться на паузу на этот промежуток времени, ежедневно.',
+                sleepStart: 'Ложиться в:',
+                sleepEnd: 'Просыпаться в:',
             },
             en: {
                 code: 'en',
@@ -135,6 +138,8 @@
                 sleepDisabled: 'Disabled',
                 sleepTimeHeader: 'Sleep Time',
                 sleepTimeDescription: 'The game will be automatically paused during the selected interval, daily.',
+                sleepStart: 'Go to bed at:',
+                sleepEnd: 'Wake up at:',
             },
             es: {
                 code: 'es',
@@ -176,6 +181,8 @@
                 sleepDisabled: 'Desactivado',
                 sleepTimeHeader: 'Tiempo de sueño',
                 sleepTimeDescription: 'El juego se pausará automáticamente durante el intervalo seleccionado.',
+                sleepStart: 'Acuéstate a las:',
+                sleepEnd: 'Despiértate a las:',
 
             },
             fr: {
@@ -218,6 +225,8 @@
                 sleepDisabled: 'Désactivé',
                 sleepTimeHeader: 'Temps de sommeil',
                 sleepTimeDescription: 'Le jeu sera automatiquement mis en pause pendant l\'intervalle sélectionné.',
+                sleepStart: 'Coucher à:',
+                sleepEnd: 'Réveil à:',
             }
 
 
@@ -675,6 +684,8 @@
             CONTENT.text.title.innerHTML = lang.sleepTimeHeader;
             CONTENT.text.preFirst.innerHTML = lang.sleepTimeDescription;
             CONTENT.text.buttonSubmit.innerHTML = lang.applyChange;
+            CONTENT.text.span1 = lang.sleepStart;
+            CONTENT.text.span2 = lang.sleepEnd;
 
 
             const selects = [CONTENT.text.select1, CONTENT.text.select2];
