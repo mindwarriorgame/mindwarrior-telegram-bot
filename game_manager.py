@@ -619,6 +619,11 @@ class GameManager:
 
     def _maybe_resume(self, user: User) -> bool:
         if user['paused_counter_state']:
+            pause_counter = Counter(user['paused_counter_state'])
+            seconds = pause_counter.get_total_seconds()
+            if user['next_prompt_time'] is not None:
+                user['next_prompt_time'] = user['next_prompt_time'] + datetime.timedelta(seconds=seconds)
+
             active_play_time_counter = Counter(user['active_game_counter_state'])
             active_play_time_counter.resume()
             user['active_game_counter_state'] = active_play_time_counter.serialize()
