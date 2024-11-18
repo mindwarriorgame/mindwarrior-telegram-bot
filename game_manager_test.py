@@ -1114,7 +1114,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [],
                                  'image': None,
                                  'menu_commands': [],
-                                 'message': 'Sleep scheduler has been updated.',
+                                 'message': 'Sleep scheduler has been updated 💤\n'
+                                            '\n'
+                                            'Enabled? 🟢\n'
+                                            'Sleep time: 22:30 - 06:00\n',
                                  'to_chat_id': 1}])
 
         data = self.game_manager.process_tick()
@@ -1196,12 +1199,15 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['next_autopause_event_time'], datetime.datetime(2023, 4, 20, 22, 30, 1).astimezone(datetime.timezone.utc))
 
-        data = self.game_manager.on_data_provided(1, 'sleep_config:False,,Australia/Sydney,,12345,,22:30,,06:00')
+        data = self.game_manager.on_data_provided(1, 'sleep_config:False,,Australia/Sydney,,12345,,20:30,,05:00')
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['next_autopause_event_time'], None)
 
         self.assertEqual(data, [{'buttons': [],
                                  'image': None,
                                  'menu_commands': [],
-                                 'message': 'Sleep scheduler has been updated.',
+                                 'message': 'Sleep scheduler has been updated 💤\n'
+                                            '\n'
+                                            'Enabled? ⚪️\n'
+                                            'Sleep time: N/A - N/A\n',
                                  'to_chat_id': 1}])

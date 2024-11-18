@@ -273,7 +273,10 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                        "Heure de sommeil: {bed_time} - {wakeup_time}\n",
 
     sleep_command_button="Configurer le planificateur de sommeil 💤",
-    sleep_config_updated="La configuration du sommeil a été mise à jour.",
+    sleep_config_updated="La configuration du sommeil a été mise à jour 💤\n"
+                         "\n"
+                         "Activé? {is_enabled}\n"
+                         "Heure de sommeil: {bed_time} - {wakeup_time}\n"
 )
 
 
@@ -451,7 +454,10 @@ Presiona el botón de abajo para comenzar el juego.""",
                         "Hora de dormir: {bed_time} - {wakeup_time}\n",
 
     sleep_command_button="Configurar el programador de sueño 💤",
-    sleep_config_updated="La configuración de sueño ha sido actualizada.",
+    sleep_config_updated="La configuración de sueño ha sido actualizada 💤\n"
+                         "\n"
+                         "Activado? {is_enabled}\n"
+                         "Hora de dormir: {bed_time} - {wakeup_time}\n"
 )
 
 
@@ -631,7 +637,10 @@ Press the button below to start the game.""",
 
     sleep_command_button="Configure sleep scheduler 💤",
 
-    sleep_config_updated="Sleep scheduler has been updated.",
+    sleep_config_updated="Sleep scheduler has been updated 💤\n"
+                         "\n"
+                         "Enabled? {is_enabled}\n"
+                         "Sleep time: {bed_time} - {wakeup_time}\n",
 )
 
 de = Lang(
@@ -809,7 +818,10 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     sleep_command_button="Schlafplaner konfigurieren 💤",
 
-    sleep_config_updated="Der Schlafplaner wurde aktualisiert.",
+    sleep_config_updated="Der Schlafplaner wurde aktualisiert 💤\n"
+                         "\n"
+                         "Aktiviert? {is_enabled}\n"
+                         "Schlafenszeit: {bed_time} - {wakeup_time}\n"
 )
 
 
@@ -987,7 +999,10 @@ ru = Lang(
                         "Включено? {is_enabled}\n"  
                         "Время сна: {bed_time} - {wakeup_time}\n",
     sleep_command_button = "Настроить планировщик сна 💤",
-    sleep_config_updated="Настройки планировщика сна обновлены.",
+    sleep_config_updated="Настройки планировщика сна обновлены 💤\n"
+                         "\n"
+                         "Включено? {is_enabled}\n"
+                         "Время сна: {bed_time} - {wakeup_time}\n",
 )
 
 

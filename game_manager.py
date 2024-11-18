@@ -946,7 +946,11 @@ class GameManager:
             user['next_autopause_event_time'] = None
         self.users_orm.upsert_user(user)
 
-        return self._render_single_message(user['user_id'], lang.sleep_config_updated, None, None)
+        return self._render_single_message(user['user_id'], lang.sleep_config_updated.format(
+            is_enabled='🟢' if enabled else '⚪️',
+            bed_time=autopause_manager.get_bed_time() if autopause_manager.get_bed_time() is not None else 'N/A',
+            wakeup_time=autopause_manager.get_wakep_time() if autopause_manager.get_wakep_time() is not None else 'N/A'
+        ), None, None)
 
 
 

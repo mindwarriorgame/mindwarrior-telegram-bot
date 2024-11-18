@@ -71,6 +71,10 @@ class AutopauseManager:
             self.data["start_at_mins_in_user_tz"] = start_at_mins_in_user_tz
             self.data["stop_at_mins_in_user_tz"] = stop_at_mins_in_user_tz
             return self._calculate_next_interval_timestamps()
+        else:
+            self.data["timezone"] = None
+            self.data["start_at_mins_in_user_tz"] = None
+            self.data["stop_at_mins_in_user_tz"] = None
 
         return None, None
 
