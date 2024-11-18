@@ -100,6 +100,8 @@ class GameManager:
             return [self._on_set_difficulty(lang, user, user_message)]
         if "reviewed_at:" in user_message:
             return [self._on_reviewed(lang, user, user_message)]
+        if "sleep_config:" in user_message:
+            return [self._on_sleep_config(lang, user, user_message)]
         if "achievements_button" in user_message:
             return [self._render_single_message(chat_id, lang.achievements_link_regenerated, None, {
                 "text": lang.view_badges_button,
@@ -348,7 +350,12 @@ class GameManager:
                 wakeup_time=autopause_manager.get_wakep_time() if autopause_manager.get_wakep_time() is not None else 'N/A',
             ), None, {
                 "text": lang.sleep_command_button,
-                "url": self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&sleep=1&bed_time={autopause_manager.get_bed_time()}&wakeup_time={autopause_manager.get_wakep_time()}'
+                "url": self.frontend_base_url + f'?env={self.env}'
+                                                f'&lang_code={lang.lang_code}'
+                                                f'&sleep=1'
+                                                f'&enabled={"true" if autopause_manager.is_enabled() else "false"}'
+                                                f'&bed_time={autopause_manager.get_bed_time()}'
+                                                f'&wakeup_time={autopause_manager.get_wakep_time()}'
             })
 
     def on_stats_command(self, chat_id) -> Reply:
@@ -419,7 +426,7 @@ class GameManager:
         user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_manager.get_next_autopause_event_at_timestamp() + 1, tz=datetime.timezone.utc)
         self.users_orm.upsert_user(user)
 
-        if autopause_manager.is_in_interval(now_utc()):
+        if autopause_manager.is_in_interval(now_utc().timestamp()):
             if user['paused_counter_state'] is None:
                 self._pause_user(user)
                 self.users_orm.upsert_user(user)
@@ -920,6 +927,23 @@ class GameManager:
         if not is_autopause_enabled:
             pause_prompt += "\n" + lang.autopause_prompt
         return pause_prompt
+
+    def _on_sleep_config(self, lang: Lang, user: User, user_message: str) -> Reply:
+        msg_tail = user_message.split('sleep_config:')[1]
+        split = msg_tail.split(',,')
+        enabled = split[0] == '1' or split[0].lower() == 'true'
+        user_tz = split[1]
+        user_tz_offset_secs = int(split[2])
+        bed_time = split[3]
+        wakeup_time = split[4]
+
+        autopause_manager = AutopauseManager(user['autopause_config_serialized'])
+        autopause_manager.update(enabled, user_tz, user_tz_offset_secs, bed_time, wakeup_time)
+        user['autopause_config_serialized'] = autopause_manager.serialize()
+        user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_manager.get_next_autopause_event_at_timestamp() + 1, tz=datetime.timezone.utc)
+        self.users_orm.upsert_user(user)
+
+        return self._render_single_message(user['user_id'], lang.sleep_config_updated, None, None)
 
 
 

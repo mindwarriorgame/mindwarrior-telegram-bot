@@ -59,9 +59,13 @@ class AutopauseManager:
     def serialize(self) -> str:
         return json.dumps(self.data)
 
-    def update(self, is_enabled, user_tz_string, user_tz_offset_secs, start_at_mins_in_user_tz, stop_at_mins_in_user_tz):
+    def update(self, is_enabled, user_tz_string, user_tz_offset_secs, start_at_str, stop_at_str):
         self.data["is_enabled"] = is_enabled
         if is_enabled:
+            start_at_mins_in_user_tz = int(start_at_str.split(":")[0]) * 60 + int(start_at_str.split(":")[1])
+            stop_at_mins_in_user_tz = int(stop_at_str.split(":")[0]) * 60 + int(stop_at_str.split(":")[1])
+            if stop_at_mins_in_user_tz < start_at_mins_in_user_tz:
+                stop_at_mins_in_user_tz += 24 * 60
             tz = detect_timezone(user_tz_string, user_tz_offset_secs)
             self.data["timezone"] = tz
             self.data["start_at_mins_in_user_tz"] = start_at_mins_in_user_tz

@@ -98,6 +98,8 @@ class Lang:
     sleep_command_button: str
     sleep_command_text: str
 
+    sleep_config_updated: str
+
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
@@ -271,7 +273,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                        "Heure de sommeil: {bed_time} - {wakeup_time}\n",
 
     sleep_command_button="Configurer le planificateur de sommeil 💤",
-
+    sleep_config_updated="La configuration du sommeil a été mise à jour.",
 )
 
 
@@ -449,7 +451,7 @@ Presiona el botón de abajo para comenzar el juego.""",
                         "Hora de dormir: {bed_time} - {wakeup_time}\n",
 
     sleep_command_button="Configurar el programador de sueño 💤",
-
+    sleep_config_updated="La configuración de sueño ha sido actualizada.",
 )
 
 
@@ -622,12 +624,14 @@ Press the button below to start the game.""",
 
     sleep_command_text="Configure sleep scheduler 💤\n"
                          "\n"
-                         "Press the button below to set up your sleep time. The game will be automatically paused for this period.\n"
+                         "Press the button below to set up your sleep time. The game will be automatically paused for this period, daily.\n"
                          "\n"
                          "Enabled? {is_enabled}\n"
                          "Sleep time: {bed_time} - {wakeup_time}\n",
 
     sleep_command_button="Configure sleep scheduler 💤",
+
+    sleep_config_updated="Sleep scheduler has been updated.",
 )
 
 de = Lang(
@@ -805,6 +809,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     sleep_command_button="Schlafplaner konfigurieren 💤",
 
+    sleep_config_updated="Der Schlafplaner wurde aktualisiert.",
 )
 
 
@@ -977,11 +982,12 @@ ru = Lang(
 
     sleep_command_text="Настроить планировщик сна 💤\n"
                         "\n"
-                        "Нажмите на кнопку ниже, чтобы установить время сна. Игра будет автоматически поставлена на паузу на это время.\n"
+                        "Нажмите на кнопку ниже, чтобы установить время вашего сна. Игра будет автоматически ставиться на паузу на этот промежуток времени.\n"
                         "\n"
                         "Включено? {is_enabled}\n"  
                         "Время сна: {bed_time} - {wakeup_time}\n",
     sleep_command_button = "Настроить планировщик сна 💤",
+    sleep_config_updated="Настройки планировщика сна обновлены.",
 )
 
 

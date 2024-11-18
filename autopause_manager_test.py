@@ -28,13 +28,13 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(now.astimezone(tz=ZoneInfo("Asia/Novosibirsk")).hour, 21)
         manager = AutopauseManager(None)
 
-        manager.update(True, "novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60)
+        manager.update(True, "novosibirsk", 7 * 3600, '22:00', '08:00')
         next_event = datetime.fromtimestamp(manager.get_next_autopause_event_at_timestamp(), tz=ZoneInfo("Australia/Sydney"))
         self.assertEqual(next_event.hour, 1)
         self.assertEqual(next_event.minute, 0)
         self.assertEqual(next_event.day, now.day)
 
-        manager.update(True, "novosibirsk", 7 * 3600, 20*60, (24 + 8) * 60)
+        manager.update(True, "novosibirsk", 7 * 3600, '20:00', '08:00')
         next_event = datetime.fromtimestamp(manager.get_next_autopause_event_at_timestamp(), tz=ZoneInfo("Australia/Sydney"))
 
         self.assertEqual(next_event.hour, 11)
@@ -48,7 +48,7 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
         now = datetime.now(tz=ZoneInfo("Australia/Sydney"))
         self.assertEqual(now.astimezone(tz=ZoneInfo("Asia/Novosibirsk")).hour, 21)
         manager = AutopauseManager(None)
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, '22:00', '08:00')
 
         self.assertFalse(manager.is_in_interval(datetime.now().timestamp()))
         self.assertTrue(manager.is_in_interval(datetime.now().timestamp() + 3 * 3600))
@@ -59,7 +59,7 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
         now = datetime.now(tz=ZoneInfo("Australia/Sydney"))
         self.assertEqual(now.astimezone(tz=ZoneInfo("Asia/Novosibirsk")).hour, 21)
         manager = AutopauseManager(None)
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, '22:00', '08:00')
 
         serialized = manager.serialize()
         manager2 = AutopauseManager(serialized)
@@ -71,19 +71,16 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(manager.get_wakep_time(), None)
 
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60 + 30)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, '22:00', '08:30')
         self.assertEqual(manager.get_wakep_time(), "08:30")
 
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 18) * 60)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, '22:00', '18:00')
         self.assertEqual(manager.get_wakep_time(), "18:00")
 
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, 8 * 60)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, '22:00', '08:00')
         self.assertEqual(manager.get_wakep_time(), "08:00")
 
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, 18 * 60)
-        self.assertEqual(manager.get_wakep_time(), "18:00")
-
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, 0 * 60)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, '22:00', '00:00')
         self.assertEqual(manager.get_wakep_time(), "00:00")
 
     def test_get_bed_time(self):
@@ -91,8 +88,8 @@ class AutopauseManagerTest(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(manager.get_bed_time(), None)
 
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 22*60, (24 + 8) * 60 + 30)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, '22:00', '08:00')
         self.assertEqual(manager.get_bed_time(), "22:00")
 
-        manager.update(True, "Asia/Novosibirsk", 7 * 3600, 3*60 + 25, (24 + 18) * 60)
+        manager.update(True, "Asia/Novosibirsk", 7 * 3600, '03:25', '08:00')
         self.assertEqual(manager.get_bed_time(), "03:25")
