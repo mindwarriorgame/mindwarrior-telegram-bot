@@ -940,7 +940,10 @@ class GameManager:
         autopause_manager = AutopauseManager(user['autopause_config_serialized'])
         autopause_manager.update(enabled, user_tz, user_tz_offset_secs, bed_time, wakeup_time)
         user['autopause_config_serialized'] = autopause_manager.serialize()
-        user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_manager.get_next_autopause_event_at_timestamp() + 1, tz=datetime.timezone.utc)
+        if autopause_manager.is_enabled():
+            user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_manager.get_next_autopause_event_at_timestamp() + 1, tz=datetime.timezone.utc)
+        else:
+            user['next_autopause_event_time'] = None
         self.users_orm.upsert_user(user)
 
         return self._render_single_message(user['user_id'], lang.sleep_config_updated, None, None)

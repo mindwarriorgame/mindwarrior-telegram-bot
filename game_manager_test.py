@@ -1184,3 +1184,24 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                  '\n'
                                                  ' ‣ /sleep - configure sleep scheduler',
                                       'to_chat_id': 1}])
+
+    @time_machine.travel("2023-04-20 22:00", tick=False)
+    def test_autosleep_disable(self):
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
+
+        self.game_manager.on_data_provided(1, 'sleep_config:True,,Australia/Sydney,,12345,,22:30,,06:00')
+        user = self.users_orm.get_user_by_id(1)
+        self.assertEqual(user['next_autopause_event_time'], datetime.datetime(2023, 4, 20, 22, 30, 1).astimezone(datetime.timezone.utc))
+
+        data = self.game_manager.on_data_provided(1, 'sleep_config:False,,Australia/Sydney,,12345,,22:30,,06:00')
+        user = self.users_orm.get_user_by_id(1)
+        self.assertEqual(user['next_autopause_event_time'], None)
+
+        self.assertEqual(data, [{'buttons': [],
+                                 'image': None,
+                                 'menu_commands': [],
+                                 'message': 'Sleep scheduler has been updated.',
+                                 'to_chat_id': 1}])
