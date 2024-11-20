@@ -582,7 +582,7 @@
         const boardProgress2 = deserializeProgressMap(urlParams.get('bp2'));
         {
             const registry = new ProgressRegistry();
-            registry.fillWithDefaultProgressDelta(boardProgress2);
+            registry.enrichWithDefaults(boardProgress2);
         }
         board2Items.forEach(item => {
             board2.addCell(item, boardProgress2[item.badge]);

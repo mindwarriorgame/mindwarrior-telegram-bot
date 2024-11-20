@@ -27,23 +27,16 @@ class ProgressRegistry {
         this._syncWithLocalStorage();
     }
 
-    fillWithDefaultProgressDelta(progress) {
-        const badges = Object.keys(progress);
-        badges.forEach(badge => {
-            progress[badge]["progress_pct_delta"] = 0;
-        });
-    }
-
     enrichWithProgressPctDelta(level, progress, ts) {
         const earlierTimestamps = this.progressRepository.timestamps.filter(t => t < parseInt(ts));
         if (earlierTimestamps.length === 0) {
-            this._enrichWithDefaults(progress);
+            this.enrichWithDefaults(progress);
             return progress;
         }
         const prevTimestamp = earlierTimestamps[earlierTimestamps.length - 1];
         const prevProgressRec = this.progressRepository.timestampToProgress["" + prevTimestamp];
         if (prevProgressRec.level !== level) {
-            this._enrichWithDefaults(progress);
+            this.enrichWithDefaults(progress);
             return progress;
         }
         const prevProgress = prevProgressRec.progress;
@@ -74,7 +67,7 @@ class ProgressRegistry {
         }
     }
 
-    _enrichWithDefaults(progress) {
+    enrichWithDefaults(progress) {
         const badges = Object.keys(progress);
         badges.forEach(badge => {
             progress[badge]["progress_pct_delta"] = progress[badge]["progress_pct"];

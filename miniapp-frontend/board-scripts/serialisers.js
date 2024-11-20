@@ -44,8 +44,8 @@ function deserializeProgressMap(str) {
     str.split("--").forEach((chunk, chunkIdx) =>  {
         const [badge, ...progressItems] = chunk.split("_");
         ret[badge] = {
-            [badgeProgressKey[badge]]: parseInt(progressItems[0]),
-            progress_pct: parseInt(progressItems[1]),
+            [badgeProgressKey[badge]]: parseInt(progressItems[0]) || 0,
+            progress_pct: parseInt(progressItems[1]) || 0,
         };
     });
     console.log(JSON.stringify(ret, null, 2));
