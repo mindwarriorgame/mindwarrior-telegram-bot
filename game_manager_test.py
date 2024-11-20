@@ -1177,7 +1177,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         with time_machine.travel("2023-04-21 06:01", tick=False):
             data = self.game_manager.process_tick()
-            self.assertEqual(data, [{'buttons': [],
+            self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                  'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                      'image': None,
                                      'menu_commands': [],
                                      'message': 'Good morning! ☀️\n'

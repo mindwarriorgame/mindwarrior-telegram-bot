@@ -432,7 +432,7 @@ class GameManager:
 
             if is_resumed:
                 lang = self._get_user_lang(user['lang_code'])
-                return [self._render_single_message(user['user_id'], lang.autopause_resumed_msg, None, None)]
+                return [self._render_single_message(user['user_id'], lang.autopause_resumed_msg, None, self._render_review_button(lang))]
             else:
                 return []
 
