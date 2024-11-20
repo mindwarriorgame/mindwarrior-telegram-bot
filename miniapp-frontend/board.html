@@ -580,6 +580,10 @@
         board1.setHeader(lang.level_next_level.replace('###', level));
         const board2 = new Board(document.getElementById('board2'));
         const boardProgress2 = deserializeProgressMap(urlParams.get('bp2'));
+        {
+            const registry = new ProgressRegistry();
+            registry.fillWithDefaultProgressDelta(boardProgress2);
+        }
         board2Items.forEach(item => {
             board2.addCell(item, boardProgress2[item.badge]);
             if ((item.badge != 'c0' && !item.active) || (item.badge == 'c0' && item.active)) {
