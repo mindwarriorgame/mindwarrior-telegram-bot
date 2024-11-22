@@ -139,12 +139,12 @@ class BadgeCell {
         this.aElt.style.display = 'none';
     }
 
-    setAchievementActiveDisabled() {
-        this.elt.classList.add('active');
-        this.elt.style.opacity = 0.75;
-        this.lockElt.style.display = 'none';
-        this.progressElt.style.display = 'none';
-        this.aElt.style.display = 'none';
+    hideInShadows() {
+        this.elt.style.opacity = 0.5;
+    }
+
+    stepOutOfShadows() {
+        this.elt.style.opacity = 1;
     }
 
     setAchievementInactiveInProgress() {
@@ -224,19 +224,40 @@ class Board {
     }
 
     finishAdding() {
-        const hasActiveGrumpyCat = this.cells.some(cell => cell.item.badge === 'c0' && cell.item.active);
-        if (hasActiveGrumpyCat) {
+        const hasActiveGrumpyCat = this._hasActiveGrumpyCat();
+        const isRemovingGrumpyCat = this._findRemovingGrumpyCatCell();
+        console.log("Grumpy cat status: ", hasActiveGrumpyCat, isRemovingGrumpyCat);
+        if (hasActiveGrumpyCat || isRemovingGrumpyCat) {
             this.cells.forEach((cell) => {
                 if (cell.item.badge !== 'c0') {
-                    if (cell.item.active) {
-                        cell.setAchievementActiveDisabled();
-                    } else {
-                        cell.setAchievementInactiveLocked();
-                    }
+                    console.log('shadowing', cell.item.badge);
+                    cell.hideInShadows();
                 }
             });
         }
     }
+
+    _onMoveFinished() {
+        console.log('finished');
+        this.showActionButton();
+        this.cells.forEach(cell => cell.onFinishMovement());
+        if (this._findRemovingGrumpyCatCell()) {
+            this.cells.forEach((cell) => {
+                if (cell.item.badge !== 'c0') {
+                    cell.stepOutOfShadows();
+                }
+            });
+        }
+    }
+
+    _hasActiveGrumpyCat() {
+        return this.cells.some(cell => cell.item.badge === 'c0' && cell.item.active);
+    }
+
+    _findRemovingGrumpyCatCell() {
+        return this.cells.find(cell => cell.item.badge === 'c0' && cell.item.last_modified && !cell.item.active);
+    }
+
 
     waitTillReady() {
         return waitImagesLoadedPromise(this.boardElt.querySelectorAll('img')).then(() => {
@@ -255,7 +276,7 @@ class Board {
         this.placeholderElt.style.visibility = 'hidden';
 
         const actionCallback = () => {
-            const removedC0 = this.cells.find(cell => cell.item.badge === 'c0' && cell.item.last_modified && !cell.item.active);
+            const removedC0 = this._findRemovingGrumpyCatCell();
             if (removedC0) {
                 setTimeout(() => {
                     removedC0.setGrumpyCatDisappears();
@@ -264,6 +285,7 @@ class Board {
                         return onDone();
                     }, 1500);
                 }, 750);
+                return;
             }
 
             const targetCell = this.cells.find(cell => cell.isTarget);
@@ -307,11 +329,6 @@ class Board {
             actionCallback();
         }
 
-    }
-
-    _onMoveFinished() {
-        this.showActionButton();
-        this.cells.forEach(cell => cell.onFinishMovement());
     }
 
     newBoardMode() {
