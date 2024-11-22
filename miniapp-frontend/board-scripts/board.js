@@ -25,6 +25,7 @@ class BadgeCell {
         this.lockElt = this.elt.querySelector('.lock');
         this.isTarget = isTarget;
         this.elt.querySelector('img').style.transition = 'none';
+        this.isInShadow = false;
 
         this._configureProgressControls();
 
@@ -66,7 +67,7 @@ class BadgeCell {
         if (this.progress) {
             this.aElt.onclick = (e) => {
                 e.preventDefault();
-                openPopup(this.item.badge, this.progress);
+                openPopup(this.item.badge, this.progress, this.isInShadow);
             };
             if (this.progress.progress_pct < 33) {
                 this.progressElt.classList.add('red');
@@ -141,10 +142,12 @@ class BadgeCell {
 
     hideInShadows() {
         this.elt.style.opacity = 0.5;
+        this.isInShadow = true;
     }
 
     stepOutOfShadows() {
         this.elt.style.opacity = 1;
+        this.isInShadow = false;
     }
 
     setAchievementInactiveInProgress() {
@@ -241,7 +244,7 @@ class Board {
         console.log('finished');
         this.showActionButton();
         this.cells.forEach(cell => cell.onFinishMovement());
-        if (this._findRemovingGrumpyCatCell()) {
+        if (this._findRemovingGrumpyCatCell() && !this._hasActiveGrumpyCat()) {
             this.cells.forEach((cell) => {
                 if (cell.item.badge !== 'c0') {
                     cell.stepOutOfShadows();

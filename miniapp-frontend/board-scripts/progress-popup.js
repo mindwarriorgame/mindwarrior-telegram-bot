@@ -21,7 +21,14 @@ function renderSimpleTemplate(template, pct, pctDelta, counter, counterIsTime= t
     return ret.join(' ');
 }
 
-function openPopup(badge, progress) {
+function wrapWithGrumpyCat(content, hasGrumpyCat) {
+    if (hasGrumpyCat) {
+        return content + "<br /> <br />" + window.lang.grumpy_cat_no_progress;
+    }
+    return content;
+}
+
+function openPopup(badge, progress, hasGrumpyCat) {
     let content = `<img src="../badge-images/${badge}_512.jpg" />`;
 
     const timeBadges = {
@@ -38,7 +45,7 @@ function openPopup(badge, progress) {
     }
 
     if (timeBadges[badge]) {
-        content += renderSimpleTemplate(timeBadges[badge], progress.progress_pct, progress.progress_pct_delta, progress.remaining_time_secs);
+        content += renderSimpleTemplate(wrapWithGrumpyCat(timeBadges[badge], hasGrumpyCat), progress.progress_pct, progress.progress_pct_delta, progress.remaining_time_secs);
     } else if (badge === 'c0') {
         const message = window.lang.review_times
             .replace("##1", Math.ceil(progress.remaining_reviews / 3))
@@ -52,7 +59,7 @@ function openPopup(badge, progress) {
         ret.push(renderProgressBar(progress.progress_pct || 0, progress.progress_pct_delta || 0));
         content += ret.join(' ');
     } else {
-        content += renderSimpleTemplate(reviewBadges[badge], progress.progress_pct, progress.progress_pct_delta, progress.remaining_reviews, false);
+        content += renderSimpleTemplate(wrapWithGrumpyCat(reviewBadges[badge], hasGrumpyCat), progress.progress_pct, progress.progress_pct_delta, progress.remaining_reviews, false);
     }
 
     content += `<p><button class='action-btn' onclick='closePopup()'>${window.lang.close}</button></p>`;
