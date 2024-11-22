@@ -11,14 +11,11 @@ from counter import Counter
 from game_manager import GameManager
 from users_orm import UsersOrm
 
-MENU_COMMANDS = [['review', '💫️review Formula'],
+MENU_COMMANDS = [['review', '💫️ review Formula'],
                  ['pause', '⏸️ pause the game'],
-                 ['sleep', '💤 sleep scheduler'],
-                 ['formula', '️🧪update Formula'],
+                 ['formula', '️🧪 update Formula'],
                  ['stats', '📊 game progress'],
-                 ['difficulty', '💪change difficulty'],
-                 ['data', '💾 view your raw data'],
-                 ['feedback', '📢 send feedback']]
+                 ['settings', '🔧 settings']]
 
 
 class TestGameManager(unittest.IsolatedAsyncioTestCase):
@@ -138,7 +135,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 ' ‣ /pause - pause the game\n'
                                                 '\n'
-                                                ' ‣ /sleep - configure sleep scheduler',
+                                                ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
             user = self.users_orm.get_user_by_id(1)
             self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 6, 5).astimezone(datetime.timezone.utc))
@@ -185,7 +182,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 ' ‣ /pause - pause the game\n'
                                                 '\n'
-                                                ' ‣ /sleep - configure sleep scheduler',
+                                                ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
@@ -202,7 +199,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                     '\n'
                                                     ' ‣ /pause - pause the game\n'
                                                     '\n'
-                                                    ' ‣ /sleep - configure sleep scheduler',
+                                                    ' ‣ /settings - configure sleep scheduler',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
                 self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
@@ -239,7 +236,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 ' ‣ /pause - pause the game\n'
                                                 '\n'
-                                                ' ‣ /sleep - configure sleep scheduler',
+                                                ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 data = self.game_manager.process_tick()
@@ -255,7 +252,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                     '\n'
                                                     ' ‣ /pause - pause the game\n'
                                                     '\n'
-                                                    ' ‣ /sleep - configure sleep scheduler',
+                                                    ' ‣ /settings - configure sleep scheduler',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
                 self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
@@ -377,7 +374,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
-                                            ' ‣ /sleep - configure sleep scheduler',
+                                            ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
 
@@ -662,7 +659,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
-                                            ' ‣ /sleep - configure sleep scheduler',
+                                            ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['counters_history_serialized'], '['
@@ -711,7 +708,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
-                                            ' ‣ /sleep - configure sleep scheduler',
+                                            ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -780,7 +777,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
-                                            ' ‣ /sleep - configure sleep scheduler',
+                                            ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -810,7 +807,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
-                                            ' ‣ /sleep - configure sleep scheduler',
+                                            ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['counters_history_serialized'], '[{"counter_name": "review", "counter_stopped_duration_secs": 1500, "event_datetime": {"_isoformat": "2022-04-20T14:00:00+00:00"}}]')
@@ -846,7 +843,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
-                                            ' ‣ /sleep - configure sleep scheduler',
+                                            ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
     def test_formula_command_renders_set_letter_button(self):
@@ -867,6 +864,20 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            'href="https://mindwarriorgame.org/faq.en.html#formula">Formula</a></i>.',
                                 'to_chat_id': 1})
 
+    def test_on_settings_command(self):
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+
+        self.assertEqual(self.game_manager.on_settings_command(1), {'buttons': [{'data': 'sleep', 'text': '💤 sleep scheduler'},
+                                                                                {'data': 'difficulty', 'text': '💪 change difficulty'},
+                                                                                {'data': 'data', 'text': '💾 view your raw data'},
+                                                                                {'data': 'feedback', 'text': '📢 send feedback'}],
+                                                                    'image': None,
+                                                                    'menu_commands': [],
+                                                                    'message': 'Please use the buttons below to configure the game 🔧',
+                                                                    'to_chat_id': 1})
+
 
     @time_machine.travel("2022-04-21", tick=False)
     def test_data_command(self):
@@ -886,14 +897,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                              {'text': 'DELETE ALL DATA ❌',
                                               'url': 'http://frontend?env=prod&lang_code=en&delete_data=1'}],
                                  'image': 'fname',
-                                 'menu_commands': [['review', '💫️review Formula'],
-                                                   ['pause', '⏸️ pause the game'],
-                                                   ['sleep', '💤 sleep scheduler'],
-                                                   ['formula', '️🧪update Formula'],
-                                                   ['stats', '📊 game progress'],
-                                                   ['difficulty', '💪change difficulty'],
-                                                   ['data', '💾 view your raw data'],
-                                                   ['feedback', '📢 send feedback']],
+                                 'menu_commands': MENU_COMMANDS,
                                  'message': '<a href="https://mindwarriorgame.org/privacy-policy.en">We '
                                             'respect your privacy</a> and want to treat your data as '
                                             'transparent as possible. Below you can find all your data that '
@@ -971,7 +975,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 ' ‣ /pause - pause the game\n'
                                                 '\n'
-                                                ' ‣ /sleep - configure sleep scheduler',
+                                                ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
             user = self.users_orm.get_user_by_id(1)
             badge_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
@@ -1006,7 +1010,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 ' ‣ /pause - pause the game\n'
                                                 '\n'
-                                                ' ‣ /sleep - configure sleep scheduler',
+                                                ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
 
         user = self.users_orm.get_user_by_id(1)
@@ -1031,7 +1035,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
-                                            ' ‣ /sleep - configure sleep scheduler',
+                                            ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
         achievement_urls = [
@@ -1062,7 +1066,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 ' ‣ /pause - pause the game\n'
                                                 '\n'
-                                                ' ‣ /sleep - configure sleep scheduler',
+                                                ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
 
         user = self.users_orm.get_user_by_id(1)
@@ -1087,7 +1091,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
-                                            ' ‣ /sleep - configure sleep scheduler',
+                                            ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
 
@@ -1166,7 +1170,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 'The game is automatically paused until 06:00. Sweet dreams! 🌙\n'
                                                 '\n'
-                                                ' ‣ /sleep - configure sleep scheduler',
+                                                ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
             user = self.users_orm.get_user_by_id(1)
             self.assertIsNotNone(user['paused_counter_state'])
@@ -1185,7 +1189,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 '\n'
                                                 'The game is resumed. Have a great day! 🌞\n'
                                                 '\n'
-                                                ' ‣ /sleep - configure sleep scheduler',
+                                                ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
             user = self.users_orm.get_user_by_id(1)
             self.assertIsNone(user['paused_counter_state'])
@@ -1222,7 +1226,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                  '\n'
                                                  'The game is automatically paused until 06:00. Sweet dreams! 🌙\n'
                                                  '\n'
-                                                 ' ‣ /sleep - configure sleep scheduler',
+                                                 ' ‣ /settings - configure sleep scheduler',
                                       'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20 22:00", tick=False)

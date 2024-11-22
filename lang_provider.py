@@ -52,6 +52,9 @@ class Lang:
     menu_difficulty: str
     menu_data: str
     menu_feedback: str
+    menu_settings: str
+
+    settings_title: str
 
     feedback_text: str
 
@@ -116,14 +119,17 @@ fr = Lang(
 
 Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
-    menu_review = "💫️réviser la Formule",
+    menu_review = "💫️ réviser la Formule",
     menu_pause = "⏸️ mettre le jeu en pause",
-    menu_sleep = "💤 planificateur de sommeil",
     menu_stats = "📊 progression du jeu",
-    menu_formula = "️🧪mettre à jour la Formule",
-    menu_difficulty = "💪changer la difficulté",
+    menu_formula = "️🧪 mettre à jour la Formule",
+    menu_sleep = "💤 planificateur de sommeil",
+    menu_difficulty = "💪 changer la difficulté",
     menu_data = "💾 voir vos données brutes",
     menu_feedback = "📢 envoyer des commentaires",
+    menu_settings="🔧 paramètres",
+
+    settings_title='Veuillez utiliser les boutons ci-dessous pour configurer le jeu 🔧',
 
     feedback_text = "Des questions, des suggestions ou des commentaires? "
                     "N'hésitez pas à créer un <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">problème GitHub</a> pour en discuter! 😉",
@@ -146,7 +152,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                                 "{pause_prompt}",
 
     pause_prompt = " ‣ /pause - mettre le jeu en pause",
-    autopause_prompt=" ‣ /sleep - configurer le planificateur de sommeil",
+    autopause_prompt=" ‣ /settings - configurer le planificateur de sommeil",
 
     review_since_last_time="Temps écoulé depuis la dernière consultation : {duration}",
 
@@ -257,13 +263,13 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                        "\n"
                        "Le jeu est automatiquement mis en pause jusqu'à {until_time}. Faites de beaux rêves! 🌙\n"
                        "\n"
-                       " ‣ /sleep - configurer le planificateur de sommeil",
+                       " ‣ /settings - configurer le planificateur de sommeil",
 
     autopause_resumed_msg = "Bonjour! ☀️\n"
                             "\n"
                             "Le jeu reprend. Passez une bonne journée! 🌞\n"
                             "\n"
-                            " ‣ /sleep - configurer le planificateur de sommeil",
+                            " ‣ /settings - configurer le planificateur de sommeil",
 
     sleep_command_text="Configurer le planificateur de sommeil 💤\n"
                        "\n"
@@ -296,14 +302,17 @@ es = Lang(
 
 Presiona el botón de abajo para comenzar el juego.""",
 
-    menu_review="💫️revisar Fórmula",
+    menu_review="💫️ revisar Fórmula",
     menu_pause="⏸️ pausar el juego",
     menu_sleep="💤 programador de sueño",
     menu_stats="📊 progreso del juego",
-    menu_formula="🧪actualizar Fórmula",
-    menu_difficulty="💪cambiar dificultad",
+    menu_formula="🧪 actualizar Fórmula",
+    menu_difficulty="💪 cambiar dificultad",
     menu_data="💾 ver tus datos sin procesar",
     menu_feedback = "📢 enviar comentarios",
+    menu_settings="🔧 ajustes",
+
+    settings_title='Utiliza los botones a continuación para configurar el juego 🔧',
 
     feedback_text = "¿Tienes preguntas, sugerencias o comentarios?"
                     "¡No dudes en plantear un <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">problema de GitHub</a> para discutirlo! 😉",
@@ -325,7 +334,7 @@ Presiona el botón de abajo para comenzar el juego.""",
                                 "\n"
                                 "{pause_prompt}",
     pause_prompt=" ‣ /pause - pausar el juego",
-    autopause_prompt = " ‣ /sleep - configurar el programador de sueño",
+    autopause_prompt = " ‣ /settings - configurar el programador de sueño",
 
     review_since_last_time="Tiempo desde la última revisión: {duration}",
 
@@ -438,13 +447,13 @@ Presiona el botón de abajo para comenzar el juego.""",
                        "\n"
                        "El juego se pausa automáticamente hasta {until_time}. ¡Dulces sueños! 🌙\n"
                        "\n"
-                       " ‣ /sleep - configurar el programador de sueño",
+                       " ‣ /settings - configurar el programador de sueño",
 
     autopause_resumed_msg = "¡Buenos días! ☀️\n"
                             "\n"
                             "El juego se reanuda. ¡Que tengas un buen día! 🌞\n"
                             "\n"
-                            " ‣ /sleep - configurar el programador de sueño",
+                            " ‣ /settings - configurar el programador de sueño",
 
     sleep_command_text="Configurar el programador de sueño 💤\n"
                         "\n"
@@ -477,14 +486,17 @@ en = Lang(
 
 Press the button below to start the game.""",
 
-    menu_review="💫️review Formula",
+    menu_review="💫️ review Formula",
     menu_pause="⏸️ pause the game",
-    menu_sleep="💤 sleep scheduler",
     menu_stats="📊 game progress",
-    menu_formula="️🧪update Formula",
-    menu_difficulty="💪change difficulty",
+    menu_formula="️🧪 update Formula",
+    menu_settings="🔧 settings",
+    menu_sleep="💤 sleep scheduler",
+    menu_difficulty="💪 change difficulty",
     menu_data = "💾 view your raw data",
     menu_feedback = "📢 send feedback",
+
+    settings_title='Please use the buttons below to configure the game 🔧',
 
     feedback_text = "Questions, suggestions, or feedback? "
                     "Please feel free to raise a <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub issue</a> to discuss! 😉",
@@ -508,7 +520,7 @@ Press the button below to start the game.""",
                                 "{pause_prompt}",
 
     pause_prompt = " ‣ /pause - pause the game",
-    autopause_prompt=" ‣ /sleep - configure sleep scheduler",
+    autopause_prompt=" ‣ /settings - configure sleep scheduler",
 
 
     review_since_last_time="Time since the last review: {duration}",
@@ -620,13 +632,13 @@ Press the button below to start the game.""",
                        "\n"
                        "The game is automatically paused until {until_time}. Sweet dreams! 🌙\n"
                        "\n"
-                       " ‣ /sleep - configure sleep scheduler",
+                       " ‣ /settings - configure sleep scheduler",
 
     autopause_resumed_msg = "Good morning! ☀️\n"
                             "\n"        
                             "The game is resumed. Have a great day! 🌞\n"
                             "\n"    
-                            " ‣ /sleep - configure sleep scheduler",
+                            " ‣ /settings - configure sleep scheduler",
 
     sleep_command_text="Configure sleep scheduler 💤\n"
                          "\n"
@@ -659,14 +671,17 @@ de = Lang(
 
 Drücke den Button unten, um das Spiel zu starten.""",
 
-    menu_review="💫️Formel überprüfen",
+    menu_review="💫️ Formel überprüfen",
     menu_pause="⏸️ Spiel pausieren",
     menu_sleep="💤 Schlafplaner",
     menu_stats="📊 Spielfortschritt",
-    menu_formula="️🧪Formel aktualisieren",
-    menu_difficulty="💪Schwierigkeitsgrad ändern",
+    menu_formula="️🧪 Formel aktualisieren",
+    menu_difficulty="💪 Schwierigkeitsgrad ändern",
     menu_data = "💾 Rohdaten anzeigen",
     menu_feedback = "📢 Feedback senden",
+    menu_settings = "🔧 Einstellungen",
+
+    settings_title='Bitte verwenden Sie die untenstehenden Schaltflächen, um das Spiel zu konfigurieren 🔧',
 
     feedback_text = "Fragen, Vorschläge oder Feedback? "
                     "Bitte melden Sie gerne ein <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub-Problem</a> zur Diskussion! 😉",
@@ -689,7 +704,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
                                 "{pause_prompt}",
 
     pause_prompt = " ‣ /pause - Spiel pausieren",
-    autopause_prompt=" ‣ /sleep - Schlafplaner konfigurieren",
+    autopause_prompt=" ‣ /settings - Schlafplaner konfigurieren",
 
 
     review_since_last_time="Zeit seit der letzten Überprüfung: {duration}",
@@ -801,13 +816,13 @@ Drücke den Button unten, um das Spiel zu starten.""",
                        "\n"
                        "Das Spiel wird automatisch bis {until_time} pausiert. Süße Träume! 🌙\n"
                        "\n"
-                       " ‣ /sleep - Schlafplaner konfigurieren",
+                       " ‣ /settings - Schlafplaner konfigurieren",
 
     autopause_resumed_msg = "Guten Morgen! ☀️\n"
                             "\n"
                             "Das Spiel wird fortgesetzt. Hab einen schönen Tag! 🌞\n"
                             "\n"
-                            " ‣ /sleep - Schlafplaner konfigurieren",
+                            " ‣ /settings - Schlafplaner konfigurieren",
 
     sleep_command_text="Schlafplaner konfigurieren 💤\n"
                         "\n"
@@ -841,7 +856,7 @@ ru = Lang(
 
 Нажмите кнопку ниже, чтобы начать игру.""",
 
-    menu_review="💫️просмотреть Формулу",
+    menu_review="💫️ просмотреть Формулу",
     menu_pause="⏸️ поставить игру на паузу",
     menu_sleep="💤 настроить планировщик сна",
     menu_stats="📊 статистика игры",
@@ -849,6 +864,10 @@ ru = Lang(
     menu_difficulty="💪 изменить сложность",
     menu_data = "💾 просмотреть свои данные",
     menu_feedback = "📢 обратная связь",
+
+    menu_settings = "🔧 настройки",
+
+    settings_title='Используйте кнопки ниже, чтобы настроить игру 🔧',
 
     feedback_text = "Вопросы? Предложения? Обратная связь? "
                     "Давайте обсудим это в <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub-е</a>! 😉",
@@ -872,7 +891,7 @@ ru = Lang(
                                 "{pause_prompt}",
 
     pause_prompt = " ‣ /pause - игру на паузу",
-    autopause_prompt=" ‣ /sleep - настроить планировщик сна",
+    autopause_prompt=" ‣ /settings - настроить планировщик сна",
 
 
     review_since_last_time="Прошло с последнего просмотра: {duration}",
@@ -984,13 +1003,13 @@ ru = Lang(
                        "\n"
                        "Игра автоматически поставлена на паузу до {until_time}. Сладких снов! 🌙\n"
                        "\n"
-                       " ‣ /sleep - настроить планировщик сна",
+                       " ‣ /settings - настроить планировщик сна",
 
     autopause_resumed_msg = "Доброе утро! ☀️\n"
                             "\n"
                             "Игра возобновлена. Хорошего дня! 🌞\n"
                             "\n"
-                            " ‣ /sleep - настроить планировщик сна",
+                            " ‣ /settings - настроить планировщик сна",
 
     sleep_command_text="Настроить планировщик сна 💤\n"
                         "\n"

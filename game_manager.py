@@ -1,7 +1,7 @@
 import copy
 import datetime
 import uuid
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, NotRequired
 import time
 
 import numpy as np
@@ -18,7 +18,8 @@ from users_orm import UsersOrm, User
 
 class Button(TypedDict):
     text: str
-    url: str
+    data: NotRequired[str]
+    url: NotRequired[str]
 
 class Reply(TypedDict):
     to_chat_id: int
@@ -948,18 +949,38 @@ class GameManager:
             wakeup_time=autopause_manager.get_wakep_time() if autopause_manager.get_wakep_time() is not None else 'N/A'
         ), None, None)
 
+    def on_settings_command(self, chat_id) -> Reply:
+        user = self.users_orm.get_user_by_id(chat_id)
+        if user['lang_code'] is None:
+            return self.on_start_command(chat_id)
+        lang = self._get_user_lang(user['lang_code'])
+
+        return self._render_settings_screen(chat_id, lang)
+
     def _render_menu_commands(self, lang):
         return [
             ["review", lang.menu_review],
             ["pause", lang.menu_pause],
-            ["sleep", lang.menu_sleep],
             ["formula", lang.menu_formula],
             ["stats", lang.menu_stats],
-            ["difficulty", lang.menu_difficulty],
-            ["data", lang.menu_data],
-            ["feedback", lang.menu_feedback]
+            ["settings", lang.menu_settings]
         ]
 
+    def _render_settings_screen(self, chat_id, lang) -> Reply:
+        sub_commands = [
+            { "data": "sleep", "text": lang.menu_sleep },
+            { "data": "difficulty", "text": lang.menu_difficulty },
+            { "data": "data", "text": lang.menu_data },
+            { "data": "feedback", "text": lang.menu_feedback }
+        ]
+
+        return {
+            'to_chat_id': chat_id,
+            'message': lang.settings_title,
+            'buttons': sub_commands,
+            'menu_commands': [],
+            'image': None
+        }
 
 
 
