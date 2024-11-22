@@ -869,10 +869,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
 
-        self.assertEqual(self.game_manager.on_settings_command(1), {'buttons': [{'data': 'sleep', 'text': '💤 sleep scheduler'},
-                                                                                {'data': 'difficulty', 'text': '💪 change difficulty'},
-                                                                                {'data': 'data', 'text': '💾 view your raw data'},
-                                                                                {'data': 'feedback', 'text': '📢 send feedback'}],
+        self.assertEqual(self.game_manager.on_settings_command(1), {'buttons': [{'data': 'sleep', 'text': '💤 Sleep scheduler'},
+                                                                                {'data': 'difficulty', 'text': '💪 Change difficulty'},
+                                                                                {'data': 'data', 'text': '💾 View your raw data'},
+                                                                                {'data': 'feedback', 'text': '📢 Send feedback'}],
                                                                     'image': None,
                                                                     'menu_commands': [],
                                                                     'message': 'Please use the buttons below to configure the game 🔧',

@@ -123,13 +123,14 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     menu_pause = "⏸️ mettre le jeu en pause",
     menu_stats = "📊 progression du jeu",
     menu_formula = "️🧪 mettre à jour la Formule",
-    menu_sleep = "💤 planificateur de sommeil",
-    menu_difficulty = "💪 changer la difficulté",
-    menu_data = "💾 voir vos données brutes",
-    menu_feedback = "📢 envoyer des commentaires",
     menu_settings="🔧 paramètres",
 
     settings_title='Veuillez utiliser les boutons ci-dessous pour configurer le jeu 🔧',
+
+    menu_sleep = "💤 Planificateur de sommeil",
+    menu_difficulty = "💪 Changer la difficulté",
+    menu_data = "💾 Voir vos données brutes",
+    menu_feedback = "📢 Envoyer des commentaires",
 
     feedback_text = "Des questions, des suggestions ou des commentaires? "
                     "N'hésitez pas à créer un <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">problème GitHub</a> pour en discuter! 😉",
@@ -304,15 +305,16 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     menu_review="💫️ revisar Fórmula",
     menu_pause="⏸️ pausar el juego",
-    menu_sleep="💤 programador de sueño",
     menu_stats="📊 progreso del juego",
     menu_formula="🧪 actualizar Fórmula",
-    menu_difficulty="💪 cambiar dificultad",
-    menu_data="💾 ver tus datos sin procesar",
-    menu_feedback = "📢 enviar comentarios",
     menu_settings="🔧 ajustes",
 
     settings_title='Utiliza los botones a continuación para configurar el juego 🔧',
+
+    menu_sleep="💤 Programador de sueño",
+    menu_difficulty="💪 Cambiar dificultad",
+    menu_data="💾 Ver tus datos sin procesar",
+    menu_feedback = "📢 Enviar comentarios",
 
     feedback_text = "¿Tienes preguntas, sugerencias o comentarios?"
                     "¡No dudes en plantear un <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">problema de GitHub</a> para discutirlo! 😉",
@@ -491,12 +493,13 @@ Press the button below to start the game.""",
     menu_stats="📊 game progress",
     menu_formula="️🧪 update Formula",
     menu_settings="🔧 settings",
-    menu_sleep="💤 sleep scheduler",
-    menu_difficulty="💪 change difficulty",
-    menu_data = "💾 view your raw data",
-    menu_feedback = "📢 send feedback",
 
     settings_title='Please use the buttons below to configure the game 🔧',
+
+    menu_sleep="💤 Sleep scheduler",
+    menu_difficulty="💪 Change difficulty",
+    menu_data = "💾 View your raw data",
+    menu_feedback = "📢 Send feedback",
 
     feedback_text = "Questions, suggestions, or feedback? "
                     "Please feel free to raise a <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub issue</a> to discuss! 😉",
@@ -673,13 +676,14 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     menu_review="💫️ Formel überprüfen",
     menu_pause="⏸️ Spiel pausieren",
-    menu_sleep="💤 Schlafplaner",
     menu_stats="📊 Spielfortschritt",
     menu_formula="️🧪 Formel aktualisieren",
+    menu_settings = "🔧 Einstellungen",
+
     menu_difficulty="💪 Schwierigkeitsgrad ändern",
+    menu_sleep="💤 Schlafplaner",
     menu_data = "💾 Rohdaten anzeigen",
     menu_feedback = "📢 Feedback senden",
-    menu_settings = "🔧 Einstellungen",
 
     settings_title='Bitte verwenden Sie die untenstehenden Schaltflächen, um das Spiel zu konfigurieren 🔧',
 
@@ -858,16 +862,16 @@ ru = Lang(
 
     menu_review="💫️ просмотреть Формулу",
     menu_pause="⏸️ поставить игру на паузу",
-    menu_sleep="💤 настроить планировщик сна",
     menu_stats="📊 статистика игры",
     menu_formula="🧪 изменить Формулу",
-    menu_difficulty="💪 изменить сложность",
-    menu_data = "💾 просмотреть свои данные",
-    menu_feedback = "📢 обратная связь",
 
     menu_settings = "🔧 настройки",
-
     settings_title='Используйте кнопки ниже, чтобы настроить игру 🔧',
+
+    menu_sleep="💤 Настроить планировщик сна",
+    menu_difficulty="💪 Изменить сложность",
+    menu_data = "💾 Просмотреть свои данные",
+    menu_feedback = "📢 Обратная связь",
 
     feedback_text = "Вопросы? Предложения? Обратная связь? "
                     "Давайте обсудим это в <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub-е</a>! 😉",
