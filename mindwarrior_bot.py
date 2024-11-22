@@ -79,6 +79,7 @@ def get_message(update: Update):
     return update.message if update.message is not None else update.callback_query.message
 
 
+
 async def start_command(update, context):
     global game_manager
     message = get_message(update)
@@ -197,9 +198,15 @@ async def fetch_and_process_updates(app: Application):
         await process_ticks()
 
 async def button(update: Update, ctx) -> None:
+    global game_manager
     query = update.callback_query
 
     await query.answer()
+
+    for lang_code, lang in LangProvider.get_available_languages().items():
+        if query.data == lang_code:
+            await send_reply(get_message(update), game_manager.on_lang_input(get_message(update).chat.id, lang_code))
+            return
 
     if query.data == "data":
         await data_command(update, ctx)

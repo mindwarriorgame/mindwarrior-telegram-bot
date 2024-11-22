@@ -64,7 +64,7 @@ class GameManager:
         return self._render_start_game_screen(lang, user)
 
     def on_lang_input(self, chat_id: int, user_message: str) -> Reply:
-        lang_code = user_message[1:]
+        lang_code = user_message[1:] if user_message.startswith("/") else user_message
         languages = LangProvider.get_available_languages()
         if lang_code in languages:
             user = self.users_orm.get_user_by_id(chat_id)
@@ -642,15 +642,26 @@ class GameManager:
         return False
 
     def _render_list_of_langs(self, chat_id, languages: dict[str, Lang]) -> Reply:
-        message = ""
+        buttons = []
         for lang_code in sorted(languages):
             lang = languages[lang_code]
-            new_lang_msg = "/" + lang_code + " - " + lang.lang_name
             if lang_code == "en":
-                message = new_lang_msg + "\n\n" + message
+                buttons = [{
+                    "text": lang.lang_name,
+                    "data": lang_code
+                }] + buttons
             else:
-                message += new_lang_msg + "\n\n"
-        return self._render_single_message(chat_id, message, None, None)
+                buttons += [{
+                    "text": lang.lang_name,
+                    "data": lang_code
+                }]
+        return {
+            'to_chat_id': chat_id,
+            'message': "Select your language:",
+            'buttons': buttons,
+            'menu_commands': [],
+            'image': None
+        }
 
     def _render_single_message(self, chat_id, msg: str, maybe_badge_message: Optional[str], maybe_badge_button: Optional[Button]) -> Reply:
         buttons = []

@@ -143,19 +143,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
     def test_on_start_command(self):
         data = self.game_manager.on_review_command(1)
-        self.assertEqual(data, {'buttons': [],
+        self.assertEqual(data, {'buttons': [{'data': 'en', 'text': 'English'},
+                                            {'data': 'de', 'text': 'Deutsch'},
+                                            {'data': 'es', 'text': 'Español'},
+                                            {'data': 'fr', 'text': 'Français'},
+                                            {'data': 'ru', 'text': 'Русский'}],
                                 'image': None,
                                 'menu_commands': [],
-                                'message': '/en - English\n'
-                                           '\n'
-                                           '/de - Deutsch\n'
-                                           '\n'
-                                           '/es - Español\n'
-                                           '\n'
-                                           '/fr - Français\n'
-                                           '\n'
-                                           '/ru - Русский\n'
-                                           '\n',
+                                'message': 'Select your language:',
                                 'to_chat_id': 1})
 
 
