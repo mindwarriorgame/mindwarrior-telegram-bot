@@ -127,10 +127,10 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     settings_title='Veuillez utiliser les boutons ci-dessous pour configurer le jeu 🔧',
 
-    menu_sleep = "💤 Planificateur de sommeil",
-    menu_difficulty = "💪 Changer la difficulté",
-    menu_data = "💾 Voir vos données brutes",
-    menu_feedback = "📢 Envoyer des commentaires",
+    menu_sleep="💤 Planificateur de sommeil",
+    menu_difficulty="💪 Difficulté du jeu",
+    menu_data = "💾 Données personnelles",
+    menu_feedback = "📢 Commentaires",
 
     feedback_text = "Des questions, des suggestions ou des commentaires? "
                     "N'hésitez pas à créer un <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">problème GitHub</a> pour en discuter! 😉",
@@ -311,10 +311,10 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     settings_title='Utiliza los botones a continuación para configurar el juego 🔧',
 
-    menu_sleep="💤 Programador de sueño",
-    menu_difficulty="💪 Cambiar dificultad",
-    menu_data="💾 Ver tus datos sin procesar",
-    menu_feedback = "📢 Enviar comentarios",
+    menu_sleep="💤 Planificador de sueño",
+    menu_difficulty="💪 Dificultad del juego",
+    menu_data = "💾 Datos personales",
+    menu_feedback = "📢 Comentarios",
 
     feedback_text = "¿Tienes preguntas, sugerencias o comentarios?"
                     "¡No dudes en plantear un <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">problema de GitHub</a> para discutirlo! 😉",
@@ -496,10 +496,10 @@ Press the button below to start the game.""",
 
     settings_title='Please use the buttons below to configure the game 🔧',
 
-    menu_sleep="💤 Sleep scheduler",
-    menu_difficulty="💪 Change difficulty",
-    menu_data = "💾 View your raw data",
-    menu_feedback = "📢 Send feedback",
+    menu_sleep="💤 Sleep Scheduler",
+    menu_difficulty="💪 Game Difficulty",
+    menu_data = "💾 Personal Data",
+    menu_feedback = "📢 Feedback",
 
     feedback_text = "Questions, suggestions, or feedback? "
                     "Please feel free to raise a <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub issue</a> to discuss! 😉",
@@ -680,10 +680,10 @@ Drücke den Button unten, um das Spiel zu starten.""",
     menu_formula="️🧪 Formel aktualisieren",
     menu_settings = "🔧 Einstellungen",
 
-    menu_difficulty="💪 Schwierigkeitsgrad ändern",
     menu_sleep="💤 Schlafplaner",
-    menu_data = "💾 Rohdaten anzeigen",
-    menu_feedback = "📢 Feedback senden",
+    menu_difficulty="💪 Spielschwierigkeit",
+    menu_data = "💾 Persönliche Daten",
+    menu_feedback = "📢 Feedback",
 
     settings_title='Bitte verwenden Sie die untenstehenden Schaltflächen, um das Spiel zu konfigurieren 🔧',
 
@@ -868,9 +868,9 @@ ru = Lang(
     menu_settings = "🔧 настройки",
     settings_title='Используйте кнопки ниже, чтобы настроить игру 🔧',
 
-    menu_sleep="💤 Настроить планировщик сна",
-    menu_difficulty="💪 Изменить сложность",
-    menu_data = "💾 Просмотреть свои данные",
+    menu_sleep="💤 Планировщик сна",
+    menu_difficulty="💪 Сложность игры",
+    menu_data = "💾 Личные данные",
     menu_feedback = "📢 Обратная связь",
 
     feedback_text = "Вопросы? Предложения? Обратная связь? "
