@@ -547,10 +547,13 @@
     }
 
     function toStopwatchValue(nMsecs) {
-        const nSecs = Math.floor(nMsecs / 1000);
-        const nMins = Math.floor(nSecs / 60);
+        let nSecs = Math.floor(nMsecs / 1000);
+        let nMins = Math.floor(nSecs / 60);
         let nHours = Math.floor(nMins / 60);
         const nDays = Math.floor(nHours / 24);
+
+        nSecs = nSecs % 60;
+        nMins = nMins % 60;
         nHours = nHours % 24;
 
         let ret = "";
