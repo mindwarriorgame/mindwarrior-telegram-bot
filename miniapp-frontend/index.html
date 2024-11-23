@@ -568,6 +568,7 @@
             vertical-align: middle;
             width: 24px;
             filter: invert(1);
+            background-color: #222222;
         }
 
         #menu div {
@@ -1315,6 +1316,7 @@
 
                 CONTENT.textarea.focus();
                 CONTENT.textarea.setSelectionRange(beginningOfLine, endSelection);
+                CONTENT.textarea.focus();
             }
 
             const insertAtLineEnd = (e, newText) => {
@@ -1328,6 +1330,7 @@
                 CONTENT.textarea.value = CONTENT.textarea.value.substring(0, endOfLine) + newText + CONTENT.textarea.value.substring(endOfLine);
                 CONTENT.textarea.focus();
                 CONTENT.textarea.setSelectionRange(endOfLine, endOfLine + newText.length);
+                CONTENT.textarea.focus();
             }
 
             const insertModifier = (e, modifier, newText) => {
@@ -1345,6 +1348,7 @@
 
                 CONTENT.textarea.focus();
                 CONTENT.textarea.setSelectionRange(startAt + 1, startAt + 1 + textToInsert.length + modifier.length * 2);
+                CONTENT.textarea.focus();
             }
 
             MENU.insertHeader.textContent = lang.menuHeader;
