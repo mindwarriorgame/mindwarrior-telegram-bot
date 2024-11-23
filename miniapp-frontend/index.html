@@ -556,6 +556,10 @@
             padding: 10px;
         }
 
+        #back-to-edit {
+            background-color:#eeeeee;
+        }
+
         #back-to-edit a {
             color: dodgerblue;
         }
@@ -673,8 +677,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const langCode = urlParams.get('lang_code') || 'en';
     window.lang = window.langs[langCode];
-
-    document.getElementById('footer').innerHTML = window.lang.footer;
 
     window.expandChunk = (idx) => {
         if (document.getElementById('chunk' + idx).style.display === 'block') {
@@ -889,6 +891,9 @@
         share: document.querySelector('#menu .share')
     };
 
+    const FOOTER = document.querySelector('#footer');
+    FOOTER.innerHTML = window.lang.footer;
+
     function hide(elt) {
         elt.classList.add('hidden');
     }
@@ -923,6 +928,8 @@
         hide(PREVIEW_BTN.parent);
 
         hide(MENU.parent);
+
+        hide(FOOTER);
     }
 
     class DataSubmitComponent {
@@ -1239,6 +1246,7 @@
                 hide(MENU.parent);
                 show(CONTENT.review);
                 show(BACK_TO_EDIT.parent);
+                hide(FOOTER);
                 CONTENT.review.innerHTML = initStopwatches(initCounters(textToHtml(CONTENT.textarea.value, lang)));
             });
 
@@ -1265,7 +1273,6 @@
                 hide(HEADER.close);
                 hide(MENU.parent);
             });
-
 
 
             MENU.share.addEventListener("click", (e) => {
@@ -1407,6 +1414,7 @@
             show(CONTENT.textarea);
             show(HEADER.menu);
             show(PREVIEW_BTN.parent);
+            show(FOOTER);
         }
     }
 
