@@ -1314,6 +1314,8 @@
                     endSelection = endOfLine + headerBeginning.length + 1;
                 }
 
+                // https://stackoverflow.com/questions/29899364/how-do-you-scroll-to-the-position-of-the-cursor-in-a-textarea
+                CONTENT.textarea.setSelectionRange(beginningOfLine, beginningOfLine);
                 CONTENT.textarea.focus();
                 CONTENT.textarea.setSelectionRange(beginningOfLine, endSelection);
                 CONTENT.textarea.focus();
@@ -1328,6 +1330,9 @@
                     endOfLine++;
                 }
                 CONTENT.textarea.value = CONTENT.textarea.value.substring(0, endOfLine) + newText + CONTENT.textarea.value.substring(endOfLine);
+
+                // https://stackoverflow.com/questions/29899364/how-do-you-scroll-to-the-position-of-the-cursor-in-a-textarea
+                CONTENT.textarea.setSelectionRange(endOfLine, endOfLine);
                 CONTENT.textarea.focus();
                 CONTENT.textarea.setSelectionRange(endOfLine, endOfLine + newText.length);
                 CONTENT.textarea.focus();
@@ -1346,6 +1351,8 @@
                 }
                 CONTENT.textarea.value = CONTENT.textarea.value.substring(0, CONTENT.textarea.selectionStart) + " " + modifier + textToInsert + modifier + " " + CONTENT.textarea.value.substring(CONTENT.textarea.selectionEnd);
 
+                // https://stackoverflow.com/questions/29899364/how-do-you-scroll-to-the-position-of-the-cursor-in-a-textarea
+                CONTENT.textarea.setSelectionRange(startAt + 1, startAt + 1);
                 CONTENT.textarea.focus();
                 CONTENT.textarea.setSelectionRange(startAt + 1, startAt + 1 + textToInsert.length + modifier.length * 2);
                 CONTENT.textarea.focus();
