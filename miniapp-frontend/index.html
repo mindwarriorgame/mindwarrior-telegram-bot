@@ -977,6 +977,15 @@
             this._showData(data);
             const url = `https://boo.great-site.net?env=${env}&lang_code=${langCode}&query_id=` + encodeURIComponent(this.queryId) + '&data=' + encodeURIComponent(data)+'&_=' + new Date().getTime();
             const corsUrl = url; //'https://corsproxy.io/?' + encodeURIComponent(url);
+
+            if (!AbortSignal.timeout) {
+                AbortSignal.timeout = function timeout(ms) {
+                    const ctrl = new AbortController()
+                    setTimeout(() => ctrl.abort(), ms)
+                    return ctrl.signal
+                }
+            }
+
             try {
                 const response = await fetch(corsUrl, {mode: 'cors', signal: AbortSignal.timeout(15000)});
                 if (!response.ok) {
