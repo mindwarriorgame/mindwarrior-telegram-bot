@@ -24,7 +24,12 @@ async def process_ticks():
     global game_manager
     replies = game_manager.process_tick()
     for reply in replies:
-        await send_reply_with_bot(reply)
+        try:
+            await send_reply_with_bot(reply)
+        except Exception as e:
+            if type(e).__name__ == 'Forbidden' and 'bot was blocked by the user' in e.message:
+                print('Deleting blocked user')
+                game_manager.users_orm.remove_user(reply['to_chat_id'])
 
 
 async def send_reply(message: Message, ret: Reply):
