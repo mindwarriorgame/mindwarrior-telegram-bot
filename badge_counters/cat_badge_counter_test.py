@@ -87,6 +87,53 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         self._test_runner('c1', expectations, 2, ['c1', 'c2', 'c0', 't0'])
 
+    def test_no_c0_on_beginner(self):
+
+        expectations = [
+            {
+                'progress_at': 0,
+                'expected_progress_pct': 0,
+                'expected_remaining_time_secs': 28800,
+                'expected_challenge': 'review_regularly_no_penalty'
+            },
+            {
+                'review_at': 0,
+                'expected_badge': None,
+            },
+            {
+                'progress_at': 0,
+                'expected_progress_pct': 0,
+                'expected_remaining_time_secs': 28800,
+                'expected_challenge': 'review_regularly_no_penalty'
+            },
+            {
+                'penalty_at': 60000,
+                'expected_badge': None,
+            },
+            {
+                'progress_at': 61000,
+                'expected_progress_pct': 0,
+                'expected_remaining_time_secs': 28800,
+                'expected_challenge': 'review_regularly_no_penalty',
+            },
+            {
+                'review_at': 62000,
+                'expected_badge': None,
+            },
+            {
+                'review_at': 63000,
+                'expected_badge': None,
+            },
+            {
+                'progress_at': 64000,
+                'expected_progress_pct': 4,
+                'expected_remaining_time_secs': 27800,
+                'expected_challenge': 'review_regularly_no_penalty',
+            }
+        ]
+
+        self._test_runner('c1', expectations, 0, ['c1', 'c2', 'c0', 't0'])
+
     def _test_runner(self, for_badge, expectations, difficulty, board_locked_items):
         counter = CatBadgeCounter()
         state = None

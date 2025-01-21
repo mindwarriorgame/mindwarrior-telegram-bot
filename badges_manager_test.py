@@ -48,6 +48,54 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(badges_manager.is_level_completed(), False)
         self.assertEqual(badges_manager.serialize(), '{"badges_state": {"CatBadgeCounter": "cumulative_counter_secs=0,counter_last_updated=61000,update_reason=penalty", "TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5,skip_next", "FeatherBadgeCounter": "86400"}, "board": [{"badge": "f0", "is_active": true}, {"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, {"badge": "c0", "is_active": true, "is_last_modified": true}], "level": 0, "c0_hp": 15, "c0_hp_next_delta": 1, "last_badge": "c0", "last_badge_at": 61000, "c0_active_time_penalty": 0, "c0_lock_started_at": 61000}')
 
+    def test_no_grumpy_cat_small_levels(self):
+        badges_manager = BadgesManager(0, '{"badges_state": {"CatBadgeCounter": '
+                                          '"cumulative_counter_secs=0,counter_last_updated=0,update_reason=game_started", '
+                                          '"TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, '
+                                          '"board": [{"badge": "f0", "is_active": true, "is_last_modified": true}, '
+                                          '{"badge": "s0", "is_active": null}, {"badge": "s1", "is_active": null}, '
+                                          '{"badge": "c0", "is_active": null}, {"badge": "c1", "is_active": null}], "level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": "f0", "last_badge_at": 0, "c0_active_time_penalty": 0, "c0_lock_started_at": 0}'
+                                       )
+        badge = badges_manager.on_penalty(61000)
+        self.assertEqual(badge, None)
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": '
+                                                     '{"CatBadgeCounter": '
+                                                     '"cumulative_counter_secs=0,counter_last_updated=61000,update_reason=penalty", '
+                                                     '"TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5,skip_next", '
+                                                     '"FeatherBadgeCounter": "86400"}, '
+                                                     '"board": ['
+                                                     '{"badge": "f0", "is_active": true}, '
+                                                     '{"badge": "s0", "is_active": null}, '
+                                                     '{"badge": "s1", "is_active": null}, '
+                                                     '{"badge": "c0", "is_active": null}, '
+                                                     '{"badge": "c1", "is_active": null}], '
+                                                     '"level": 0, "c0_hp": 0, "c0_hp_next_delta": 1, "last_badge": null, "last_badge_at": null, "c0_active_time_penalty": 0, "c0_lock_started_at": 0}')
+        badges_manager.on_review(100000)
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": '
+                                                     '{"CatBadgeCounter": "cumulative_counter_secs=0,counter_last_updated=100000,update_reason=review", '
+                                                     '"TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", '
+                                                     '"FeatherBadgeCounter": "86400"}, '
+                                                     '"board": ['
+                                                     '{"badge": "f0", "is_active": true}, '
+                                                     '{"badge": "s0", "is_active": null}, '
+                                                     '{"badge": "s1", "is_active": null}, '
+                                                     '{"badge": "c0", "is_active": null}, '
+                                                     '{"badge": "c1", "is_active": null}], '
+                                                     '"level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": null, "last_badge_at": null, "c0_active_time_penalty": 0, "c0_lock_started_at": 0}')
+        badges_manager.on_review(120000)
+        self.assertEqual(badges_manager.serialize(), '{"badges_state": '
+                                                     '{"CatBadgeCounter": "cumulative_counter_secs=20000,counter_last_updated=120000,update_reason=review", '
+                                                     '"TimeBadgeCounter": "86400", '
+                                                     '"StarBadgeCounter": "1,5", "FeatherBadgeCounter": "86400"}, '
+                                                     '"board": [{"badge": "f0", "is_active": true}, '
+                                                     '{"badge": "s0", "is_active": null}, '
+                                                     '{"badge": "s1", "is_active": null}, '
+                                                     '{"badge": "c0", "is_active": null}, '
+                                                     '{"badge": "c1", "is_active": null}], '
+                                                     '"level": 0, "c0_hp": 0, "c0_hp_next_delta": 3, "last_badge": null, "last_badge_at": null, "c0_active_time_penalty": 0, "c0_lock_started_at": 0}')
+
+        pass
+
     def test_grumpy_spoils_everything(self):
         badges_state = ('{"CatBadgeCounter": '
             '"cumulative_counter_secs=0,counter_last_updated=61000,update_reason=penalty", '

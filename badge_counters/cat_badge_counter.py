@@ -48,7 +48,7 @@ class CatBadgeCounter:
         if state is None:
             _, state = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
 
-        return "c0", self._generate_state(self._get_cumulative_counter_secs(state), active_play_time_secs, "penalty")
+        return "c0" if difficulty >= 1 else None, self._generate_state(self._get_cumulative_counter_secs(state), active_play_time_secs, "penalty")
 
     def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
         if state is None:
