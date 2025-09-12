@@ -1,0 +1,7 @@
+{
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["-q"],
+  "python.testing.pytestPath": "${workspaceFolder}/venv/bin/pytest",
+  "python.testing.cwd": "${workspaceFolder}"
+}

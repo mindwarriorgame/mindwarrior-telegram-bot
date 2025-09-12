@@ -4,3 +4,4 @@ venv
 /mindwarrior_bot_launcher.test.sh
 /scp.sh
 /ssh.sh
+__pycache__
