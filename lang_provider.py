@@ -82,6 +82,7 @@ class Lang:
 
     badge_unhappy_cat: str
     badge_new: str
+    diamond_new: str
     view_badges_button: str
     locked_achievements: str
     cooldown_msg: str
@@ -91,6 +92,9 @@ class Lang:
     remained_grumpy_cats: str
     achievements_unblocked: str
     achievements_link_regenerated: str
+
+    kick_grumpy_cat_for_diamonds: str
+    buy_new_achievement_for_diamonds: str
 
     autopause_on_msg: str
     autopause_resumed_msg: str
@@ -250,6 +254,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
     badge_new = "🏆 Vous avez un nouvel accomplissement !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
+    diamond_new = "💎 Vous avez reçu un diamant ! Total: {count}",
     view_badges_button = "Voir les réussites 🏆",
     locked_achievements = "⛔🏆😾 Un chat grincheux bloque de nouvelles réussites !",
     cooldown_msg="❄️ Les révisions anticipées ne sont pas récompensées.",
@@ -259,6 +264,9 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     remained_grumpy_cats="😾 Chats grincheux restants : {count}",
     achievements_unblocked="🏆 Les réussites sont débloquées !",
     achievements_link_regenerated="Le lien vers la page des réussites a été régénéré. Veuillez utiliser le bouton ci-dessous pour l'ouvrir.",
+
+    kick_grumpy_cat_for_diamonds="Expulser le chat grincheux pour 💎 {count} /shop",
+    buy_new_achievement_for_diamonds="Acheter le prochain succès pour 💎 {count} /shop",
 
     autopause_on_msg = "Il est temps de dormir 💤\n"
                        "\n"
@@ -435,6 +443,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     badge_unhappy_cat = "😾 ¡Ups! ¡Un gato gruñón se coló!\nPresiona el botón \"Ver logros\" abajo.",
     badge_new = "🏆 ¡Tienes un nuevo logro!\nPresiona el botón \"Ver logros\" abajo.",
+    diamond_new = "💎 ¡Has recibido un diamante! Total: {count}",
     view_badges_button = "Ver logros 🏆",
     locked_achievements = "⛔🏆😾 ¡Un gato gruñón bloquea nuevos logros!",
     cooldown_msg="❄️ Las revisiones tempranas no se recompensan.",
@@ -444,6 +453,9 @@ Presiona el botón de abajo para comenzar el juego.""",
     remained_grumpy_cats="😾 Gatos gruñones restantes: {count}",
     achievements_unblocked="🏆 ¡Logros desbloqueados!",
     achievements_link_regenerated="El enlace a la página de logros ha sido regenerado. Por favor, usa el botón de abajo para abrirlo.",
+
+    kick_grumpy_cat_for_diamonds="Expulsar al gato gruñón por 💎 {count} /shop",
+    buy_new_achievement_for_diamonds="Comprar el siguiente logro por 💎 {count} /shop",
 
     autopause_on_msg = "Hora de dormir 💤\n"
                        "\n"
@@ -621,6 +633,7 @@ Press the button below to start the game.""",
 
     badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!\nPress \"View achievements\" button below.",
     badge_new = "🏆 You've got a new achievement!\nPress \"View achievements\" button below.",
+    diamond_new = "💎 You've got a new diamond! Total: {count}", 
     view_badges_button = "View achievements 🏆",
     locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
     cooldown_msg="❄️ Early reviews are not rewarded.",
@@ -631,6 +644,9 @@ Press the button below to start the game.""",
     achievements_unblocked="🏆 Achievements are unlocked!",
     achievements_link_regenerated="The link to the achievements page has been regenerated. Please use the button below to open it.",
 
+    kick_grumpy_cat_for_diamonds="Kick out the grumpy cat for 💎 {count} /shop",
+    buy_new_achievement_for_diamonds="Buy the next achievement for 💎 {count} /shop",
+    
     autopause_on_msg = "Time to sleep 💤\n"
                        "\n"
                        "The game is automatically paused until {until_time}. Sweet dreams! 🌙\n"
@@ -806,6 +822,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     badge_unhappy_cat = "😾 Ups! Eine grimmige Katze hat sich eingeschlichen!\nDrücke den Button \"Erfolge ansehen\" unten.",
     badge_new = "🏆 Du hast einen neuen Erfolg erzielt!\nDrücke den Button \"Erfolge ansehen\" unten.",
+    diamond_new = "💎 Du hast einen Diamanten erhalten! Gesamt: {count}",
     view_badges_button = "Erfolge ansehen 🏆",
     locked_achievements = "⛔🏆😾 Eine grimmige Katze blockiert neue Erfolge!",
     cooldown_msg="❄️ Frühe Überprüfungen werden nicht belohnt.",
@@ -815,6 +832,9 @@ Drücke den Button unten, um das Spiel zu starten.""",
     remained_grumpy_cats="😾 Verbliebene grimmige Katzen: {count}",
     achievements_unblocked="🏆 Erfolge wurden freigeschaltet!",
     achievements_link_regenerated="Der Link zur Erfolgsseite wurde neu generiert. Bitte benutze den Button unten, um ihn zu öffnen.",
+
+    kick_grumpy_cat_for_diamonds="Den mürrischen Kater für 💎 {count} rauswerfen /shop",
+    buy_new_achievement_for_diamonds="Den nächsten Erfolg für 💎 {count} kaufen /shop",
 
     autopause_on_msg = "Zeit zum Schlafen 💤\n"
                        "\n"
@@ -993,6 +1013,7 @@ ru = Lang(
 
     badge_unhappy_cat = "😾 Ой! Похоже, к вам забрался недовольный кот!\nНажмите кнопку \"Посмотреть достижения\" снизу.",
     badge_new = "🏆 Вы получили новое достижение\nНажмите кнопку \"Посмотреть достижения\" снизу.",
+    diamond_new = "💎 Вы получили алмаз! Всего: {count}",
     view_badges_button = "Посмотреть достижения 🏆",
     locked_achievements = "⛔🏆😾 Недовольный кот блокирует достижения!",
     cooldown_msg="❄️ Слишком частые просмотры не вознаграждаются.",
@@ -1002,6 +1023,9 @@ ru = Lang(
     remained_grumpy_cats="😾 Осталось недовольных котов: {count}",
     achievements_unblocked="🏆 Достижения разблокированы!",
     achievements_link_regenerated="Ссылка на страницу с достижениями обновлена. Нажмите на кнопку ниже, чтобы открыть ее.",
+
+    kick_grumpy_cat_for_diamonds="Выгнать недовольного кота за 💎 {count} /shop",
+    buy_new_achievement_for_diamonds="Купить следующее достижение за 💎 {count} /shop",
 
     autopause_on_msg = "Пора спать 💤\n"
                        "\n"

@@ -13,6 +13,8 @@ from lang_provider import LangProvider
 # pydevd_pycharm.settrace('localhost', port=53509, stdoutToServer=True, stderrToServer=True)
 
 TOKEN = os.environ.get('TOKEN')
+if TOKEN is None:
+    raise Exception("No token was provided!")
 ENV = os.environ.get('ENV')
 FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL')
 

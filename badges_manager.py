@@ -207,7 +207,7 @@ class BadgesManager:
             # No new badge => no changes on the board
             return None
 
-    def _get_inactive_badges_on_board(self, board: [BoardCell]):
+    def _get_inactive_badges_on_board(self, board: list[BoardCell]) -> list[str]:
         inactive_badges = []
         for cell in board:
             if cell['badge'] != 'c0' and (not cell.get("is_active")):
@@ -273,8 +273,8 @@ class BadgesManager:
     def serialize(self) -> str:
         return json.dumps(self.data)
 
-    def clone_board_without_last_modified(self, board):
-        settled_board: [BoardCell] = []
+    def clone_board_without_last_modified(self, board) -> list[BoardCell]:
+        settled_board: list[BoardCell] = []
         for cell in board:
             settled_board.append({
                 "badge": cell["badge"],
@@ -282,7 +282,7 @@ class BadgesManager:
             })
         return settled_board
 
-    def _level_badges_to_new_board(self, level) -> [BoardCell]:
+    def _level_badges_to_new_board(self, level) -> list[BoardCell]:
         board = []
         for badge in level:
             board.append({
@@ -297,7 +297,7 @@ class BadgesManager:
                 cnt += 1
         return cnt
 
-    def _expel_grumpy_cat(self, board: [BoardCell]):
+    def _expel_grumpy_cat(self, board: list[BoardCell]) -> list[BoardCell]:
         settled_board = self.clone_board_without_last_modified(board)
         for cell in settled_board:
             if cell["badge"] == "c0" and cell.get("is_active"):
@@ -306,13 +306,13 @@ class BadgesManager:
                 break
         return settled_board
 
-    def _has_inactive_badge_on_board(self, board: [BoardCell], badge):
+    def _has_inactive_badge_on_board(self, board: list[BoardCell], badge) -> bool:
         for cell in board:
             if cell["badge"] == badge and not cell.get("is_active"):
                 return True
         return False
 
-    def _activate_badge_on_board(self, board: [BoardCell], badge: str):
+    def _activate_badge_on_board(self, board: list[BoardCell], badge: str) -> list[BoardCell]:
         settled_board = self.clone_board_without_last_modified(board)
         for cell in settled_board:
             if cell["badge"] == badge and not cell.get("is_active"):
@@ -321,7 +321,7 @@ class BadgesManager:
                 break
         return settled_board
 
-    def _put_badge_to_board(self, badge)-> ([BoardCell], str):
+    def _put_badge_to_board(self, badge)-> tuple[list[BoardCell], Optional[str]]:
         old_board = self.data["board"]
 
         if self._has_inactive_badge_on_board(old_board, badge):

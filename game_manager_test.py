@@ -886,8 +886,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.game_manager.on_pause_command(1)
 
         data = self.game_manager.on_data_command(1)
-        self.assertIn('tmp_user_data', data[0]['image'])
-        os.remove(data[0]['image'])
+        image = '' if data[0]['image'] is None else data[0]['image']
+        self.assertIn('tmp_user_data', image) 
+        os.remove(image)
         data[0]['image'] = 'fname'
         self.assertEqual(data, [{'buttons': [{'text': 'View localStorage data 🔎',
                                               'url': 'http://frontend?env=prod&lang_code=en&view_localstorage=1'},

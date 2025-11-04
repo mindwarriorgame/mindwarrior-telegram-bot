@@ -8,12 +8,12 @@ class FeatherBadgeCounter:
         koef = [0.5, 0.75, 1, 1.25, 1.5]
         return round(INTERVAL_SECS * koef[difficulty])
 
-    def on_game_started(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+    def on_game_started(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: list[str]) -> Tuple[Optional[str], Optional[str]]:
         if "f0" in badges_locked_on_board:
             return "f0", str(active_play_time_secs + self._calculate_interval_secs(difficulty))
         return None, str(active_play_time_secs + self._calculate_interval_secs(difficulty))
 
-    def on_formula_updated(self, active_play_time_secs: int,  state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+    def on_formula_updated(self, active_play_time_secs: int,  state: Optional[str], difficulty, badges_locked_on_board: list[str]) -> Tuple[Optional[str], Optional[str]]:
         if "f0" not in badges_locked_on_board:
             return None, state
 
@@ -26,18 +26,18 @@ class FeatherBadgeCounter:
 
         return None, state
 
-    def on_prompt(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str])  -> Tuple[Optional[str], Optional[str]]:
+    def on_prompt(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: list[str])  -> Tuple[Optional[str], Optional[str]]:
         return None, state
 
-    def on_penalty(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+    def on_penalty(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: list[str]) -> Tuple[Optional[str], Optional[str]]:
         return None, state
 
-    def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+    def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: list[str]) -> Tuple[Optional[str], Optional[str]]:
         if state is None and "f0" in badges_locked_on_board:
             return None, self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)[1]
         return None, state
 
-    def progress(self, for_badge, active_play_time_secs, state, difficulty, badges_locked_on_board: [str]):
+    def progress(self, for_badge, active_play_time_secs, state, difficulty, badges_locked_on_board: list[str]):
         if for_badge != "f0":
             return None
 

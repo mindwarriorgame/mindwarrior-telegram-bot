@@ -22,7 +22,10 @@ def detect_timezone(tz_name: str, utcoffset_secs: int):
         timezones_by_offset_diff = {}
         min_diff = 10 * 3600
         for tz in timezones:
-            offset = zoneinfo.ZoneInfo(tz).utcoffset(datetime.datetime.now()).total_seconds()
+            tz_utc_offset = zoneinfo.ZoneInfo(tz).utcoffset(datetime.datetime.now())
+            if tz_utc_offset is None:
+                continue 
+            offset = tz_utc_offset.total_seconds()
             offset_diff = abs(offset - utcoffset_secs)
             if offset_diff < min_diff:
                 min_diff = offset_diff

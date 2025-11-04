@@ -13,7 +13,7 @@ class CatBadgeCounter:
         koef = [0.5, 0.75, 1, 1.25, 1.5]
         return round(INTERVAL_SECS * koef[difficulty])
 
-    def on_game_started(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+    def on_game_started(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: list[str]) -> Tuple[Optional[str], Optional[str]]:
         return None, self._generate_state(0, active_play_time_secs, "game_started")
 
     def _get_cumulative_counter_secs(self, state: str) -> int:
@@ -28,12 +28,14 @@ class CatBadgeCounter:
     def _generate_state(self, cumulative_counter_secs: int, counter_last_updated: int, update_reason: str) -> str:
         return "cumulative_counter_secs=" + str(cumulative_counter_secs) + ",counter_last_updated=" + str(counter_last_updated) + ",update_reason=" + update_reason
 
-    def on_formula_updated(self, active_play_time_secs: int,  state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+    def on_formula_updated(self, active_play_time_secs: int,  state: Optional[str], difficulty, badges_locked_on_board: list[str]) -> Tuple[Optional[str], Optional[str]]:
         return None, state
 
-    def on_prompt(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str])  -> Tuple[Optional[str], Optional[str]]:
+    def on_prompt(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: list[str])  -> Tuple[Optional[str], Optional[str]]:
         if state is None:
             _, state = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
+        if state is None:
+            raise Exception("should never happen, for typecasting")
 
         if "c1" in badges_locked_on_board:
             return None, state
@@ -44,13 +46,15 @@ class CatBadgeCounter:
         return None, state
 
 
-    def on_penalty(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+    def on_penalty(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: list[str]) -> Tuple[Optional[str], Optional[str]]:
         if state is None:
             _, state = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
+        if state is None:
+            raise Exception("should never happen, for typecasting")
 
         return "c0" if difficulty >= 1 else None, self._generate_state(self._get_cumulative_counter_secs(state), active_play_time_secs, "penalty")
 
-    def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: [str]) -> Tuple[Optional[str], Optional[str]]:
+    def on_review(self, active_play_time_secs: int, state: Optional[str], difficulty, badges_locked_on_board: list[str]) -> Tuple[Optional[str], Optional[str]]:
         if state is None:
             return self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
 
@@ -81,12 +85,15 @@ class CatBadgeCounter:
 
         return None, state
 
-    def progress(self, for_badge, active_play_time_secs, state, difficulty, badges_locked_on_board: [str]):
+    def progress(self, for_badge, active_play_time_secs, state, difficulty, badges_locked_on_board: list[str]):
         if for_badge != "c1" and for_badge != "c2":
             return None
 
         if state is None:
             _, state = self.on_game_started(active_play_time_secs, state, difficulty, badges_locked_on_board)
+        
+        if state is None:
+            raise Exception("should never happen (called on_game_started above), for typecasting")
 
         cumulative_counter_secs = self._get_cumulative_counter_secs(state)
 

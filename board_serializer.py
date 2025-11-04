@@ -27,5 +27,5 @@ def serialize_progress(progress: dict) -> str:
         serialized_items.append(chunk)
     return "--".join(serialized_items)
 
-def serialize_board(board: [BoardCell]) -> str:
+def serialize_board(board: list[BoardCell]) -> str:
     return "_".join([serialize_cell(cell) for cell in board])

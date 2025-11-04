@@ -54,11 +54,11 @@ class Counter:
 
     def refresh(self):
         if self._data['is_active']:
-            self._data['total_seconds_intermediate'] += (datetime.now(tz=timezone.utc) - self._data['last_total_seconds_updated']).total_seconds()
+            self._data['total_seconds_intermediate'] += int((datetime.now(tz=timezone.utc) - self._data['last_total_seconds_updated']).total_seconds())
 
         self._data['last_total_seconds_updated'] = datetime.now(tz=timezone.utc)
 
-    def _deserialize_data(self, counter_data_serialized):
+    def _deserialize_data(self, counter_data_serialized: Optional[str]) -> CounterData:
         if counter_data_serialized is None or counter_data_serialized == '':
             return {
                 'is_active': False,

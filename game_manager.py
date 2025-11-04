@@ -74,7 +74,9 @@ class GameManager:
         else:
             return self._render_single_message(chat_id, "Invalid language code. Try again (/start)", None, None)
 
-    def _get_user_lang(self, lang_code: str) -> Lang:
+    def _get_user_lang(self, lang_code: str | None) -> Lang:
+        if lang_code is None:
+            raise Exception("User doesn't have language set")
         languages = LangProvider.get_available_languages()
         lang = languages[lang_code]
         if lang is None:
@@ -214,7 +216,7 @@ class GameManager:
         return self._render_review_screen(lang, user['user_id'], is_paused, since_last_review_secs)
 
 
-    def _on_reviewed(self, lang: Lang, user: User, user_message: str):
+    def _on_reviewed(self, lang: Lang, user: User, user_message: str) -> Reply:
         if user['active_game_counter_state'] is None:
             return self._render_start_game_screen(lang, user)
 
@@ -232,7 +234,8 @@ class GameManager:
                 'to_chat_id': user['user_id'],
                 'message': lang.review_command_timeout,
                 'buttons': [self._render_review_button(lang)],
-                'menu_commands': []
+                'menu_commands': [],
+                'image': None
             }
 
         is_resumed = self._maybe_resume(user)
@@ -282,10 +285,10 @@ class GameManager:
             'url': self.frontend_base_url + f'?env={self.env}&lang_code={lang.lang_code}&new_game=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}&shared_key_uuid={user["shared_key_uuid"]}'
         }
 
-    def on_data_command(self, chat_id) -> [Reply]:
+    def on_data_command(self, chat_id) -> list[Reply]:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
-            return self.on_start_command(chat_id)
+            return [self.on_start_command(chat_id)]
         lang = self._get_user_lang(user['lang_code'])
 
         data = [" - shared_key_uuid: " + user['shared_key_uuid']]
@@ -301,7 +304,7 @@ class GameManager:
 
         return self._render_delete_data_screen(lang, chat_id, data_short, data)
 
-    def on_feedback_command(self, chat_id) -> [Reply]:
+    def on_feedback_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
             return self.on_start_command(chat_id)
@@ -413,9 +416,12 @@ class GameManager:
 
         return replies
 
-    def _process_autopause(self, user: User) -> [Reply]:
+    def _process_autopause(self, user: User) -> list[Reply]:
         autopause_manager = AutopauseManager(user['autopause_config_serialized'])
-        user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_manager.get_next_autopause_event_at_timestamp() + 1, tz=datetime.timezone.utc)
+        next_autopause_event_timestamp = autopause_manager.get_next_autopause_event_at_timestamp()
+        if next_autopause_event_timestamp is None:
+            return []
+        user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(next_autopause_event_timestamp + 1, tz=datetime.timezone.utc)
         self.users_orm.upsert_user(user)
 
         if autopause_manager.is_in_interval(now_utc().timestamp()):
@@ -447,7 +453,7 @@ class GameManager:
         autopause_manager = AutopauseManager(user['autopause_config_serialized'])
         return self._render_penalty(lang, maybe_badge_msg, maybe_badge_button, user['user_id'], autopause_manager.is_enabled())
 
-    def _record_counter_time(self, user: User, counter_name: str, serialized_counter: str):
+    def _record_counter_time(self, user: User, counter_name: str, serialized_counter: Optional[str]):
         counter = Counter(serialized_counter)
         user['counters_history_serialized'] = add_timer_rec_to_history(user['counters_history_serialized'], {
             'counter_name': counter_name,
@@ -463,13 +469,13 @@ class GameManager:
         }
 
     def _render_game_started_screen(self, next_review: str, difficulty: int, lang: Lang, chat_id: int, maybe_badge_message: Optional[str], maybe_badge_button: Optional[Button]) -> Reply:
-        difficulty = lang.difficulties[difficulty]
+        difficulty_name = lang.difficulties[difficulty]
         buttons = [self._render_review_button(lang)]
         if maybe_badge_button is not None:
             buttons.append(maybe_badge_button)
         return {
             'to_chat_id': chat_id,
-            'message': lang.game_started.format(next_review=next_review, difficulty=difficulty
+            'message': lang.game_started.format(next_review=next_review, difficulty=difficulty_name
                                                 , maybe_achievement=("\n" + maybe_badge_message + "\n") if maybe_badge_message is not None else ""),
             'buttons': buttons,
             'menu_commands': [],
@@ -642,19 +648,19 @@ class GameManager:
         return False
 
     def _render_list_of_langs(self, chat_id, languages: dict[str, Lang]) -> Reply:
-        buttons = []
+        buttons: list[Button] = []
         for lang_code in sorted(languages):
             lang = languages[lang_code]
             if lang_code == "en":
-                buttons = [{
+                buttons.insert(0, {
                     "text": lang.lang_name,
                     "data": lang_code
-                }] + buttons
+                })
             else:
-                buttons += [{
+                buttons.append({
                     "text": lang.lang_name,
                     "data": lang_code
-                }]
+                })
         return {
             'to_chat_id': chat_id,
             'message': "Select your language:",
@@ -727,7 +733,7 @@ class GameManager:
             'image': fname
         }
 
-    def _render_edit_formula(self, lang, shared_key_uuid, chat_id):
+    def _render_edit_formula(self, lang, shared_key_uuid, chat_id) -> Reply:
         return {
             'to_chat_id': chat_id,
             'message': lang.formula_command_text,
@@ -741,7 +747,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_review_screen(self, lang, chat_id, is_paused: bool, since_last_review_secs):
+    def _render_review_screen(self, lang, chat_id, is_paused: bool, since_last_review_secs) -> Reply:
         message = []
         if is_paused:
             message.append(lang.review_paused_text)
@@ -769,7 +775,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_on_pause(self, lang: Lang, chat_id):
+    def _render_on_pause(self, lang: Lang, chat_id) -> Reply:
         return {
             'to_chat_id': chat_id,
             'message': lang.paused_command,
@@ -778,7 +784,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_already_on_pause(self, lang: Lang, chat_id):
+    def _render_already_on_pause(self, lang: Lang, chat_id) -> Reply:
         return {
             'to_chat_id': chat_id,
             'message': lang.already_paused,
@@ -787,7 +793,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_delete_data_screen(self, lang, chat_id, data_short, data) -> [Reply]:
+    def _render_delete_data_screen(self, lang, chat_id, data_short, data) -> list[Reply]:
         random_fname = 'tmp_user_data_' + str(np.random.randint(100000, 900000)) + '.txt'
         # write message to file
         with open(random_fname, 'w') as f:
@@ -830,7 +836,7 @@ class GameManager:
             'image': None
         }
 
-    def _process_reminder_prompt(self, user: User):
+    def _process_reminder_prompt(self, user: User) -> Reply:
         lang = self._get_user_lang(user['lang_code'])
 
         user['next_prompt_type'] = NEXT_PROMPT_TYPE_PENALTY
@@ -854,7 +860,7 @@ class GameManager:
             user['next_prompt_time'] -= datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
             user['next_prompt_type'] = NEXT_PROMPT_TYPE_REMINDER
 
-    def _render_reminder_prompt(self, lang, chat_id, maybe_badge_button: Button, is_autopause_enabled):
+    def _render_reminder_prompt(self, lang, chat_id, maybe_badge_button: Optional[Button], is_autopause_enabled) -> Reply:
         buttons = [self._render_review_button(lang)]
         if maybe_badge_button is not None:
             buttons.append(maybe_badge_button)
@@ -869,8 +875,9 @@ class GameManager:
     def _render_board_url(self, chat_id: int, lang: Lang, badges_manager: BadgesManager, active_play_time_secs) -> str:
         button_url = self.frontend_base_url.replace("index.html", "board.html")
         button_url += '?lang=' + lang.lang_code + '&env=' + self.env
-        if badges_manager.get_last_badge() is not None:
-            button_url += '&new_badge=' + badges_manager.get_last_badge()
+        maybe_last_badge = badges_manager.get_last_badge()
+        if maybe_last_badge is not None:
+            button_url += '&new_badge=' + maybe_last_badge
 
         button_url += "&level=" + str(badges_manager.get_level() + 1)
         button_url += "&b1=" + serialize_board(badges_manager.get_board())
@@ -886,7 +893,7 @@ class GameManager:
 
         return button_url
 
-    def _handle_badge_event(self, user, event) -> (Optional[str], Optional[Button]):
+    def _handle_badge_event(self, user, event) -> tuple[Optional[str], Optional[Button]]:
         badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
 
         active_play_time_secs = self._calculate_active_play_time_seconds(user)
@@ -899,7 +906,7 @@ class GameManager:
         lang = self._get_user_lang(user['lang_code'])
         button_url = self._render_board_url(user['user_id'], lang, badges_manager, active_play_time_secs)
 
-        view_achievements_button = {
+        view_achievements_button: Button = {
             'text': lang.view_badges_button,
             'url': button_url
         }
@@ -948,8 +955,9 @@ class GameManager:
         autopause_manager = AutopauseManager(user['autopause_config_serialized'])
         autopause_manager.update(enabled, user_tz, user_tz_offset_secs, bed_time, wakeup_time)
         user['autopause_config_serialized'] = autopause_manager.serialize()
-        if autopause_manager.is_enabled():
-            user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_manager.get_next_autopause_event_at_timestamp() + 1, tz=datetime.timezone.utc)
+        autopause_next_timestamp = autopause_manager.get_next_autopause_event_at_timestamp()
+        if autopause_manager.is_enabled() and autopause_next_timestamp is not None:
+            user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_next_timestamp + 1, tz=datetime.timezone.utc)
         else:
             user['next_autopause_event_time'] = None
         self.users_orm.upsert_user(user)
@@ -960,7 +968,7 @@ class GameManager:
             wakeup_time=autopause_manager.get_wakep_time() if autopause_manager.get_wakep_time() is not None else 'N/A'
         ), None, None)
 
-    def on_settings_command(self, chat_id) -> Reply:
+    def on_settings_command(self, chat_id: int) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
             return self.on_start_command(chat_id)
@@ -978,7 +986,7 @@ class GameManager:
         ]
 
     def _render_settings_screen(self, chat_id, lang) -> Reply:
-        sub_commands = [
+        sub_commands: list[Button] = [
             { "data": "sleep", "text": lang.menu_sleep },
             { "data": "difficulty", "text": lang.menu_difficulty },
             { "data": "data", "text": lang.menu_data },
