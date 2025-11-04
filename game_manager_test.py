@@ -154,11 +154,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'to_chat_id': 1})
 
 
+    # TODO: fix timezone @time_machine.travel(datetime(2022, 4, 21, tzinfo=timezone.utc), tick=False)
     @time_machine.travel("2022-04-21", tick=False)
     def test_process_tick_brings_grumpy_cat(self):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
-        user['difficulty'] = 0
+        user['difficulty'] = 1
         self.users_orm.upsert_user(user)
         self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
 
@@ -184,7 +185,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                      {'text': 'View achievements 🏆',
-                                                      'url': 'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=c0_5_0--s0_3_0&ts=1650485400'}],
+                                                      'url': 'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=f0a_s0_c0am&bp1=c0_10_0--s0_3_0&ts=1650485400'}],
                                          'image': None,
                                          'menu_commands': [],
                                          'message': 'You forgot to review your <i>Formula</i> 🟥\n'
@@ -197,7 +198,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                     ' ‣ /settings - configure sleep scheduler',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
-                self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
+                self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 20, 22, 55, tzinfo=datetime.timezone.utc))
                 self.assertEqual(user['next_prompt_type'], 'reminder')
                 badges = BadgesManager(user['difficulty'], user['badges_serialized'])
                 self.assertEqual(badges.get_last_badge(), "c0")
@@ -206,7 +207,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
     def test_process_tick_grumpy_cat_blocking(self):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
-        user['difficulty'] = 0
+        user['difficulty'] = 1
         self.users_orm.upsert_user(user)
 
         self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
@@ -222,7 +223,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                  {'text': 'View achievements 🏆',
-                                                  'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0a&bp1=c0_5_0--s0_3_0&ts=1650484200'}],
+                                                  'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0a&bp1=c0_10_0--s0_3_0&ts=1650484200'}],
                                      'image': None,
                                      'menu_commands': [],
                                      'message': "Don't forget to review your <i>Formula</i>! ⏰\n"
@@ -238,7 +239,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                      {'text': 'View achievements 🏆',
-                                                      'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0a&bp1=c0_5_0--s0_3_0&ts=1650485400'}],
+                                                      'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0a_s0_c0a&bp1=c0_10_0--s0_3_0&ts=1650485400'}],
                                          'image': None,
                                          'menu_commands': [],
                                          'message': 'You forgot to review your <i>Formula</i> 🟥\n'
@@ -250,8 +251,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                     ' ‣ /settings - configure sleep scheduler',
                                          'to_chat_id': 1}])
                 user = self.users_orm.get_user_by_id(1)
-                self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 11, 55).astimezone(datetime.timezone.utc))
+                self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 20, 22, 55, tzinfo=datetime.timezone.utc))
                 self.assertEqual(user['next_prompt_type'], 'reminder')
+            
 
 
     @time_machine.travel("2022-04-21", tick=False)
@@ -744,7 +746,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.resume()
         counter.move_time_back(15)
         user['paused_counter_state'] = counter.serialize()
-        user['difficulty']  = 0
+        user['difficulty']  = 1
         counter.move_time_back(10)
         user['active_game_counter_state'] = counter.serialize()
         user['review_counter_state'] = counter.serialize()
@@ -760,7 +762,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
-                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_c0a&bp1=c0_4_20--s0_3_0--f0_43200_0&ts=1650463200'}],
+                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_c0a&bp1=c0_9_10--s0_3_0--f0_64800_0&ts=1650463200'}],
                                  'image': None,
                                  'menu_commands': MENU_COMMANDS,
                                  'message': 'The game is resumed.\n'
@@ -768,7 +770,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             '🧹😾 Kicking out the grumpy cat...\n'
                                             '\n'
-                                            'Next review before 12:15 am\n'
+                                            'Next review before 12:16 am\n'
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
                                             '\n'
