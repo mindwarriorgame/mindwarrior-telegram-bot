@@ -520,6 +520,10 @@ class GameManager:
             for is_resumed in [True, False]:
                 for lang_code, lang in langs.items():
                     ret = ret + [self._render_review_command_success(None, None, "10:00", lang, chat_id, is_resumed, True)]
+                    ret = ret + [self._render_review_command_success(lang.diamond_new.format(count=15), None, "10:00", lang, chat_id, is_resumed, True)]
+                    ret = ret + [self._render_review_command_success(
+                        lang.diamond_new.format(count=15), 
+                        None, "10:00", lang, chat_id, is_resumed, True)]
                     ret = ret + [self._render_review_command_success(lang.badge_new, {
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
@@ -529,6 +533,10 @@ class GameManager:
                         "url": "https://google.com"
                     }, "10:00", lang, chat_id, is_resumed, True)]
                     ret = ret + [self._render_review_command_success(lang.grumpy_cat_kicked_out + "\n" + lang.achievements_unblocked, {
+                        "text": lang.view_badges_button,
+                        "url": "https://google.com"
+                    }, "10:00", lang, chat_id, is_resumed, False)]
+                    ret = ret + [self._render_review_command_success(lang.kicking_out_grumpy_cat + "\n" + lang.kick_grumpy_cat_for_diamonds.format(count=50), {
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
                     }, "10:00", lang, chat_id, is_resumed, False)]
