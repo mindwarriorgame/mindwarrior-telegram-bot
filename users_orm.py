@@ -34,6 +34,8 @@ class User(TypedDict):
     next_autopause_event_time: Optional[datetime]
     autopause_config_serialized: Optional[str]
 
+    diamonds: int
+
 class UsersOrm:
 
     def __del__(self) -> None:
@@ -76,6 +78,14 @@ class UsersOrm:
         ''')
         self.conn.commit()
 
+        self.cursor.execute("PRAGMA table_info(users)")
+        columns = [row[1] for row in self.cursor.fetchall()]
+        if "diamonds" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE users ADD COLUMN diamonds INTEGER NOT NULL DEFAULT 0"
+            )
+            self.conn.commit()
+
         self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_prompt_time ON users (difficulty, active_game_counter_state_is_null, paused_counter_state_is_null, next_prompt_time)')
         self.conn.commit()
 
@@ -105,7 +115,8 @@ class UsersOrm:
             next_prompt_type,
             badges_serialized,
             next_autopause_event_time,
-            autopause_config_serialized
+            autopause_config_serialized,
+            diamonds
                 FROM users WHERE user_id = ?""", (user_id,))
         return self._to_user_obj(self.cursor.fetchone(), user_id)
 
@@ -126,7 +137,8 @@ class UsersOrm:
             next_prompt_type,
             badges_serialized,
             next_autopause_event_time,
-            autopause_config_serialized 
+            autopause_config_serialized,
+            diamonds
                 FROM users WHERE difficulty = ? AND active_game_counter_state_is_null = 0 AND paused_counter_state_is_null = 1 AND next_prompt_time < ? LIMIT ?""",
                             (difficulty, cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -148,7 +160,8 @@ class UsersOrm:
             next_prompt_type,
             badges_serialized,
             next_autopause_event_time,
-            autopause_config_serialized 
+            autopause_config_serialized,
+            diamonds
                 FROM users WHERE next_autopause_event_time < ? LIMIT ?""",
                             (cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -190,7 +203,8 @@ class UsersOrm:
                 next_prompt_type="",
                 badges_serialized="",
                 next_autopause_event_time=None,
-                autopause_config_serialized=None
+                autopause_config_serialized=None,
+                diamonds=0
             )
         return User(
             user_id=param[0],
@@ -205,7 +219,8 @@ class UsersOrm:
             next_prompt_type=param[11],
             badges_serialized=param[12],
             next_autopause_event_time=safe_convert_to_datetime(param[13]),
-            autopause_config_serialized=param[14]
+            autopause_config_serialized=param[14],
+            diamonds=param[15]
         )
     def remove_user(self, user_id: int):
         self.cursor.execute('DELETE FROM users WHERE user_id = ?', (user_id,))
@@ -228,8 +243,9 @@ class UsersOrm:
                 next_prompt_type,
                 badges_serialized,
                 next_autopause_event_time,
-                autopause_config_serialized
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                autopause_config_serialized,
+                diamonds
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 lang_code = excluded.lang_code,
                 difficulty = excluded.difficulty,
@@ -244,7 +260,8 @@ class UsersOrm:
                 next_prompt_type = excluded.next_prompt_type,
                 badges_serialized = excluded.badges_serialized,
                 next_autopause_event_time = excluded.next_autopause_event_time,
-                autopause_config_serialized = excluded.autopause_config_serialized
+                autopause_config_serialized = excluded.autopause_config_serialized,
+                diamonds = excluded.diamonds
         ''', (
             user['user_id'],
             user['lang_code'],
@@ -265,7 +282,8 @@ class UsersOrm:
             user['badges_serialized'],
 
             user['next_autopause_event_time'].astimezone(ZoneInfo('UTC')).isoformat() if user['next_autopause_event_time'] is not None else None,
-            user['autopause_config_serialized']
+            user['autopause_config_serialized'],
+            user['diamonds']
         ))
         self.conn.commit()
 

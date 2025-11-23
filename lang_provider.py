@@ -48,6 +48,7 @@ class Lang:
     menu_pause: str
     menu_sleep: str
     menu_stats: str
+    menu_shop: str
     menu_formula: str
     menu_difficulty: str
     menu_data: str
@@ -125,6 +126,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     menu_review = "💫️ réviser la Formule",
     menu_pause = "⏸️ mettre le jeu en pause",
     menu_stats = "📊 progression du jeu",
+    menu_shop = "💎 boutique",
     menu_formula = "️🧪 mettre à jour la Formule",
     menu_settings="🔧 paramètres",
 
@@ -312,6 +314,7 @@ Presiona el botón de abajo para comenzar el juego.""",
     menu_review="💫️ revisar Fórmula",
     menu_pause="⏸️ pausar el juego",
     menu_stats="📊 progreso del juego",
+    menu_shop="💎 comercio",
     menu_formula="🧪 actualizar Fórmula",
     menu_settings="🔧 ajustes",
 
@@ -500,6 +503,7 @@ Press the button below to start the game.""",
     menu_review="💫️ review Formula",
     menu_pause="⏸️ pause the game",
     menu_stats="📊 game progress",
+    menu_shop = "💎 shop",
     menu_formula="️🧪 update Formula",
     menu_settings="🔧 settings",
 
@@ -689,6 +693,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
     menu_review="💫️ Formel überprüfen",
     menu_pause="⏸️ Spiel pausieren",
     menu_stats="📊 Spielfortschritt",
+    menu_shop = "💎 Geschäft",
     menu_formula="️🧪 Formel aktualisieren",
     menu_settings = "🔧 Einstellungen",
 
@@ -879,6 +884,7 @@ ru = Lang(
     menu_review="💫️ просмотреть Формулу",
     menu_pause="⏸️ поставить игру на паузу",
     menu_stats="📊 статистика игры",
+    menu_shop="💎 магазин",
     menu_formula="🧪 изменить Формулу",
 
     menu_settings = "🔧 настройки",

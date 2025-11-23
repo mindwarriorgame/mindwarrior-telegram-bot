@@ -15,6 +15,7 @@ MENU_COMMANDS = [['review', '💫️ review Formula'],
                  ['pause', '⏸️ pause the game'],
                  ['formula', '️🧪 update Formula'],
                  ['stats', '📊 game progress'],
+                 ['shop', '💎 shop'],
                  ['settings', '🔧 settings']]
 
 
@@ -367,6 +368,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
+                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
+                                            "\n"
                                             'Next review before 12:17 am\n'
                                             '\n'
                                             ' ‣ /pause - pause the game\n'
@@ -588,44 +591,46 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data['buttons'], [{'text': 'Write "Formula" and start playing! 🏁',
                                             'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45&shared_key_uuid=' + user['shared_key_uuid']}])
 
+    @time_machine.travel("2022-04-22", tick=False)
     def test_on_pause_puts_counter_to_pause(self):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
         self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
+        with time_machine.travel("2022-04-22T00:00:10", tick=False):
+            data = self.game_manager.on_pause_command(1)
 
-        data = self.game_manager.on_pause_command(1)
+            with time_machine.travel("2022-04-22T00:00:15", tick=False):
+                user = self.users_orm.get_user_by_id(1)
 
-        user = self.users_orm.get_user_by_id(1)
+                self.assertIsNotNone(user['paused_counter_state'])
+                counter = Counter(user['paused_counter_state'])
+                self.assertTrue(counter.is_active())
+                self.assertGreater(counter.get_total_seconds(), 0)
 
-        self.assertIsNotNone(user['paused_counter_state'])
-        counter = Counter(user['paused_counter_state'])
-        self.assertTrue(counter.is_active())
-        self.assertGreater(counter.get_total_seconds(), 0)
+                self.assertIsNotNone(user['active_game_counter_state'])
+                counter = Counter(user['active_game_counter_state'])
+                self.assertFalse(counter.is_active())
+                self.assertGreater(counter.get_total_seconds(), 0)
 
-        self.assertIsNotNone(user['active_game_counter_state'])
-        counter = Counter(user['active_game_counter_state'])
-        self.assertFalse(counter.is_active())
-        self.assertGreater(counter.get_total_seconds(), 0)
+                self.assertIsNotNone(user['review_counter_state'])
+                counter = Counter(user['review_counter_state'])
+                self.assertFalse(counter.is_active())
+                self.assertGreater(counter.get_total_seconds(), 0)
 
-        self.assertIsNotNone(user['review_counter_state'])
-        counter = Counter(user['review_counter_state'])
-        self.assertFalse(counter.is_active())
-        self.assertGreater(counter.get_total_seconds(), 0)
-
-        self.assertEqual(data, {'buttons': [{'text': 'Review your "Formula" 💫',
-                                             'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
-                                'image': None,
-                                'menu_commands': [],
-                                'message': 'The game is paused ⏸️\n'
-                                           '\n'
-                                           'You will not be receiving reminders about your <i>Formula</i>, '
-                                           'and the active play time counter <a '
-                                           'href="https://mindwarriorgame.org/faq.en#pause">are frozen</a>.\n'
-                                           '\n'
-                                           'To resume the game, simply review your <i>Formula</i> using the '
-                                           'button below.',
-                                'to_chat_id': 1})
+                self.assertEqual(data, {'buttons': [{'text': 'Review your "Formula" 💫',
+                                                    'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                        'image': None,
+                                        'menu_commands': [],
+                                        'message': 'The game is paused ⏸️\n'
+                                                '\n'
+                                                'You will not be receiving reminders about your <i>Formula</i>, '
+                                                'and the active play time counter <a '
+                                                'href="https://mindwarriorgame.org/faq.en#pause">are frozen</a>.\n'
+                                                '\n'
+                                                'To resume the game, simply review your <i>Formula</i> using the '
+                                                'button below.',
+                                        'to_chat_id': 1})
 
     @time_machine.travel("2022-04-21", tick=False)
     def test_on_formula_reviewed_resumed(self):
@@ -651,6 +656,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'menu_commands': MENU_COMMANDS,
                                  'message': 'The game is resumed.\n'
                                             '<i>Formula</i> has been reviewed 🎉\n'
+                                            '\n'
+                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'
@@ -700,6 +707,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             "🏆 You've got a new achievement!\n"
                                             'Press "View achievements" button below.\n'
+                                            "\n"
+                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
                                             '\n'
                                             'Next review before 12:15 am\n'
                                             '\n'
@@ -734,6 +743,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
+                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
+                                            "\n"
                                             'Next review before 12:15 am\n'
                                             '\n'
                                             ' ‣ /pause - pause the game',
@@ -799,6 +810,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'image': None,
                                  'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
+                                            '\n'
+                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
                                             '\n'
                                             'Next review before 12:18 am\n'
                                             '\n'
@@ -910,17 +923,17 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             ' - difficulty: 1\n'
                                             '\n'
                                             ' - review_counter_state: {"is_active": false, '
-                                            '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
+                                            '"total_seconds_intermediate": 0, "last_total_seconds_updated": '
                                             '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
                                             '\n'
                                             ' - next_prompt_time: 2022-04-20 16:45:00+00:00\n'
                                             '\n'
                                             ' - active_game_counter_state: {"is_active": false, '
-                                            '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
+                                            '"total_seconds_intermediate": 0, "last_total_seconds_updated": '
                                             '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
                                             '\n'
                                             ' - paused_counter_state: {"is_active": true, '
-                                            '"total_seconds_intermediate": 0.0, "last_total_seconds_updated": '
+                                            '"total_seconds_intermediate": 0, "last_total_seconds_updated": '
                                             '{"_isoformat": "2022-04-20T14:00:00+00:00"}}\n'
                                             '\n'
                                             ' - counters_history_serialized: None\n'
@@ -935,7 +948,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' - next_autopause_event_time: None\n'
                                             '\n'
-                                            ' - autopause_config_serialized: None</code>',
+                                            ' - autopause_config_serialized: None\n'
+                                            '\n'
+                                            ' - diamonds: 0</code>',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)
@@ -1084,6 +1099,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             '🧹 The grumpy cat has been kicked out!\n'
                                             '🏆 Achievements are unlocked!\n'
+                                            '\n'
+                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
                                             '\n'
                                             'Next review before 12:16 am\n'
                                             '\n'

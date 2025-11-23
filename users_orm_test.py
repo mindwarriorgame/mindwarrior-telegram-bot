@@ -42,7 +42,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='',
             badges_serialized='',
             next_autopause_event_time=None,
-            autopause_config_serialized=None
+            autopause_config_serialized=None,
+            diamonds=0
         ))
 
     @time_machine.travel("2022-04-21")
@@ -54,6 +55,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         self.assertGreaterEqual(len(user['shared_key_uuid']), 10)
         user['shared_key_uuid'] = 'abcd'
         user['next_prompt_type'] = 'qwe'
+        user['diamonds'] = 5
         self.assertEqual(user, User(
             user_id=123,
             lang_code='ru',
@@ -67,7 +69,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='qwe',
             badges_serialized='',
             next_autopause_event_time=None,
-            autopause_config_serialized=None
+            autopause_config_serialized=None,
+            diamonds=5
         ))
 
         user['lang_code'] = 'en'
@@ -82,6 +85,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['badges_serialized'] = 'badges_serialized'
         user['next_autopause_event_time'] = datetime.datetime(2022, 4, 21, 2, 0, 0)
         user['autopause_config_serialized'] = 'blah'
+        user['diamonds'] = 6
         self.users_orm.upsert_user(user)
 
         self.assertEqual(self.users_orm.get_user_by_id(123), User(
@@ -97,7 +101,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='ewq',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=6
         ))
 
     def test_get_some_users_for_prompt_when_no_user(self):
@@ -118,7 +123,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=7
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [user])
@@ -138,7 +144,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=8
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_next_autopause_events(10), [user])
@@ -161,7 +168,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=None,
-            autopause_config_serialized=None
+            autopause_config_serialized=None,
+            diamonds=9
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -182,6 +190,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             autopause_config_serialized='blah',
+            diamonds=10
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 2), [])
@@ -202,7 +211,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=11
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -223,7 +233,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=12
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -242,7 +253,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=13
         )
         self.users_orm.upsert_user(user)
         self.users_orm.remove_user(124)
@@ -262,7 +274,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='',
             badges_serialized='',
             next_autopause_event_time=None,
-            autopause_config_serialized=None
+            autopause_config_serialized=None,
+            diamonds=0
         ))
 
     @time_machine.travel("2022-04-21 00:00:00")
@@ -280,7 +293,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=44
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 1)
@@ -302,7 +316,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=55
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)
@@ -323,7 +338,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_prompt_type='prompt_type',
             badges_serialized='badges_serialized',
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
-            autopause_config_serialized='blah'
+            autopause_config_serialized='blah',
+            diamonds=66
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)

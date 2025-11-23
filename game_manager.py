@@ -193,6 +193,7 @@ class GameManager:
 
         user['counters_history_serialized'] = None
         user['badges_serialized'] = ""
+        user['diamonds'] = 0
         self.users_orm.upsert_user(user)
 
     def on_review_command(self, chat_id) -> Reply:
@@ -260,6 +261,11 @@ class GameManager:
 
         else:
             maybe_badge_msg, maybe_badge_button =  self._handle_badge_event(user, 'on_review')
+            badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
+            if badges_manager.count_active_grumpy_cats_on_board() == 0:
+                user['diamonds'] = user['diamonds'] + 1
+                diamonds_msg = lang.diamond_new.format(count=user['diamonds'])
+                maybe_badge_msg = (maybe_badge_msg + "\n\n" + diamonds_msg) if maybe_badge_msg else diamonds_msg
             return self._render_review_command_success(maybe_badge_msg, maybe_badge_button, next_review,
                                                        lang=lang,
                                                        chat_id=user['user_id'], is_resumed=is_resumed,
@@ -984,12 +990,13 @@ class GameManager:
 
         return self._render_settings_screen(chat_id, lang)
 
-    def _render_menu_commands(self, lang):
+    def _render_menu_commands(self, lang: Lang):
         return [
             ["review", lang.menu_review],
             ["pause", lang.menu_pause],
             ["formula", lang.menu_formula],
             ["stats", lang.menu_stats],
+            ["shop", lang.menu_shop],
             ["settings", lang.menu_settings]
         ]
 
