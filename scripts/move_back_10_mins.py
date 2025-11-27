@@ -11,7 +11,7 @@ from counter import Counter
 from history import get_timer_recs_from_history, add_timer_rec_to_history
 from users_orm import UsersOrm, User
 
-db_fname = os.path.abspath('../mindwarrior.db')
+db_fname = os.path.abspath('../mindwarrior2.db')
 if not os.path.exists(db_fname):
     raise Exception('Database file not found')
 users_orm = UsersOrm(db_fname)
@@ -29,8 +29,6 @@ def _move_time_n_minutes(self, user: User, n_minutes: int):
         counter.move_time_back(n_minutes)
         user['review_counter_state'] = counter.serialize()
         print(f"Review counter state: {user['review_counter_state']}")
-    if user['last_reward_time'] is not None:
-        user['last_reward_time'] = user['last_reward_time'] - datetime.timedelta(minutes=n_minutes)
     if user['next_prompt_time'] is not None:
         user['next_prompt_time'] = user['next_prompt_time'] - datetime.timedelta(minutes=n_minutes)
     if user['active_game_counter_state'] is not None:

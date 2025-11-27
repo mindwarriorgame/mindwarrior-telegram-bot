@@ -107,6 +107,14 @@ class Lang:
 
     sleep_config_updated: str
 
+    shop_description: str
+    shop_button_kick_grumpy_cat: str
+    shop_button_next_achivement: str
+
+    shop_no_enough_diamonds: str
+    shop_diamonds_left: str
+    shop_no_grumpy_cat: str
+
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
@@ -126,7 +134,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     menu_review = "💫️ réviser la Formule",
     menu_pause = "⏸️ mettre le jeu en pause",
     menu_stats = "📊 progression du jeu",
-    menu_shop = "💎 boutique",
+    menu_shop = "🛍️ boutique",
     menu_formula = "️🧪 mettre à jour la Formule",
     menu_settings="🔧 paramètres",
 
@@ -291,7 +299,22 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     sleep_config_updated="La configuration du sommeil a été mise à jour 💤\n"
                          "\n"
                          "Activé? {is_enabled}\n"
-                         "Heure de sommeil: {bed_time} - {wakeup_time}\n"
+                         "Heure de sommeil: {bed_time} - {wakeup_time}\n",
+    shop_description = (
+        "Bienvenue dans la boutique 🛍️!\n"
+        "\n"
+        "Vous pouvez y dépenser les diamants gagnés.\n"
+        "\n"
+        "Votre solde : 💎 {diamonds}"
+    ),
+
+    shop_button_kick_grumpy_cat = "🧹😾 Chasser le chat : -💎 {price}",
+    shop_button_next_achivement = "🏆 Obtenir un succès : -💎 {price}",
+
+    shop_no_enough_diamonds = "🚫 Pas assez de diamants pour l'achat",
+    shop_diamonds_left = "Diamants restants : 💎 {diamonds}",
+    shop_no_grumpy_cat = "🤷 Aucun chat grincheux à chasser",
+
 )
 
 
@@ -314,7 +337,7 @@ Presiona el botón de abajo para comenzar el juego.""",
     menu_review="💫️ revisar Fórmula",
     menu_pause="⏸️ pausar el juego",
     menu_stats="📊 progreso del juego",
-    menu_shop="💎 comercio",
+    menu_shop="🛍️ comercio",
     menu_formula="🧪 actualizar Fórmula",
     menu_settings="🔧 ajustes",
 
@@ -480,7 +503,21 @@ Presiona el botón de abajo para comenzar el juego.""",
     sleep_config_updated="La configuración de sueño ha sido actualizada 💤\n"
                          "\n"
                          "Activado? {is_enabled}\n"
-                         "Hora de dormir: {bed_time} - {wakeup_time}\n"
+                         "Hora de dormir: {bed_time} - {wakeup_time}\n",
+    shop_description = (
+        "¡Bienvenido a la tienda 🛍️!\n"
+        "\n"
+        "Aquí puedes gastar los diamantes que has ganado.\n"
+        "\n"
+        "Tu saldo: 💎 {diamonds}"
+    ),
+
+    shop_button_kick_grumpy_cat = "🧹😾 Echar al gato: -💎 {price}",
+    shop_button_next_achivement = "🏆 Conseguir un logro: -💎 {price}",
+
+    shop_no_enough_diamonds = "🚫 No hay suficientes diamantes para la compra",
+    shop_diamonds_left = "Diamantes restantes: 💎 {diamonds}",
+    shop_no_grumpy_cat = "🤷 No hay gato gruñón que espantar",
 )
 
 
@@ -503,7 +540,7 @@ Press the button below to start the game.""",
     menu_review="💫️ review Formula",
     menu_pause="⏸️ pause the game",
     menu_stats="📊 game progress",
-    menu_shop = "💎 shop",
+    menu_shop = "🛍️ shop",
     menu_formula="️🧪 update Formula",
     menu_settings="🔧 settings",
 
@@ -672,6 +709,19 @@ Press the button below to start the game.""",
                          "\n"
                          "Enabled? {is_enabled}\n"
                          "Sleep time: {bed_time} - {wakeup_time}\n",
+    shop_description = 
+        "Welcome to the shop 🛍️!\n"
+        "\n"
+        "Here you can spend your hard-earned diamonds.\n"
+        "\n"
+        "Your balance: 💎 {diamonds}",
+
+    shop_button_kick_grumpy_cat = "🧹😾 Shoo the cat away: -💎 {price}",
+    shop_button_next_achivement = "🏆 Get an achievement: -💎 {price}",
+
+    shop_no_enough_diamonds = "🚫 Not enough diamonds for the purchase",
+    shop_diamonds_left = "Diamonds left: 💎 {diamonds}",
+    shop_no_grumpy_cat = "🤷 No grumpy cat to shoo"
 )
 
 de = Lang(
@@ -693,7 +743,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
     menu_review="💫️ Formel überprüfen",
     menu_pause="⏸️ Spiel pausieren",
     menu_stats="📊 Spielfortschritt",
-    menu_shop = "💎 Geschäft",
+    menu_shop = "🛍️ Geschäft",
     menu_formula="️🧪 Formel aktualisieren",
     menu_settings = "🔧 Einstellungen",
 
@@ -861,7 +911,20 @@ Drücke den Button unten, um das Spiel zu starten.""",
     sleep_config_updated="Der Schlafplaner wurde aktualisiert 💤\n"
                          "\n"
                          "Aktiviert? {is_enabled}\n"
-                         "Schlafenszeit: {bed_time} - {wakeup_time}\n"
+                         "Schlafenszeit: {bed_time} - {wakeup_time}\n",
+    shop_description = (
+        "Willkommen im Shop 🛍️!\n"
+        "\n"
+        "Hier kannst du deine verdienten Diamanten ausgeben.\n"
+        "\n"
+        "Dein Kontostand: 💎 {diamonds}"
+    ),
+    shop_button_kick_grumpy_cat = "🧹😾 Katze verjagen: -💎 {price}",
+    shop_button_next_achivement = "🏆 Erfolg freischalten: -💎 {price}",
+
+    shop_no_enough_diamonds = "🚫 Nicht genug Diamanten für den Kauf",
+    shop_diamonds_left = "Verbleibende Diamanten: 💎 {diamonds}",
+    shop_no_grumpy_cat = "🤷 Keine mürrische Katze zum Wegscheuchen",
 )
 
 
@@ -884,7 +947,7 @@ ru = Lang(
     menu_review="💫️ просмотреть Формулу",
     menu_pause="⏸️ поставить игру на паузу",
     menu_stats="📊 статистика игры",
-    menu_shop="💎 магазин",
+    menu_shop="🛍️ магазин",
     menu_formula="🧪 изменить Формулу",
 
     menu_settings = "🔧 настройки",
@@ -1051,8 +1114,20 @@ ru = Lang(
                          "\n"
                          "Включено? {is_enabled}\n"
                          "Время сна: {bed_time} - {wakeup_time}\n",
-)
+    
+    shop_description="Добро пожаловать в магазин 🛍️!\n"
+    "\n"
+    "Здесь вы можете потратить заработанные алмазы.\n"
+    "\n"
+    "На вашем счету: 💎 {diamonds}",
 
+    shop_button_kick_grumpy_cat="🧹😾 Прогнать кота: -💎 {price}",
+    shop_button_next_achivement="🏆 Получить достижение: -💎 {price}",
+
+    shop_no_enough_diamonds = "🚫 Недостаточно алмазов для покупки",
+    shop_diamonds_left = "Осталось алмазов: 💎 {diamonds}",
+    shop_no_grumpy_cat = "🤷 Нет сердитого кота, которого можно прогнать",
+)
 
 class LangProvider:
 

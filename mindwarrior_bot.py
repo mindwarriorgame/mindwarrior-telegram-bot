@@ -138,6 +138,14 @@ async def stats_command(update: Update, context):
     ret = game_manager.on_stats_command(chat_id)
     await send_reply(message, ret)
 
+async def shop_command(update: Update, context):
+    global game_manager
+    message = get_message(update)
+    chat_id = message.chat.id
+    ret = game_manager.on_shop_command(chat_id)
+    await send_reply(message, ret)
+
+
 async def formula_command(update: Update, context):
     global game_manager
     message = get_message(update)
@@ -159,6 +167,19 @@ async def feedback_command(update: Update, context):
     ret = game_manager.on_feedback_command(chat_id)
     await send_reply(message, ret)
 
+async def shop_unblock_command(update: Update, context):
+    global game_manager
+    message = get_message(update)
+    chat_id = message.chat.id
+    ret = game_manager.on_shop_unblock_command(chat_id)
+    await send_reply(message, ret)
+
+async def shop_progress_command(update: Update, context):
+    global game_manager
+    message = get_message(update)
+    chat_id = message.chat.id
+    ret = game_manager.on_shop_progress_command(chat_id)
+    await send_reply(message, ret)
 
 async def settings_command(update: Update, context):
     global game_manager
@@ -223,6 +244,10 @@ async def button(update: Update, ctx) -> None:
         await difficulty_command(update, ctx)
     elif query.data == "feedback":
         await feedback_command(update, ctx)
+    elif query.data == "shop_unblock":
+        await shop_unblock_command(update, ctx)
+    elif query.data == "shop_progress":
+        await shop_progress_command(update, ctx)
 
 
 async def main():
@@ -232,6 +257,7 @@ async def main():
     app.add_handler(CommandHandler('review', review_command))
     app.add_handler(CommandHandler('pause', pause_command))
     app.add_handler(CommandHandler('stats', stats_command))
+    app.add_handler(CommandHandler('shop', shop_command))
     app.add_handler(CommandHandler('formula', formula_command))
     app.add_handler(CommandHandler('settings', settings_command))
 

@@ -30,6 +30,7 @@ class BadgesManagerTest(unittest.IsolatedAsyncioTestCase):
 
 
     def test_grumpy_cat_gets_in(self):
+        self.maxDiff = None
         badges_manager = BadgesManager(2, '{"badges_state": {"CatBadgeCounter": '
                                           '"cumulative_counter_secs=0,counter_last_updated=0,update_reason=game_started", '
                                           '"TimeBadgeCounter": "86400", "StarBadgeCounter": "0,5", "FeatherBadgeCounter": "86400"}, '

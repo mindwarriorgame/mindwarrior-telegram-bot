@@ -950,7 +950,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' - autopause_config_serialized: None\n'
                                             '\n'
-                                            ' - diamonds: 0</code>',
+                                            ' - diamonds: 0\n'
+                                            '\n'
+                                            ' - spent_diamonds: 0</code>',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)
@@ -1267,3 +1269,11 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             'Enabled? ⚪️\n'
                                             'Sleep time: N/A - N/A\n',
                                  'to_chat_id': 1}])
+    def test_shop_command(self):
+        self.assertEqual(0, 1)
+
+    def test_shop_progress_command(self):
+        self.assertEqual(0, 1)
+
+    def test_shop_unblock_command(self):
+        self.assertEqual(0, 1)

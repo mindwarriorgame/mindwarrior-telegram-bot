@@ -32,6 +32,8 @@ REVIEW_INTERVAL_MINS = 15
 
 PROMPT_MINUTES = [60*6, 60*3, 60 + 30, 60, 45]
 
+PRICE_DIAMONDS = [10, 20, 30, 40, 50, 60]
+
 HAS_REMINDER = [True, True, True, False, False]
 
 NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM  = 'next_review_prompt_minutes=' + ",".join([str(PROMPT_MINUTES[idx]) for idx in range(0, len(PROMPT_MINUTES))])
@@ -264,6 +266,7 @@ class GameManager:
             badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
             if badges_manager.count_active_grumpy_cats_on_board() == 0:
                 user['diamonds'] = user['diamonds'] + 1
+                self.users_orm.upsert_user(user)
                 diamonds_msg = lang.diamond_new.format(count=user['diamonds'])
                 maybe_badge_msg = (maybe_badge_msg + "\n\n" + diamonds_msg) if maybe_badge_msg else diamonds_msg
             return self._render_review_command_success(maybe_badge_msg, maybe_badge_button, next_review,
@@ -385,6 +388,87 @@ class GameManager:
 
         return self._render_stats(lang, BadgesManager(user['difficulty'], user['badges_serialized']), user['user_id'], user['difficulty'], self._calculate_active_play_time_seconds(user),
                                   user['paused_counter_state'] is not None, since_last_review_secs, till_next_prompt_time, fname)
+
+    def on_shop_command(self, chat_id) -> Reply:
+        user = self.users_orm.get_user_by_id(chat_id)
+        if user['lang_code'] is None:
+            return self.on_start_command(chat_id)
+        lang = self._get_user_lang(user['lang_code'])
+
+        return {
+            'to_chat_id': chat_id,
+            'message': lang.shop_description.format(diamonds=user['diamonds']),
+            'buttons': [
+                {
+                    'text': lang.shop_button_kick_grumpy_cat.format(price=PRICE_DIAMONDS[user['difficulty']]),
+                    'data': 'shop_unblock'
+                },
+                {
+                    'text': lang.shop_button_next_achivement.format(price=PRICE_DIAMONDS[user['difficulty']]),
+                    'data': 'shop_progress'
+                }
+            ],
+            'menu_commands': [],
+            'image': None
+        }
+    
+    def on_shop_unblock_command(self, chat_id) -> Reply:
+        user = self.users_orm.get_user_by_id(chat_id)
+        if user['lang_code'] is None:
+            return self.on_start_command(chat_id)
+        lang = self._get_user_lang(user['lang_code'])
+
+        price = PRICE_DIAMONDS[user['difficulty']]
+        if price >= user['diamonds']:
+            return self._render_single_message(chat_id, lang.shop_no_enough_diamonds, None, None)
+        
+        badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
+        if badges_manager.count_active_grumpy_cats_on_board() < 1:
+            return self._render_single_message(chat_id, lang.shop_no_grumpy_cat, None, None)
+        
+        user['diamonds'] -= price
+        user['spent_diamonds'] += price
+        self.users_orm.upsert_user(user)
+        
+        maybe_badge_msg, maybe_badge_button = self._handle_badge_event(user, "on_shoo_cat")
+
+        return {
+            'message': (maybe_badge_msg if maybe_badge_msg else "Should never happen") + "\n\n" +
+                        lang.shop_diamonds_left.format(diamonds=user['diamonds']),
+            'to_chat_id': chat_id,
+            'buttons': [maybe_badge_button] if maybe_badge_button else [],
+            'menu_commands': self._render_menu_commands(lang),
+            'image': None
+        }
+
+    def on_shop_progress_command(self, chat_id) -> Reply:
+        user = self.users_orm.get_user_by_id(chat_id)
+        if user['lang_code'] is None:
+            return self.on_start_command(chat_id)
+        lang = self._get_user_lang(user['lang_code'])
+
+        price = PRICE_DIAMONDS[user['difficulty']]
+        if price >= user['diamonds']:
+            return self._render_single_message(chat_id, lang.shop_no_enough_diamonds, None, None)
+        
+        badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
+        if badges_manager.count_active_grumpy_cats_on_board() > 0:
+            return self._render_single_message(chat_id, lang.locked_achievements, None, None)
+        
+        user['diamonds'] -= price
+        user['spent_diamonds'] += price
+        self.users_orm.upsert_user(user)
+        
+        maybe_badge_msg, maybe_badge_button = self._handle_badge_event(user, "on_force_badge_open")
+
+        return {
+            'message': (maybe_badge_msg if maybe_badge_msg else "Should never happen") + "\n\n" +
+                        lang.shop_diamonds_left.format(diamonds=user['diamonds']),
+            'to_chat_id': chat_id,
+            'buttons': [maybe_badge_button] if maybe_badge_button else [],
+            'menu_commands': self._render_menu_commands(lang),
+            'image': None
+        }
 
     def on_difficulty_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
