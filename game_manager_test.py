@@ -15,7 +15,7 @@ MENU_COMMANDS = [['review', '💫️ review Formula'],
                  ['pause', '⏸️ pause the game'],
                  ['formula', '️🧪 update Formula'],
                  ['stats', '📊 game progress'],
-                 ['shop', '💎 shop'],
+                 ['shop', '🛍️ shop'],
                  ['settings', '🔧 settings']]
 
 
@@ -368,7 +368,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
-                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
+                                            "💎 You've got a new diamond! 💎 1 (+1)\n"
                                             "\n"
                                             'Next review before 12:17 am\n'
                                             '\n'
@@ -657,7 +657,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'message': 'The game is resumed.\n'
                                             '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
-                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
+                                            "💎 You've got a new diamond! 💎 1 (+1)\n"
                                             '\n'
                                             'Next review before 12:17 am\n'
                                             '\n'
@@ -708,7 +708,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             "🏆 You've got a new achievement!\n"
                                             'Press "View achievements" button below.\n'
                                             "\n"
-                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
+                                            "💎 You've got a new diamond! 💎 1 (+1)\n"
                                             '\n'
                                             'Next review before 12:15 am\n'
                                             '\n'
@@ -743,7 +743,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
-                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
+                                            "💎 You've got a new diamond! 💎 1 (+1)\n"
                                             "\n"
                                             'Next review before 12:15 am\n'
                                             '\n'
@@ -811,7 +811,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'menu_commands': MENU_COMMANDS,
                                  'message': '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
-                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
+                                            "💎 You've got a new diamond! 💎 1 (+1)\n"
                                             '\n'
                                             'Next review before 12:18 am\n'
                                             '\n'
@@ -1102,7 +1102,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '🧹 The grumpy cat has been kicked out!\n'
                                             '🏆 Achievements are unlocked!\n'
                                             '\n'
-                                            "💎 You've got a new diamond! 💎 1 (+1) /shop\n"
+                                            "💎 You've got a new diamond! 💎 1 (+1)\n"
                                             '\n'
                                             'Next review before 12:16 am\n'
                                             '\n'
@@ -1270,10 +1270,190 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             'Sleep time: N/A - N/A\n',
                                  'to_chat_id': 1}])
     def test_shop_command(self):
-        self.assertEqual(0, 1)
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        user['difficulty'] = 1  # price = 20 for this level
+        user['diamonds'] = 37
+        user['spent_diamonds'] = 0
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_shop_command(1)
+
+        self.assertEqual(data, {
+            'to_chat_id': 1,
+            'message': (
+                "Welcome to the shop 🛍️!\n"
+                "\n"
+                "Here you can spend your hard-earned diamonds.\n"
+                "\n"
+                "Your balance: 💎 37"
+            ),
+            'buttons': [
+                {
+                    'text': '🧹😾 Shoo the cat away: -💎 20',
+                    'data': 'shop_unblock'
+                },
+                {
+                    'text': '🏆 Get an achievement: -💎 20',
+                    'data': 'shop_progress'
+                }
+            ],
+            'menu_commands': [],
+            'image': None
+        })
 
     def test_shop_progress_command(self):
-        self.assertEqual(0, 1)
+        # Not enough diamonds
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        user['difficulty'] = 0  # price = 10 for this level
+        user['diamonds'] = 5
+        user['spent_diamonds'] = 0
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_shop_progress_command(1)
+        self.assertEqual(data, {
+            'to_chat_id': 1,
+            'message': '🚫 Not enough diamonds for the purchase',
+            'buttons': [],
+            'menu_commands': [],
+            'image': None
+        })
+
+        # Enough diamonds and no grumpy cat on board -> purchase succeeds
+        user = self.users_orm.get_user_by_id(1)
+        user['diamonds'] = 10
+        user['spent_diamonds'] = 0
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_shop_progress_command(1)
+        user = self.users_orm.get_user_by_id(1)
+
+        # diamonds and spent_diamonds updated
+        self.assertEqual(user['diamonds'], 0)
+        self.assertEqual(user['spent_diamonds'], 10)
+
+        # Reply structure
+        self.assertEqual(data['to_chat_id'], 1)
+        self.assertEqual(data['menu_commands'], MENU_COMMANDS)
+        self.assertTrue(any(b['text'] == 'View achievements 🏆' for b in data['buttons']))
+        self.assertIn('Diamonds left: 💎 0', data['message'])
+
+        # TODO: check that a new achievemnt has been received
 
     def test_shop_unblock_command(self):
-        self.assertEqual(0, 1)
+        # Not enough diamonds
+        user = self.users_orm.get_user_by_id(1)
+        user['lang_code'] = 'en'
+        user['difficulty'] = 0  # price = 10 for this level
+        user['diamonds'] = 5
+        user['spent_diamonds'] = 0
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_shop_unblock_command(1)
+        self.assertEqual(data, {
+            'to_chat_id': 1,
+            'message': '🚫 Not enough diamonds for the purchase',
+            'buttons': [],
+            'menu_commands': [],
+            'image': None
+        })
+
+        # Enough diamonds but no grumpy cat on board
+        user = self.users_orm.get_user_by_id(1)
+        user['diamonds'] = 10
+        user['spent_diamonds'] = 0
+        self.users_orm.upsert_user(user)
+
+        data = self.game_manager.on_shop_unblock_command(1)
+        self.assertEqual(data, {
+            'to_chat_id': 1,
+            'message': '🤷 No grumpy cat to shoo',
+            'buttons': [],
+            'menu_commands': [],
+            'image': None
+        })
+
+        # TODO: check that a cat has been kicked out
+
+    @time_machine.travel("2022-04-21", tick=False)
+    def test_on_review_should_render_shop_button_when_enough_diamonds(self):
+        user = self.users_orm.get_user_by_id(1)
+        counter = Counter("")
+        counter.resume()
+        user['review_counter_state'] = counter.serialize()
+        user['active_game_counter_state'] = counter.serialize()
+        user['paused_counter_state'] = None
+        user['difficulty'] = 0  # price = 10
+        user['lang_code'] = 'en'
+        user['diamonds'] = 9   # will become 10 after review
+        user['spent_diamonds'] = 0
+        user['counters_history_serialized'] = None  # no cooldown
+        self.users_orm.upsert_user(user)
+
+        payload = 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am'
+        data = self.game_manager.on_data_provided(1, payload)
+
+        self.assertEqual(len(data), 1)
+        reply = data[0]
+
+        user = self.users_orm.get_user_by_id(1)
+        self.assertEqual(user['diamonds'], 10)
+        self.assertEqual(reply['to_chat_id'], 1)
+        self.assertEqual(reply['menu_commands'], MENU_COMMANDS)
+
+        # Diamond reward + hint to use /shop
+        self.assertEqual(reply['message'], 
+                         "<i>Formula</i> has been reviewed 🎉\n" \
+                         "\n" \
+                         "💎 You've got a new diamond! 💎 10 (+1)\n" \
+                         "Buy next achievement for 💎 10 /shop\n" \
+                         "\n" \
+                         "Next review before 12:15 am\n" \
+                         "\n" \
+                         " ‣ /pause - pause the game\n" \
+                         "\n" \
+                         " ‣ /settings - configure sleep scheduler"
+        )
+    @time_machine.travel("2022-04-21", tick=False)
+    def test_on_review_should_render_shop_button_when_grumpy_cat_block_achivements_and_enough_diamnds(self):
+        user = self.users_orm.get_user_by_id(1)
+        counter = Counter("")
+        counter.resume()
+        user['review_counter_state'] = counter.serialize()
+        user['active_game_counter_state'] = counter.serialize()
+        user['paused_counter_state'] = None
+        user['difficulty'] = 1  
+        user['lang_code'] = 'en'
+        user['diamonds'] = 30 
+        user['spent_diamonds'] = 0
+        user['counters_history_serialized'] = None  # no cooldown
+
+        # Add a grumpy cat so that achievements are blocked
+        badges = BadgesManager(user['difficulty'], user['badges_serialized'])
+        badges.on_penalty(0)
+        user['badges_serialized'] = badges.serialize()
+        self.users_orm.upsert_user(user)
+
+        payload = 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am'
+        data = self.game_manager.on_data_provided(1, payload)
+
+        self.assertEqual(len(data), 1)
+        reply = data[0]
+
+        user = self.users_orm.get_user_by_id(1)
+        self.assertEqual(user['diamonds'], 30)
+
+        self.assertEqual(reply['message'],
+                         '<i>Formula</i> has been reviewed 🎉\n' +
+                         '\n' +
+                         '🧹😾 Kicking out the grumpy cat...\n' +
+                         '\n' +
+                         'Shoo the grumpy cat for 💎 20 /shop\n' +
+                         '\n' +
+                         'Next review before 12:16 am\n' +
+                         '\n' + 
+                         ' ‣ /pause - pause the game\n' +
+                         '\n' +
+                         ' ‣ /settings - configure sleep scheduler'
+                         )

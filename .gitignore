@@ -5,3 +5,7 @@ venv
 /scp.sh
 /ssh.sh
 __pycache__
+analytics*
+run-analytics.sh
+tmp*
+mindwarrior_bot_launcher.sh

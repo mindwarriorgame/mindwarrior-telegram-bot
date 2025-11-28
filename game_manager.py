@@ -264,10 +264,20 @@ class GameManager:
         else:
             maybe_badge_msg, maybe_badge_button =  self._handle_badge_event(user, 'on_review')
             badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
+            diamonds_msg = None
+            
             if badges_manager.count_active_grumpy_cats_on_board() == 0:
                 user['diamonds'] = user['diamonds'] + 1
                 self.users_orm.upsert_user(user)
+            
                 diamonds_msg = lang.diamond_new.format(count=user['diamonds'])
+                if user['diamonds'] >= self._calculate_shop_price(user):
+                    diamonds_msg += '\n' + lang.buy_next_achievement_for_diamonds.format(diamonds=self._calculate_shop_price(user))
+            
+            if badges_manager.count_active_grumpy_cats_on_board() > 0 and user['diamonds'] >= self._calculate_shop_price(user):
+                diamonds_msg = lang.kick_grumpy_cat_for_diamonds.format(diamonds=self._calculate_shop_price(user))
+            
+            if diamonds_msg:
                 maybe_badge_msg = (maybe_badge_msg + "\n\n" + diamonds_msg) if maybe_badge_msg else diamonds_msg
             return self._render_review_command_success(maybe_badge_msg, maybe_badge_button, next_review,
                                                        lang=lang,
@@ -400,11 +410,11 @@ class GameManager:
             'message': lang.shop_description.format(diamonds=user['diamonds']),
             'buttons': [
                 {
-                    'text': lang.shop_button_kick_grumpy_cat.format(price=PRICE_DIAMONDS[user['difficulty']]),
+                    'text': lang.shop_button_kick_grumpy_cat.format(price=self._calculate_shop_price(user)),
                     'data': 'shop_unblock'
                 },
                 {
-                    'text': lang.shop_button_next_achivement.format(price=PRICE_DIAMONDS[user['difficulty']]),
+                    'text': lang.shop_button_next_achivement.format(price=self._calculate_shop_price(user)),
                     'data': 'shop_progress'
                 }
             ],
@@ -412,14 +422,17 @@ class GameManager:
             'image': None
         }
     
+    def _calculate_shop_price(self, user: User) -> int:
+        return PRICE_DIAMONDS[user['difficulty']]
+    
     def on_shop_unblock_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
         if user['lang_code'] is None:
             return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
-        price = PRICE_DIAMONDS[user['difficulty']]
-        if price >= user['diamonds']:
+        price = self._calculate_shop_price(user)
+        if price > user['diamonds']:
             return self._render_single_message(chat_id, lang.shop_no_enough_diamonds, None, None)
         
         badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
@@ -447,8 +460,8 @@ class GameManager:
             return self.on_start_command(chat_id)
         lang = self._get_user_lang(user['lang_code'])
 
-        price = PRICE_DIAMONDS[user['difficulty']]
-        if price >= user['diamonds']:
+        price = self._calculate_shop_price(user)
+        if price > user['diamonds']:
             return self._render_single_message(chat_id, lang.shop_no_enough_diamonds, None, None)
         
         badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
@@ -626,7 +639,7 @@ class GameManager:
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
                     }, "10:00", lang, chat_id, is_resumed, False)]
-                    ret = ret + [self._render_review_command_success(lang.kicking_out_grumpy_cat + "\n" + lang.kick_grumpy_cat_for_diamonds.format(count=50), {
+                    ret = ret + [self._render_review_command_success(lang.kicking_out_grumpy_cat + "\n" + lang.kick_grumpy_cat_for_diamonds.format(diamonds=50), {
                         "text": lang.view_badges_button,
                         "url": "https://google.com"
                     }, "10:00", lang, chat_id, is_resumed, False)]
@@ -991,7 +1004,7 @@ class GameManager:
 
         return button_url
 
-    def _handle_badge_event(self, user, event) -> tuple[Optional[str], Optional[Button]]:
+    def _handle_badge_event(self, user: User, event) -> tuple[Optional[str], Optional[Button]]:
         badges_manager = BadgesManager(user['difficulty'], user['badges_serialized'])
 
         active_play_time_secs = self._calculate_active_play_time_seconds(user)
