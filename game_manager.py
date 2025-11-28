@@ -397,7 +397,8 @@ class GameManager:
                                              paused_at)
 
         return self._render_stats(lang, BadgesManager(user['difficulty'], user['badges_serialized']), user['user_id'], user['difficulty'], self._calculate_active_play_time_seconds(user),
-                                  user['paused_counter_state'] is not None, since_last_review_secs, till_next_prompt_time, fname)
+                                  user['paused_counter_state'] is not None, since_last_review_secs, till_next_prompt_time, fname,
+                                  user['diamonds'], user['spent_diamonds'])
 
     def on_shop_command(self, chat_id) -> Reply:
         user = self.users_orm.get_user_by_id(chat_id)
@@ -673,7 +674,9 @@ class GameManager:
         if user_message == "render_screen_6":
             ret = []
             for lang_code, lang in langs.items():
-                ret = ret + [self._render_stats(lang, BadgesManager(0, None), chat_id, 2, 1000, False, 100, 1000, None)]
+                ret = ret + [self._render_stats(lang, BadgesManager(0, None), chat_id, 2, 1000, False, 
+                                                100, 1000, None,
+                                                10, 20)]
             return ret
 
         if user_message == "render_screen_7":
@@ -824,7 +827,7 @@ class GameManager:
             'image': None
         }
 
-    def _render_stats(self, lang, badges_manager, chat_id, difficulty, active_play_time_seconds, is_paused, since_last_review_secs, till_next_prompt_time, fname) -> Reply:
+    def _render_stats(self, lang, badges_manager, chat_id, difficulty, active_play_time_seconds, is_paused, since_last_review_secs, till_next_prompt_time, fname, diamonds, spent_diamonds) -> Reply:
         return {
             'to_chat_id': chat_id,
             'message': lang.stats_command.format(
@@ -832,6 +835,8 @@ class GameManager:
                 difficulty=lang.difficulties[difficulty],
                 difficulty_details=str(difficulty + 1) + "/" + str(len(lang.difficulties)),
                 time=self._format_time_minutes(lang, active_play_time_seconds),
+                diamonds=diamonds,
+                spent_diamonds=spent_diamonds,
                 paused="⚪" if not is_paused else "🟢",
                 cooldown=self._format_time_seconds(lang, 5*60 - since_last_review_secs if since_last_review_secs < 5*60 else 0),
                 punishment=self._format_time_minutes(lang, till_next_prompt_time, skip_zeros=True)

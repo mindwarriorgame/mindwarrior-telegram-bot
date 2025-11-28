@@ -202,6 +202,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     stats_command=("🏆 Niveau : {level}\n"
                    "⌛ Temps de jeu actif : {time}\n"
+                   "💎 Diamants disponibles : {diamonds}, dépensés : {spent_diamonds}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">Difficulté</a> : {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.fr.html#pause\">En pause ?</a> {paused}\n"
                    "❄️ Temps de <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty:~:text=sera%20récompensé%20(-,%22règle%20de%20refroidissement%22,-).\">refroidissement</a> avant la prochaine récompense : {cooldown}\n"
@@ -405,6 +406,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     stats_command=("🏆 Nivel: {level}\n"
                    "⌛ Tiempo de juego activo: {time}\n"
+                   "💎 Diamantes disponibles: {diamonds}, gastados: {spent_diamonds}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Dificultad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.es.html#pause\">¿Pausado?</a> {paused}\n"
                    "❄️ <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Tiempo de espera</a> antes de la próxima recompensa: {cooldown}\n"
@@ -612,6 +614,7 @@ Press the button below to start the game.""",
 
     stats_command=("🏆 Level : {level}\n"
                    "⌛ Active play time: {time}\n"
+                   "💎 Diamonds available: {diamonds}, spent: {spent_diamonds}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.en.html#pause\">Paused?</a> {paused}\n"
                    "❄️ <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Cool-down</a> time before next reward: {cooldown}\n"
@@ -815,6 +818,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     stats_command=("🏆 Level : {level}\n"
                    "⌛ Aktive Spielzeit: {time}\n"
+                   "💎 Diamanten verfügbar: {diamonds}, ausgegeben: {spent_diamonds}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">Pausiert?</a> {paused}\n"
                    "❄️ <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlzeit</a> vor der nächsten Belohnung: {cooldown}\n"
@@ -1019,6 +1023,7 @@ ru = Lang(
 
     stats_command=("🏆 Уровень: {level}\n"
                    "⌛ Время активной игры: {time}\n"
+                   "💎 Алмазов доступно: {diamonds}, потрачено: {spent_diamonds}\n"
                    "💪 <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">Сложность игры</a>: {difficulty} ({difficulty_details})\n"
                    "⏸️ <a href=\"https://mindwarriorgame.org/faq.ru.html#pause\">На паузе?</a> {paused}\n"
                    "❄️ <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Время до следующей награды</a>: {cooldown}\n"

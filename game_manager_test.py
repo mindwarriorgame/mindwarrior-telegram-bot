@@ -511,6 +511,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['next_prompt_time'] = datetime.datetime(2022, 4, 22, 1, 45).astimezone(datetime.timezone.utc)
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
+        user['diamonds'] = 5
+        user['spent_diamonds'] = 10
         self.users_orm.upsert_user(user)
 
         data = self.game_manager.on_stats_command(1)
@@ -520,6 +522,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'menu_commands': [],
                                 'message': '🏆 Level : 1\n'
                                            '⌛ Active play time: 0d 0h 15m\n'
+                                           '💎 Diamonds available: 5, spent: 10\n'
                                            '💪 <a '
                                            'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty</a>: '
                                            'Medium (3/5)\n'
