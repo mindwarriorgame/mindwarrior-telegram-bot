@@ -37,6 +37,8 @@ class User(TypedDict):
     diamonds: int
     spent_diamonds: int
 
+    frontend_base_url_override: Optional[str]
+
 class UsersOrm:
 
     def __del__(self) -> None:
@@ -93,6 +95,13 @@ class UsersOrm:
             )
             self.conn.commit()
 
+        if "frontend_base_url_override" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE users ADD COLUMN frontend_base_url_override TEXT"
+            )
+            self.conn.commit()
+
+
         self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_prompt_time ON users (difficulty, active_game_counter_state_is_null, paused_counter_state_is_null, next_prompt_time)')
         self.conn.commit()
 
@@ -124,7 +133,8 @@ class UsersOrm:
             next_autopause_event_time,
             autopause_config_serialized,
             diamonds,
-            spent_diamonds
+            spent_diamonds,
+            frontend_base_url_override
                 FROM users WHERE user_id = ?""", (user_id,))
         return self._to_user_obj(self.cursor.fetchone(), user_id)
 
@@ -147,7 +157,8 @@ class UsersOrm:
             next_autopause_event_time,
             autopause_config_serialized,
             diamonds,
-            spent_diamonds
+            spent_diamonds,
+            frontend_base_url_override
                 FROM users WHERE difficulty = ? AND active_game_counter_state_is_null = 0 AND paused_counter_state_is_null = 1 AND next_prompt_time < ? LIMIT ?""",
                             (difficulty, cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -171,7 +182,8 @@ class UsersOrm:
             next_autopause_event_time,
             autopause_config_serialized,
             diamonds,
-            spent_diamonds
+            spent_diamonds,
+            frontend_base_url_override
                 FROM users WHERE next_autopause_event_time < ? LIMIT ?""",
                             (cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -215,7 +227,8 @@ class UsersOrm:
                 next_autopause_event_time=None,
                 autopause_config_serialized=None,
                 diamonds=0,
-                spent_diamonds=0
+                spent_diamonds=0,
+                frontend_base_url_override=None
             )
         return User(
             user_id=param[0],
@@ -232,7 +245,8 @@ class UsersOrm:
             next_autopause_event_time=safe_convert_to_datetime(param[13]),
             autopause_config_serialized=param[14],
             diamonds=param[15],
-            spent_diamonds=param[16]
+            spent_diamonds=param[16],
+            frontend_base_url_override=param[17]
         )
     def remove_user(self, user_id: int):
         self.cursor.execute('DELETE FROM users WHERE user_id = ?', (user_id,))
@@ -257,8 +271,9 @@ class UsersOrm:
                 next_autopause_event_time,
                 autopause_config_serialized,
                 diamonds,
-                spent_diamonds
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                spent_diamonds,
+                frontend_base_url_override
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 lang_code = excluded.lang_code,
                 difficulty = excluded.difficulty,
@@ -275,7 +290,8 @@ class UsersOrm:
                 next_autopause_event_time = excluded.next_autopause_event_time,
                 autopause_config_serialized = excluded.autopause_config_serialized,
                 diamonds = excluded.diamonds,
-                spent_diamonds=excluded.spent_diamonds
+                spent_diamonds=excluded.spent_diamonds,
+                frontend_base_url_override=excluded.frontend_base_url_override
         ''', (
             user['user_id'],
             user['lang_code'],
@@ -298,7 +314,8 @@ class UsersOrm:
             user['next_autopause_event_time'].astimezone(ZoneInfo('UTC')).isoformat() if user['next_autopause_event_time'] is not None else None,
             user['autopause_config_serialized'],
             user['diamonds'],
-            user['spent_diamonds']
+            user['spent_diamonds'],
+            user['frontend_base_url_override']
         ))
         self.conn.commit()
 

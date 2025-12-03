@@ -44,7 +44,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=None,
             autopause_config_serialized=None,
             diamonds=0,
-            spent_diamonds=0
+            spent_diamonds=0,
+            frontend_base_url_override=None
         ))
 
     @time_machine.travel("2022-04-21")
@@ -58,6 +59,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['next_prompt_type'] = 'qwe'
         user['diamonds'] = 5
         user['spent_diamonds'] = 6
+        user['frontend_base_url_override'] = 'over'
         self.assertEqual(user, User(
             user_id=123,
             lang_code='ru',
@@ -73,7 +75,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=None,
             autopause_config_serialized=None,
             diamonds=5,
-            spent_diamonds=6
+            spent_diamonds=6,
+            frontend_base_url_override='over'
         ))
 
         user['lang_code'] = 'en'
@@ -90,6 +93,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['autopause_config_serialized'] = 'blah'
         user['diamonds'] = 6
         user['spent_diamonds'] = 7
+        user['frontend_base_url_override'] = 'newover'
         self.users_orm.upsert_user(user)
 
         self.assertEqual(self.users_orm.get_user_by_id(123), User(
@@ -107,7 +111,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
             autopause_config_serialized='blah',
             diamonds=6,
-            spent_diamonds=7
+            spent_diamonds=7,
+            frontend_base_url_override='newover'
         ))
 
     def test_get_some_users_for_prompt_when_no_user(self):
@@ -130,7 +135,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
             autopause_config_serialized='blah',
             diamonds=7,
-            spent_diamonds=8
+            spent_diamonds=8,
+            frontend_base_url_override='over'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [user])
@@ -152,7 +158,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0).astimezone(datetime.timezone.utc),
             autopause_config_serialized='blah',
             diamonds=8,
-            spent_diamonds=9
+            spent_diamonds=9,
+            frontend_base_url_override='over'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_next_autopause_events(10), [user])
@@ -177,7 +184,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=None,
             autopause_config_serialized=None,
             diamonds=9,
-            spent_diamonds=8
+            spent_diamonds=8,
+            frontend_base_url_override='over'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -199,7 +207,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             autopause_config_serialized='blah',
             diamonds=10,
-            spent_diamonds=8
+            spent_diamonds=8,
+            frontend_base_url_override='over'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 2), [])
@@ -222,7 +231,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             autopause_config_serialized='blah',
             diamonds=11,
-            spent_diamonds=7
+            spent_diamonds=7,
+            frontend_base_url_override=None
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -245,7 +255,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             autopause_config_serialized='blah',
             diamonds=12,
-            spent_diamonds=10
+            spent_diamonds=10,
+            frontend_base_url_override='over'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -266,7 +277,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             autopause_config_serialized='blah',
             diamonds=13,
-            spent_diamonds=11
+            spent_diamonds=11,
+            frontend_base_url_override='over'
         )
         self.users_orm.upsert_user(user)
         self.users_orm.remove_user(124)
@@ -288,7 +300,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=None,
             autopause_config_serialized=None,
             diamonds=0,
-            spent_diamonds=0
+            spent_diamonds=0,
+            frontend_base_url_override=None
         ))
 
     @time_machine.travel("2022-04-21 00:00:00")
@@ -308,7 +321,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             autopause_config_serialized='blah',
             diamonds=44,
-            spent_diamonds=1
+            spent_diamonds=1,
+            frontend_base_url_override='over'
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 1)
@@ -332,7 +346,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             autopause_config_serialized='blah',
             diamonds=55,
-            spent_diamonds=2
+            spent_diamonds=2,
+            frontend_base_url_override=None
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)
@@ -355,7 +370,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             next_autopause_event_time=datetime.datetime(2022, 4, 21, 2, 0, 0),
             autopause_config_serialized='blah',
             diamonds=66,
-            spent_diamonds=3
+            spent_diamonds=3,
+            frontend_base_url_override=None
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)
