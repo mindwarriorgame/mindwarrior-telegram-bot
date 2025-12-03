@@ -9,6 +9,7 @@ from telegram.ext import CommandHandler, Application, MessageHandler, filters, C
 
 from game_manager import GameManager, Reply
 from lang_provider import LangProvider
+from users_orm import UsersOrm
 # import pydevd_pycharm
 # pydevd_pycharm.settrace('localhost', port=53509, stdoutToServer=True, stderrToServer=True)
 
@@ -20,18 +21,17 @@ FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL')
 
 bot = Bot(token=TOKEN)
 
-game_manager = GameManager("mindwarrior2.db", ENV, FRONTEND_BASE_URL)
+user_orm = UsersOrm("mindwarrior2.db")
 
 async def process_ticks():
-    global game_manager
-    replies = game_manager.process_tick()
+    replies = GameManager.process_tick(user_orm, ENV, FRONTEND_BASE_URL)
     for reply in replies:
         try:
             await send_reply_with_bot(reply)
         except Exception as e:
             if type(e).__name__ == 'Forbidden' and 'bot was blocked by the user' in e.message:
                 print('Deleting blocked user')
-                game_manager.users_orm.remove_user(reply['to_chat_id'])
+                user_orm.remove_user(reply['to_chat_id'])
 
 
 async def send_reply(message: Message, ret: Reply):
@@ -85,122 +85,100 @@ async def send_reply_with_bot(ret: Reply):
 def get_message(update: Update):
     return update.message if update.message is not None else update.callback_query.message
 
-
+def get_game_manager(chat_id: int):
+    return GameManager(user_orm, ENV, FRONTEND_BASE_URL, chat_id)
 
 async def start_command(update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_start_command(chat_id)
+    ret = get_game_manager(chat_id).on_start_command()
     await send_reply(message, ret)
 
 async def review_command(update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_review_command(chat_id)
-    await send_reply(message, ret)
-
-
-async def help_command(update: Update, context):
-    global game_manager
-    message = get_message(update)
-    chat_id = message.chat.id
-    ret = game_manager.on_help_command(chat_id)
+    ret = get_game_manager(chat_id).on_review_command()
     await send_reply(message, ret)
 
 
 async def lang_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_lang_input(chat_id, update.message.text)
+    ret = get_game_manager(chat_id).on_lang_input(update.message.text)
     await send_reply(message, ret)
 
 async def pause_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_pause_command(chat_id)
+    ret = get_game_manager(chat_id).on_pause_command()
     await send_reply(message, ret)
 
 async def sleep_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_sleep_command(chat_id)
+    ret = get_game_manager(chat_id).on_sleep_command()
     await send_reply(message, ret)
 
 async def stats_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_stats_command(chat_id)
+    ret = get_game_manager(chat_id).on_stats_command()
     await send_reply(message, ret)
 
 async def shop_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_shop_command(chat_id)
+    ret = get_game_manager(chat_id).on_shop_command()
     await send_reply(message, ret)
 
 
 async def formula_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_formula_command(chat_id)
+    ret = get_game_manager(chat_id).on_formula_command()
     await send_reply(message, ret)
 
 async def difficulty_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_difficulty_command(chat_id)
+    ret = get_game_manager(chat_id).on_difficulty_command()
     await send_reply(message, ret)
 
 async def feedback_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_feedback_command(chat_id)
+    ret = get_game_manager(chat_id).on_feedback_command()
     await send_reply(message, ret)
 
 async def shop_unblock_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_shop_unblock_command(chat_id)
+    ret = get_game_manager(chat_id).on_shop_unblock_command()
     await send_reply(message, ret)
 
 async def shop_progress_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_shop_progress_command(chat_id)
+    ret = get_game_manager(chat_id).on_shop_progress_command()
     await send_reply(message, ret)
 
 async def settings_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_settings_command(chat_id)
+    ret = get_game_manager(chat_id).on_settings_command()
     await send_reply(message, ret)
 
 async def data_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    rets = game_manager.on_data_command(chat_id)
+    rets = get_game_manager(chat_id).on_data_command()
     for ret in rets:
         await send_reply_with_bot(ret)
 
 async def fallback_command(update: Update, context):
-    global game_manager
     message = get_message(update)
     chat_id = message.chat.id
-    ret = game_manager.on_data_provided(chat_id, message.text)
+    ret = get_game_manager(chat_id).on_data_provided(message.text)
     for reply in ret:
         if reply['to_chat_id'] == chat_id:
             await send_reply(message, reply)
@@ -226,14 +204,15 @@ async def fetch_and_process_updates(app: Application):
         await process_ticks()
 
 async def button(update: Update, ctx) -> None:
-    global game_manager
     query = update.callback_query
 
     await query.answer()
 
     for lang_code, lang in LangProvider.get_available_languages().items():
         if query.data == lang_code:
-            await send_reply(get_message(update), game_manager.on_lang_input(get_message(update).chat.id, lang_code))
+            message = get_message(update)
+            chat_id = message.chat.id
+            await send_reply(message, get_game_manager(chat_id).on_lang_input(lang_code))
             return
 
     if query.data == "data":

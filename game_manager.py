@@ -65,23 +65,19 @@ class GameManager:
     def on_start_command(self) -> Reply:
         return self._render_list_of_langs()
 
-    def on_help_command(self) -> Reply:
-        if self.user['lang_code'] is None:
-            return self.on_start_command()
-        return self._render_start_game_screen()
-
     def on_lang_input(self, user_message: str) -> Reply:
         lang_code = user_message[1:] if user_message.startswith("/") else user_message
         languages = LangProvider.get_available_languages()
         if lang_code in languages:
             self.user['lang_code'] = lang_code
+            self.lang = languages[lang_code]
             if lang_code == 'ru':
                 # Apparently Russian government is blocking netlify :(
                 # TODO: add ability to select servers in settings
                 # TODO: add backend to ru.mindwarriorgame as well 
                 self.user['frontend_base_url_override'] = "https://ru.mindwarriorgame.org/miniapp-frontend/index.html"
             self.users_orm.upsert_user(self.user)
-            return self.on_help_command()
+            return self._render_start_game_screen()
         else:
             return self._render_single_message("Invalid language code. Try again (/start)", None, None)
 
