@@ -3,7 +3,7 @@ import datetime
 import os
 
 import telegram
-from telegram import Bot, WebAppInfo, Update, \
+from telegram import Bot, MaybeInaccessibleMessage, WebAppInfo, Update, \
     InlineKeyboardMarkup, InlineKeyboardButton, Message
 from telegram.ext import CommandHandler, Application, MessageHandler, filters, CallbackQueryHandler
 
@@ -82,20 +82,29 @@ async def send_reply_with_bot(ret: Reply):
         if ret['image'].startswith('tmp_'):
             os.remove(ret['image'])
 
-def get_message(update: Update):
-    return update.message if update.message is not None else update.callback_query.message
+def get_message(update: Update) -> Message | None:
+    if update.message:
+        return update.message
+    if update.callback_query:
+        if isinstance(update.callback_query.message, Message):
+            return update.callback_query.message
+    return None
 
 def get_game_manager(chat_id: int):
     return GameManager(user_orm, ENV, FRONTEND_BASE_URL, chat_id)
 
 async def start_command(update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_start_command()
     await send_reply(message, ret)
 
 async def review_command(update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_review_command()
     await send_reply(message, ret)
@@ -103,30 +112,42 @@ async def review_command(update, context):
 
 async def lang_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
+    if not message.text:
+        message.text = "null"
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_lang_input(update.message.text)
+    ret = get_game_manager(chat_id).on_lang_input(message.text)
     await send_reply(message, ret)
 
 async def pause_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_pause_command()
     await send_reply(message, ret)
 
 async def sleep_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_sleep_command()
     await send_reply(message, ret)
 
 async def stats_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_stats_command()
     await send_reply(message, ret)
 
 async def shop_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_shop_command()
     await send_reply(message, ret)
@@ -134,42 +155,56 @@ async def shop_command(update: Update, context):
 
 async def formula_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_formula_command()
     await send_reply(message, ret)
 
 async def difficulty_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_difficulty_command()
     await send_reply(message, ret)
 
 async def feedback_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_feedback_command()
     await send_reply(message, ret)
 
 async def shop_unblock_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_shop_unblock_command()
     await send_reply(message, ret)
 
 async def shop_progress_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_shop_progress_command()
     await send_reply(message, ret)
 
 async def settings_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_settings_command()
     await send_reply(message, ret)
 
 async def data_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
     chat_id = message.chat.id
     rets = get_game_manager(chat_id).on_data_command()
     for ret in rets:
@@ -177,6 +212,10 @@ async def data_command(update: Update, context):
 
 async def fallback_command(update: Update, context):
     message = get_message(update)
+    if not message:
+        return
+    if not message.text:
+        message.text="<null>"
     chat_id = message.chat.id
     ret = get_game_manager(chat_id).on_data_provided(message.text)
     for reply in ret:
@@ -184,7 +223,6 @@ async def fallback_command(update: Update, context):
             await send_reply(message, reply)
         else:
             await send_reply_with_bot(reply)
-
 
 
 async def fetch_and_process_updates(app: Application):
@@ -205,13 +243,18 @@ async def fetch_and_process_updates(app: Application):
 
 async def button(update: Update, ctx) -> None:
     query = update.callback_query
+    if not query:
+        return
+    
+    message = get_message(update)
+    if not message:
+        return
+    chat_id = message.chat.id
 
     await query.answer()
 
     for lang_code, lang in LangProvider.get_available_languages().items():
         if query.data == lang_code:
-            message = get_message(update)
-            chat_id = message.chat.id
             await send_reply(message, get_game_manager(chat_id).on_lang_input(lang_code))
             return
 
@@ -230,6 +273,8 @@ async def button(update: Update, ctx) -> None:
 
 
 async def main():
+    if not TOKEN:
+        raise BaseException("Cannot run without token")
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler('start', start_command))
 

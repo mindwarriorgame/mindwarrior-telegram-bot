@@ -11,12 +11,12 @@ from counter import Counter
 from game_manager import GameManager
 from users_orm import User, UsersOrm
 
-MENU_COMMANDS = [['review', '💫️ review Formula'],
-                 ['pause', '⏸️ pause the game'],
-                 ['formula', '️🧪 update Formula'],
-                 ['stats', '📊 game progress'],
-                 ['shop', '🛍️ shop'],
-                 ['settings', '🔧 settings']]
+MENU_COMMANDS = [('review', '💫️ review Formula'),
+                 ('pause', '⏸️ pause the game'),
+                 ('formula', '️🧪 update Formula'),
+                 ('stats', '📊 game progress'),
+                 ('shop', '🛍️ shop'),
+                 ('settings', '🔧 settings')]
 
 
 class TestGameManager(unittest.IsolatedAsyncioTestCase):

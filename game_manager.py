@@ -1,7 +1,7 @@
 import copy
 import datetime
 import uuid
-from typing import TypedDict, Optional, NotRequired
+from typing import Tuple, TypedDict, Optional, NotRequired
 import time
 
 import numpy as np
@@ -25,7 +25,7 @@ class Reply(TypedDict):
     to_chat_id: int
     message: str
     buttons: list[Button]
-    menu_commands: list[list[str]]
+    menu_commands: list[Tuple[str, str]]
     image: Optional[str]
 
 REVIEW_INTERVAL_MINS = 15
@@ -873,14 +873,14 @@ class GameManager:
     def on_settings_command(self) -> Reply:
         return self._render_settings_screen()
 
-    def _render_menu_commands(self):
+    def _render_menu_commands(self) -> list[Tuple[str, str]]:
         return [
-            ["review", self.lang.menu_review],
-            ["pause", self.lang.menu_pause],
-            ["formula", self.lang.menu_formula],
-            ["stats", self.lang.menu_stats],
-            ["shop", self.lang.menu_shop],
-            ["settings", self.lang.menu_settings]
+            ("review", self.lang.menu_review),
+            ("pause", self.lang.menu_pause),
+            ("formula", self.lang.menu_formula),
+            ("stats", self.lang.menu_stats),
+            ("shop", self.lang.menu_shop),
+            ("settings", self.lang.menu_settings)
         ]
 
     def _render_settings_screen(self) -> Reply:
