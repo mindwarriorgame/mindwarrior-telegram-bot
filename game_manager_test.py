@@ -9,7 +9,7 @@ from autopause_manager import AutopauseManager
 from badges_manager import BadgesManager
 from counter import Counter
 from game_manager import GameManager
-from users_orm import UsersOrm
+from users_orm import User, UsersOrm
 
 MENU_COMMANDS = [['review', '💫️ review Formula'],
                  ['pause', '⏸️ pause the game'],
@@ -29,7 +29,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         except FileNotFoundError:
             pass
         self.users_orm = UsersOrm('test.db')
-        self.game_manager = GameManager('test.db', 'prod', 'http://frontend')
         self.maxDiff = None
 
     def tearDown(self):
@@ -39,13 +38,17 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         except FileNotFoundError:
             pass
 
+    def _create_game_manager(self, user: User):
+        return GameManager(self.users_orm, 'prod', 'http://frontend', user['user_id'])
+
     @time_machine.travel("2022-04-21", tick=False)
     def test_on_start_game_starts(self):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(user)
 
-        data = self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
+        data = game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -90,8 +93,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(user)
 
-        data = self.game_manager.on_data_provided(1, "not valid message")
+        data = game_manager.on_data_provided("not valid message")
         self.assertEqual(data, [{'buttons': [{'text': 'Write "Formula" and start playing! 🏁',
                                               'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45&shared_key_uuid=' + user["shared_key_uuid"]}],
                                  'image': None,
@@ -104,9 +108,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(user)
 
-        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
-        data = self.game_manager.on_data_provided(1, "not valid message")
+        game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
+        data = game_manager.on_data_provided("not valid message")
         self.assertEqual(data, [{'buttons': [],
                                  'image': None,
                                  'menu_commands': [],
@@ -120,10 +125,11 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['difficulty'] = 0
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+        game_manager = self._create_game_manager(user)
+        game_manager.on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
         user = self.users_orm.get_user_by_id(1)
         with time_machine.travel("2022-04-21 05:50", tick=False):
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                  {'text': 'View achievements 🏆',
@@ -143,7 +149,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(user['next_prompt_type'], 'penalty')
 
     def test_on_start_command(self):
-        data = self.game_manager.on_review_command(1)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
+        data = game_manager.on_start_command()
         self.assertEqual(data, {'buttons': [{'data': 'en', 'text': 'English'},
                                             {'data': 'de', 'text': 'Deutsch'},
                                             {'data': 'es', 'text': 'Español'},
@@ -153,7 +160,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'menu_commands': [],
                                 'message': 'Select your language:',
                                 'to_chat_id': 1})
-
+        
 
     # TODO: fix timezone @time_machine.travel(datetime(2022, 4, 21, tzinfo=timezone.utc), tick=False)
     @time_machine.travel("2022-04-21", tick=False)
@@ -162,11 +169,13 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['difficulty'] = 1
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+        game_manager = self._create_game_manager(user)
+        
+        game_manager.on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
 
         user = self.users_orm.get_user_by_id(1)
         with time_machine.travel("2022-04-21 05:50", tick=False):
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                  {'text': 'View achievements 🏆',
@@ -182,7 +191,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
-                data = self.game_manager.process_tick()
+                data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                      {'text': 'View achievements 🏆',
@@ -210,8 +219,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['difficulty'] = 1
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        self.game_manager.on_data_provided(1, "start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+        game_manager.on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
 
         user = self.users_orm.get_user_by_id(1)
         badges = BadgesManager(user['difficulty'], user['badges_serialized'])
@@ -220,7 +230,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.users_orm.upsert_user(user)
 
         with time_machine.travel("2022-04-21 05:50", tick=False):
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                  {'text': 'View achievements 🏆',
@@ -236,7 +246,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 ' ‣ /settings - configure sleep scheduler',
                                      'to_chat_id': 1}])
             with time_machine.travel("2022-04-21 06:10", tick=False):
-                data = self.game_manager.process_tick()
+                data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                       'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                                      {'text': 'View achievements 🏆',
@@ -269,8 +279,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['review_counter_state'] = counter.serialize()
         user['active_game_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_review_command(1)
+        data = game_manager.on_review_command()
         self.assertEqual(data, {'buttons': [{'text': 'Improve yourself 💪',
                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                             {'text': 'Improve the world 🙌',
@@ -297,8 +308,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(25)
         user['active_game_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_review_command(1)
+        data = game_manager.on_review_command()
         self.assertEqual(data, {'buttons': [{'text': 'Improve yourself 💪',
                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                             {'text': 'Improve the world 🙌',
@@ -324,8 +336,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
+        data = game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -359,7 +372,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(counter.is_active(), True)
         self.assertEqual(counter.get_total_seconds(), 0)
 
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:13 am,,12:14 am,,12:15 am,,12:16 am,,12:17 am')
+        data = game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:13 am,,12:14 am,,12:15 am,,12:16 am,,12:17 am')
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
@@ -383,8 +396,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'set_difficulty:1')[0]
+        data = game_manager.on_data_provided('set_difficulty:1')[0]
 
         self.assertEqual(data['to_chat_id'], 1)
         self.assertEqual(data['message'].index('stranger') >= 0, True)
@@ -404,8 +418,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'set_difficulty:3;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
+        data = game_manager.on_data_provided('set_difficulty:3;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
 
         self.assertEqual(data, {'buttons': [{'text': 'Review your "Formula" 💫',
                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
@@ -453,8 +468,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'set_difficulty:1;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
+        data = game_manager.on_data_provided('set_difficulty:1;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
 
         self.assertEqual(data, {'buttons': [{'text': 'Review your "Formula" 💫',
                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
@@ -491,8 +507,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        self.game_manager.on_data_provided(1, 'set_difficulty:4;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
+        game_manager.on_data_provided('set_difficulty:4;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
 
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 22, 0, 45).astimezone(datetime.timezone.utc))
@@ -514,8 +531,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['diamonds'] = 5
         user['spent_diamonds'] = 10
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_stats_command(1)
+        data = game_manager.on_stats_command()
         self.assertEqual(data, {'buttons': [{'text': 'View achievements 🏆',
                                              'url': 'http://frontend?lang=en&env=prod&level=1&b1=f0_s0_s1_c0&bp1=c0_0_100--s0_5_0--f0_86400_0&ts=1650549600'}],
                                 'image': None,
@@ -549,8 +567,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_stats_command(1)
+        data = game_manager.on_stats_command()
         self.assertIn("⚪", data['message'])
 
 
@@ -558,8 +577,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_difficulty_command(1)
+        data = game_manager.on_difficulty_command()
 
         self.assertEqual(data, {'buttons': [{'text': 'Beginner (6h)',
                                              'url': 'http://frontend?env=prod&lang_code=en&set_difficulty=0&next_review_prompt_minutes=360,180,90,60,45'},
@@ -586,8 +606,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_pause_command(1)
+        data = game_manager.on_pause_command()
 
         self.assertEqual(data['to_chat_id'], 1)
         self.assertGreater(data['message'].index(', stranger!'), 0)
@@ -599,9 +620,11 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
+
+        game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
         with time_machine.travel("2022-04-22T00:00:10", tick=False):
-            data = self.game_manager.on_pause_command(1)
+            data = game_manager.on_pause_command()
 
             with time_machine.travel("2022-04-22T00:00:15", tick=False):
                 user = self.users_orm.get_user_by_id(1)
@@ -648,8 +671,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['review_counter_state'] = counter.serialize()
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+        data = game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -696,8 +720,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         badges.on_review(0)
         user['badges_serialized'] = badges.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+        data = game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -735,8 +760,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         autopause_manager.update(True, 'Asia/Tokyo', 12 * 3600, '00:05', '00:15')
         user['autopause_config_serialized'] = autopause_manager.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+        data = game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -770,8 +796,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         badges.on_penalty(0)
         user['badges_serialized'] = badges.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+        data = game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -803,8 +830,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['review_counter_state'] = counter.serialize()
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am,,12:18 am,,12:19 am')
+        data = game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am,,12:18 am,,12:19 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -840,9 +868,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['review_counter_state'] = counter.serialize()
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+        game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+        data = game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
@@ -864,8 +893,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['shared_key_uuid'] = '84504531-c5bf-4cf4-9e88-5c1180870ee2'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_formula_command(1)
+        data = game_manager.on_formula_command()
 
         self.assertEqual(data, {'buttons': [{'text': 'Update your Formula 🧪',
                                              'url': 'http://frontend?env=prod&lang_code=en&formula=1&shared_key_uuid=84504531-c5bf-4cf4-9e88-5c1180870ee2'}],
@@ -881,8 +911,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        self.assertEqual(self.game_manager.on_settings_command(1), {'buttons': [{'data': 'sleep', 'text': '💤 Sleep Scheduler'},
+        self.assertEqual(game_manager.on_settings_command(), {'buttons': [{'data': 'sleep', 'text': '💤 Sleep Scheduler'},
                                                                                 {'data': 'difficulty', 'text': '💪 Game Difficulty'},
                                                                                 {'data': 'data', 'text': '💾 Personal Data'},
                                                                                 {'data': 'feedback', 'text': '📢 Feedback'}],
@@ -898,10 +929,11 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['lang_code'] = 'en'
         user['shared_key_uuid'] = 'abc'
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
-        self.game_manager.on_pause_command(1)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
+        game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
+        game_manager.on_pause_command()
 
-        data = self.game_manager.on_data_command(1)
+        data = game_manager.on_data_command()
         image = '' if data[0]['image'] is None else data[0]['image']
         self.assertIn('tmp_user_data', image) 
         os.remove(image)
@@ -955,7 +987,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' - diamonds: 0\n'
                                             '\n'
-                                            ' - spent_diamonds: 0</code>',
+                                            ' - spent_diamonds: 0\n'
+                                            '\n'
+                                            ' - frontend_base_url_override: None</code>',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)
@@ -963,7 +997,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
+        self._create_game_manager(user).on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
+        
         user = self.users_orm.get_user_by_id(1)
         user['badges_serialized'] = ('{"board": ['
                                      '{"badge": "c0", "is_active": null}, '
@@ -978,7 +1013,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             user['next_prompt_type'] = 'penalty'
             user['next_prompt_time'] = datetime.datetime(2022, 4, 19, 1, 0).astimezone(datetime.timezone.utc)
             self.users_orm.upsert_user(user)
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
 
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -1012,7 +1047,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             counter.move_time_back(10)
             user['review_counter_state'] = counter.serialize()
             self.users_orm.upsert_user(user)
-            data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+            data = self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -1036,7 +1071,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(10)
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+        data = self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -1068,7 +1103,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             counter.move_time_back(10)
             user['review_counter_state'] = counter.serialize()
             self.users_orm.upsert_user(user)
-            data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+            data = self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -1092,7 +1127,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter.move_time_back(10)
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
-        data = self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+        data = self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                               'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
@@ -1115,17 +1150,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'to_chat_id': 1}])
 
 
-    def test_render_screens(self):
-        for screenIdx in range(0, 20):
-            self.game_manager.on_data_provided(1, 'render_screen_' + str(screenIdx))
-
     @time_machine.travel("2023-04-20", tick=False)
     def test_sleep_command_no_autosleep(self):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
-        self.assertEqual(self.game_manager.on_sleep_command(1), {'buttons': [{'text': 'Configure sleep scheduler 💤',
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
+        game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
+        self.assertEqual(game_manager.on_sleep_command(), {'buttons': [{'text': 'Configure sleep scheduler 💤',
                                                                               'url': 'http://frontend?env=prod&lang_code=en&sleep=1&enabled=false&bed_time=22:00&wakeup_time=06:00'}],
                                                                  'image': None,
                                                                  'menu_commands': [],
@@ -1146,8 +1178,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         autopause_manager.update(True, 'Asia/Tokyo', 12 * 3600, '22:30', '06:00')
         user['autopause_config_serialized'] = autopause_manager.serialize()
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
-        self.assertEqual(self.game_manager.on_sleep_command(1), {'buttons': [{'text': 'Configure sleep scheduler 💤',
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
+        game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
+        self.assertEqual(game_manager.on_sleep_command(), {'buttons': [{'text': 'Configure sleep scheduler 💤',
                                                                               'url': 'http://frontend?env=prod&lang_code=en&sleep=1&enabled=true&bed_time=22:30&wakeup_time=06:00'}],
                                                                  'image': None,
                                                                  'menu_commands': [],
@@ -1165,8 +1198,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
-        data = self.game_manager.on_data_provided(1, 'sleep_config:True,,Australia/Sydney,,12345,,22:30,,06:00')
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
+        game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
+        data = game_manager.on_data_provided('sleep_config:True,,Australia/Sydney,,12345,,22:30,,06:00')
         self.assertEqual(data, [{'buttons': [],
                                  'image': None,
                                  'menu_commands': [],
@@ -1176,13 +1210,13 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             'Sleep time: 22:30 - 06:00\n',
                                  'to_chat_id': 1}])
 
-        data = self.game_manager.process_tick()
+        data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
         self.assertEqual(data, [])
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['next_prompt_time'],  datetime.datetime(2023, 4, 20, 14, 45, tzinfo=datetime.timezone.utc));
 
         with time_machine.travel("2023-04-20 22:31", tick=False):
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
             self.assertEqual(data, [{'buttons': [],
                                      'image': None,
                                      'menu_commands': [],
@@ -1196,11 +1230,11 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self.assertIsNotNone(user['paused_counter_state'])
 
         with time_machine.travel("2023-04-21 05:59", tick=False):
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "", "")
             self.assertEqual(data, [])
 
         with time_machine.travel("2023-04-21 06:01", tick=False):
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
                                                   'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                      'image': None,
@@ -1220,25 +1254,25 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             user = self.users_orm.get_user_by_id(1)
             self.assertIsNone(user['paused_counter_state'])
 
-            self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+            game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "", "")
             self.assertEqual(data, [])
 
         with time_machine.travel("2023-04-21 22:00", tick=False):
             user = self.users_orm.get_user_by_id(1)
             self.assertIsNone(user['paused_counter_state'])
 
-            self.game_manager.on_data_provided(1, 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
+            game_manager.on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "", "")
             self.assertEqual(data, [])
 
         with time_machine.travel("2023-04-21 22:31", tick=False):
             user = self.users_orm.get_user_by_id(1)
             self.assertIsNone(user['paused_counter_state'])
 
-            data = self.game_manager.process_tick()
+            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
             self.assertEqual(data, [{'buttons': [],
                                       'image': None,
                                       'menu_commands': [],
@@ -1254,13 +1288,14 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         user['lang_code'] = 'en'
         self.users_orm.upsert_user(user)
-        self.game_manager.on_data_provided(1, 'start_game;next_review:10:00,,11:00,,12:00')
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
+        game_manager.on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
 
-        self.game_manager.on_data_provided(1, 'sleep_config:True,,Australia/Sydney,,12345,,22:30,,06:00')
+        game_manager.on_data_provided('sleep_config:True,,Australia/Sydney,,12345,,22:30,,06:00')
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['next_autopause_event_time'], datetime.datetime(2023, 4, 20, 22, 30, 1).astimezone(datetime.timezone.utc))
 
-        data = self.game_manager.on_data_provided(1, 'sleep_config:False,,Australia/Sydney,,12345,,20:30,,05:00')
+        data = game_manager.on_data_provided('sleep_config:False,,Australia/Sydney,,12345,,20:30,,05:00')
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['next_autopause_event_time'], None)
 
@@ -1279,8 +1314,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['diamonds'] = 37
         user['spent_diamonds'] = 0
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_shop_command(1)
+        data = game_manager.on_shop_command()
 
         self.assertEqual(data, {
             'to_chat_id': 1,
@@ -1313,8 +1349,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['diamonds'] = 5
         user['spent_diamonds'] = 0
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_shop_progress_command(1)
+        data = game_manager.on_shop_progress_command()
         self.assertEqual(data, {
             'to_chat_id': 1,
             'message': '🚫 Not enough diamonds for the purchase',
@@ -1328,8 +1365,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['diamonds'] = 10
         user['spent_diamonds'] = 0
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_shop_progress_command(1)
+
+        data = game_manager.on_shop_progress_command()
         user = self.users_orm.get_user_by_id(1)
 
         # diamonds and spent_diamonds updated
@@ -1352,8 +1391,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['diamonds'] = 5
         user['spent_diamonds'] = 0
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_shop_unblock_command(1)
+        data = game_manager.on_shop_unblock_command()
         self.assertEqual(data, {
             'to_chat_id': 1,
             'message': '🚫 Not enough diamonds for the purchase',
@@ -1367,8 +1407,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['diamonds'] = 10
         user['spent_diamonds'] = 0
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
-        data = self.game_manager.on_shop_unblock_command(1)
+        data = game_manager.on_shop_unblock_command()
         self.assertEqual(data, {
             'to_chat_id': 1,
             'message': '🤷 No grumpy cat to shoo',
@@ -1393,9 +1434,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['spent_diamonds'] = 0
         user['counters_history_serialized'] = None  # no cooldown
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
         payload = 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am'
-        data = self.game_manager.on_data_provided(1, payload)
+        data = game_manager.on_data_provided(payload)
 
         self.assertEqual(len(data), 1)
         reply = data[0]
@@ -1437,9 +1479,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         badges.on_penalty(0)
         user['badges_serialized'] = badges.serialize()
         self.users_orm.upsert_user(user)
+        game_manager = self._create_game_manager(self.users_orm.get_user_by_id(1))
 
         payload = 'reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am'
-        data = self.game_manager.on_data_provided(1, payload)
+        data = game_manager.on_data_provided(payload)
 
         self.assertEqual(len(data), 1)
         reply = data[0]

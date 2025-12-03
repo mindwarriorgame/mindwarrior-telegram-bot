@@ -34,7 +34,7 @@ class UserBadgesData(TypedDict):
 
 class BadgesManager:
 
-    def __init__(self, difficulty, badges_serialized = None):
+    def __init__(self, difficulty: int, badges_serialized: Optional[str] = None):
         self.difficulty = difficulty
         if badges_serialized is None or badges_serialized == "":
             self.data = UserBadgesData(badges_state={},
