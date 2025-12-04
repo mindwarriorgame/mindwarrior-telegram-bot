@@ -9,7 +9,7 @@ from telegram.ext import CommandHandler, Application, MessageHandler, filters, C
 
 from game_manager import GameManager, Reply
 from lang_provider import LangProvider
-from users_orm import UsersOrm
+from users_orm import UsersOrm, User
 # import pydevd_pycharm
 # pydevd_pycharm.settrace('localhost', port=53509, stdoutToServer=True, stderrToServer=True)
 
@@ -29,7 +29,7 @@ async def process_ticks():
         try:
             await send_reply_with_bot(reply)
         except Exception as e:
-            if type(e).__name__ == 'Forbidden' and 'bot was blocked by the user' in e.message:
+            if type(e).__name__ == 'Forbidden' and 'bot was blocked by the user' in e.message: # type: ignore
                 print('Deleting blocked user')
                 user_orm.remove_user(reply['to_chat_id'])
 
@@ -41,8 +41,8 @@ async def send_reply(message: Message, ret: Reply):
         else:
             keyboard = [
                 [
-                    InlineKeyboardButton(button['text'], web_app=WebAppInfo(url=button['url'])) if button.get('url') is not None else
-                    InlineKeyboardButton(button['text'], callback_data=button['data'])
+                    InlineKeyboardButton(button['text'], web_app=WebAppInfo(url=button.get('url', 'undefined'))) if button.get('url') is not None else
+                    InlineKeyboardButton(button['text'], callback_data=button.get('data', 'undefined'))
                 ] for button in ret['buttons']
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -68,7 +68,12 @@ async def send_reply_with_bot(ret: Reply):
         if len(ret['buttons']) == 0:
             await bot.send_message(ret['to_chat_id'], ret['message'], parse_mode='HTML')
         else:
-            keyboard = [[InlineKeyboardButton(button['text'], web_app=WebAppInfo(url=button['url']))] for button in ret['buttons']]
+            keyboard = [
+                [
+                    InlineKeyboardButton(button['text'], web_app=WebAppInfo(url=button.get('url', 'undefined'))) if button.get('url') is not None else
+                    InlineKeyboardButton(button['text'], callback_data=button.get('data', 'undefined'))
+                ] for button in ret['buttons']
+            ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await bot.send_message(ret['to_chat_id'], ret['message'], parse_mode='HTML', reply_markup=reply_markup)
 
@@ -90,15 +95,20 @@ def get_message(update: Update) -> Message | None:
             return update.callback_query.message
     return None
 
-def get_game_manager(chat_id: int):
-    return GameManager(user_orm, ENV, FRONTEND_BASE_URL, chat_id)
+def get_user_and_game_manager(chat_id: int):
+    user = user_orm.get_user_by_id(chat_id)
+    return (user, GameManager(user, ENV, FRONTEND_BASE_URL))
 
 async def start_command(update, context):
     message = get_message(update)
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_start_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_start_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def review_command(update, context):
@@ -106,7 +116,11 @@ async def review_command(update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_review_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_review_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 
@@ -117,7 +131,11 @@ async def lang_command(update: Update, context):
     if not message.text:
         message.text = "null"
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_lang_input(message.text)
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_lang_input(message.text)
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def pause_command(update: Update, context):
@@ -125,7 +143,11 @@ async def pause_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_pause_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_pause_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def sleep_command(update: Update, context):
@@ -133,7 +155,11 @@ async def sleep_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_sleep_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_sleep_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def stats_command(update: Update, context):
@@ -141,7 +167,11 @@ async def stats_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_stats_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_stats_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def shop_command(update: Update, context):
@@ -149,7 +179,11 @@ async def shop_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_shop_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_shop_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 
@@ -158,7 +192,11 @@ async def formula_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_formula_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_formula_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def difficulty_command(update: Update, context):
@@ -166,7 +204,11 @@ async def difficulty_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_difficulty_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_difficulty_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def feedback_command(update: Update, context):
@@ -174,7 +216,11 @@ async def feedback_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_feedback_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_feedback_command()
+    user_orm.upsert_user(user)
+    
     await send_reply(message, ret)
 
 async def shop_unblock_command(update: Update, context):
@@ -182,7 +228,11 @@ async def shop_unblock_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_shop_unblock_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_shop_unblock_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def shop_progress_command(update: Update, context):
@@ -190,7 +240,11 @@ async def shop_progress_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_shop_progress_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_shop_progress_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def settings_command(update: Update, context):
@@ -198,7 +252,11 @@ async def settings_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_settings_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_settings_command()
+    user_orm.upsert_user(user)
+
     await send_reply(message, ret)
 
 async def data_command(update: Update, context):
@@ -206,7 +264,11 @@ async def data_command(update: Update, context):
     if not message:
         return
     chat_id = message.chat.id
-    rets = get_game_manager(chat_id).on_data_command()
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    rets = game_manager.on_data_command()
+    user_orm.upsert_user(user)
+
     for ret in rets:
         await send_reply_with_bot(ret)
 
@@ -217,7 +279,14 @@ async def fallback_command(update: Update, context):
     if not message.text:
         message.text="<null>"
     chat_id = message.chat.id
-    ret = get_game_manager(chat_id).on_data_provided(message.text)
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_data_provided(message.text)
+    if user['user_id'] == -1:
+        user_orm.remove_user(chat_id)
+    else:
+        user_orm.upsert_user(user)
+
     for reply in ret:
         if reply['to_chat_id'] == chat_id:
             await send_reply(message, reply)
@@ -255,7 +324,9 @@ async def button(update: Update, ctx) -> None:
 
     for lang_code, lang in LangProvider.get_available_languages().items():
         if query.data == lang_code:
-            await send_reply(message, get_game_manager(chat_id).on_lang_input(lang_code))
+            user, game_manager = get_user_and_game_manager(chat_id)
+            await send_reply(message, game_manager.on_lang_input(lang_code))
+            user_orm.upsert_user(user)
             return
 
     if query.data == "data":

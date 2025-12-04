@@ -48,11 +48,10 @@ def now_utc() -> datetime.datetime:
     return datetime.datetime.now(tz=datetime.timezone.utc)
 
 class GameManager:
-    def __init__(self, users_orm: UsersOrm, env, default_frontend_base_url, chat_id):
-        self.users_orm = users_orm
+    def __init__(self, user: User, env, default_frontend_base_url):
         self.env = env
         self.default_frontend_base_url: str = default_frontend_base_url
-        self.user = self.users_orm.get_user_by_id(chat_id)
+        self.user = user
 
         lang_code = self.user['lang_code']
         if lang_code is None:
@@ -76,7 +75,6 @@ class GameManager:
                 # TODO: add ability to select servers in settings
                 # TODO: add backend to ru.mindwarriorgame as well 
                 self.user['frontend_base_url_override'] = "https://ru.mindwarriorgame.org/miniapp-frontend/index.html"
-            self.users_orm.upsert_user(self.user)
             return self._render_start_game_screen()
         else:
             return self._render_single_message("Invalid language code. Try again (/start)", None, None)
@@ -101,11 +99,11 @@ class GameManager:
             })]
         if "regenerate_shared_key_uuid" in user_message:
             self.user['shared_key_uuid'] = str(uuid.uuid4())
-            self.users_orm.upsert_user(self.user)
             return [self._render_single_message("Shared key UUID regenerated", None, None)]
         if "delete_data_confirmed" in user_message:
-            self.users_orm.remove_user(self.user['user_id'])
-            return [self._render_single_message(self.lang.data_deleted, None, None)]
+            ret = [self._render_single_message(self.lang.data_deleted, None, None)]
+            self.user['user_id'] = -1
+            return ret
 
         if self.user["active_game_counter_state"] is None:
             return [self._render_single_message(self.lang.start_game_prompt, None, self._render_start_game_button())]
@@ -168,8 +166,6 @@ class GameManager:
         self.user['difficulty'] = new_difficulty
         self._restart_user_game()
 
-        self.users_orm.upsert_user(self.user)
-
         return self._render_difficulty_changed(old_difficulty, new_difficulty, next_review_at, is_resumed)
 
     def _restart_user_game(self):
@@ -183,7 +179,6 @@ class GameManager:
         self.user['counters_history_serialized'] = None
         self.user['badges_serialized'] = ""
         self.user['diamonds'] = 0
-        self.users_orm.upsert_user(self.user)
 
     def on_review_command(self) -> Reply:
         if self.user['active_game_counter_state'] is None:
@@ -232,21 +227,19 @@ class GameManager:
         self.user['review_counter_state'] = Counter('').resume().serialize()
 
         self._reset_user_next_prompt()
-        self.user['last_reward_time_at_active_counter_time_secs'] = int(Counter(self.user['active_game_counter_state']).get_total_seconds())
-        self.users_orm.upsert_user(self.user)
 
         if is_cooldown:
             return self._render_review_command_success(self.lang.cooldown_msg, None, next_review,
                                                        is_resumed=is_resumed)
 
         else:
+            self.user['last_reward_time_at_active_counter_time_secs'] = int(Counter(self.user['active_game_counter_state']).get_total_seconds())
             maybe_badge_msg, maybe_badge_button =  self._handle_badge_event('on_review')
             badges_manager = BadgesManager(self.user['difficulty'], self.user['badges_serialized'])
             diamonds_msg = None
             
             if badges_manager.count_active_grumpy_cats_on_board() == 0:
                 self.user['diamonds'] = self.user['diamonds'] + 1
-                self.users_orm.upsert_user(self.user)
             
                 diamonds_msg = self.lang.diamond_new.format(count=self.user['diamonds'])
                 if self.user['diamonds'] >= self._calculate_shop_price():
@@ -299,8 +292,6 @@ class GameManager:
 
         if self.user['paused_counter_state'] is None:
             self._pause_user()
-
-            self.users_orm.upsert_user(self.user)
 
             return self._render_on_pause()
         else:
@@ -374,7 +365,6 @@ class GameManager:
         
         self.user['diamonds'] -= price
         self.user['spent_diamonds'] += price
-        self.users_orm.upsert_user(self.user)
         
         maybe_badge_msg, maybe_badge_button = self._handle_badge_event("on_shoo_cat")
 
@@ -398,7 +388,6 @@ class GameManager:
         
         self.user['diamonds'] -= price
         self.user['spent_diamonds'] += price
-        self.users_orm.upsert_user(self.user)
         
         maybe_badge_msg, maybe_badge_button = self._handle_badge_event("on_force_badge_open")
 
@@ -427,16 +416,18 @@ class GameManager:
             users = users_orm.get_some_users_for_prompt(quota, difficulty)
             for user in users:
                 quota -= 3
-                manager = GameManager(users_orm, env, default_frontend_base_url, user['user_id'])
+                manager = GameManager(user, env, default_frontend_base_url)
                 if user['next_prompt_type'] == NEXT_PROMPT_TYPE_PENALTY:
                     replies += [manager._process_penalty_prompt()]
                 else:
                     replies += [manager._process_reminder_prompt()]
+                users_orm.upsert_user(user)
 
         autopaused_events = users_orm.get_some_next_autopause_events(quota)
         for user in autopaused_events:
-            manager = GameManager(users_orm, env, default_frontend_base_url, user['user_id'])
+            manager = GameManager(user, env, default_frontend_base_url)
             replies += manager._process_autopause()
+            users_orm.upsert_user(user)
 
         return replies
 
@@ -446,19 +437,16 @@ class GameManager:
         if next_autopause_event_timestamp is None:
             return []
         self.user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(next_autopause_event_timestamp + 1, tz=datetime.timezone.utc)
-        self.users_orm.upsert_user(self.user)
 
         if autopause_manager.is_in_interval(now_utc().timestamp()):
             if self.user['paused_counter_state'] is None:
                 self._pause_user()
-                self.users_orm.upsert_user(self.user)
 
                 return [self._render_single_message(self.lang.autopause_on_msg.format(until_time=autopause_manager.get_wakep_time()), None, None)]
             else:
                 return []
         else:
             is_resumed = self._maybe_resume()
-            self.users_orm.upsert_user(self.user)
 
             if is_resumed:
                 return [self._render_single_message(self.lang.autopause_resumed_msg, None, self._render_review_button())]
@@ -467,7 +455,6 @@ class GameManager:
 
     def _process_penalty_prompt(self) -> Reply:
         self._reset_user_next_prompt()
-        self.users_orm.upsert_user(self.user)
 
         maybe_badge_msg, maybe_badge_button = self._handle_badge_event('on_penalty')
 
@@ -747,8 +734,6 @@ class GameManager:
         self.user['next_prompt_type'] = NEXT_PROMPT_TYPE_PENALTY
         self.user['next_prompt_time'] = now_utc() + datetime.timedelta(minutes=REVIEW_INTERVAL_MINS)
 
-        self.users_orm.upsert_user(self.user)
-
         _, maybe_badge_button = self._handle_badge_event('on_prompt')
 
         return self._render_reminder_prompt(maybe_badge_button)
@@ -806,7 +791,6 @@ class GameManager:
         badge = getattr(badges_manager, event)(active_play_time_secs)
 
         self.user['badges_serialized'] = badges_manager.serialize()
-        self.users_orm.upsert_user(self.user)
 
         button_url = self._render_board_url()
 
@@ -865,7 +849,6 @@ class GameManager:
             self.user['next_autopause_event_time'] = datetime.datetime.fromtimestamp(autopause_next_timestamp + 1, tz=datetime.timezone.utc)
         else:
             self.user['next_autopause_event_time'] = None
-        self.users_orm.upsert_user(self.user)
 
         return self._render_single_message(self.lang.sleep_config_updated.format(
             is_enabled='🟢' if enabled else '⚪️',
