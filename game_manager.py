@@ -644,7 +644,8 @@ class GameManager:
             'buttons': [
                 {
                     'text': self.lang.formula_command_button,
-                    'url': self._get_frontend_base_url() + f'?env={self.env}&lang_code={self.lang.lang_code}&formula=1&shared_key_uuid={self.user['shared_key_uuid']}'
+                    'url': self._get_frontend_base_url() + 
+                        f'?env={self.env}&lang_code={self.lang.lang_code}&formula=1&shared_key_uuid={self.user["shared_key_uuid"]}'
                 }
             ],
             'menu_commands': [],
