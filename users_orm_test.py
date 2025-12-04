@@ -45,7 +45,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized=None,
             diamonds=0,
             spent_diamonds=0,
-            frontend_base_url_override=None
+            frontend_base_url_override=None,
+            last_reward_time_at_active_counter_time_secs=0,
         ))
 
     @time_machine.travel("2022-04-21")
@@ -76,7 +77,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized=None,
             diamonds=5,
             spent_diamonds=6,
-            frontend_base_url_override='over'
+            frontend_base_url_override='over',
+            last_reward_time_at_active_counter_time_secs=0,
         ))
 
         user['lang_code'] = 'en'
@@ -94,6 +96,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['diamonds'] = 6
         user['spent_diamonds'] = 7
         user['frontend_base_url_override'] = 'newover'
+        user['last_reward_time_at_active_counter_time_secs'] = 123
         self.users_orm.upsert_user(user)
 
         self.assertEqual(self.users_orm.get_user_by_id(123), User(
@@ -112,7 +115,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=6,
             spent_diamonds=7,
-            frontend_base_url_override='newover'
+            frontend_base_url_override='newover',
+            last_reward_time_at_active_counter_time_secs=123,
         ))
 
     def test_get_some_users_for_prompt_when_no_user(self):
@@ -136,7 +140,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=7,
             spent_diamonds=8,
-            frontend_base_url_override='over'
+            frontend_base_url_override='over',
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [user])
@@ -159,7 +164,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=8,
             spent_diamonds=9,
-            frontend_base_url_override='over'
+            frontend_base_url_override='over',
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_next_autopause_events(10), [user])
@@ -185,7 +191,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized=None,
             diamonds=9,
             spent_diamonds=8,
-            frontend_base_url_override='over'
+            frontend_base_url_override='over',
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -208,7 +215,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=10,
             spent_diamonds=8,
-            frontend_base_url_override='over'
+            frontend_base_url_override='over',
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 2), [])
@@ -232,7 +240,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=11,
             spent_diamonds=7,
-            frontend_base_url_override=None
+            frontend_base_url_override=None,
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -256,7 +265,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=12,
             spent_diamonds=10,
-            frontend_base_url_override='over'
+            frontend_base_url_override='over',
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -278,7 +288,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=13,
             spent_diamonds=11,
-            frontend_base_url_override='over'
+            frontend_base_url_override='over',
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.users_orm.remove_user(124)
@@ -301,7 +312,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized=None,
             diamonds=0,
             spent_diamonds=0,
-            frontend_base_url_override=None
+            frontend_base_url_override=None,
+            last_reward_time_at_active_counter_time_secs=0,
         ))
 
     @time_machine.travel("2022-04-21 00:00:00")
@@ -322,7 +334,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=44,
             spent_diamonds=1,
-            frontend_base_url_override='over'
+            frontend_base_url_override='over',
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 1)
@@ -347,7 +360,8 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=55,
             spent_diamonds=2,
-            frontend_base_url_override=None
+            frontend_base_url_override=None,
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)
@@ -371,12 +385,10 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             autopause_config_serialized='blah',
             diamonds=66,
             spent_diamonds=3,
-            frontend_base_url_override=None
+            frontend_base_url_override=None,
+            last_reward_time_at_active_counter_time_secs=0,
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)
         self.assertEqual(self.users_orm.count_paused_users(1), 0)
         self.assertEqual(self.users_orm.count_inactive_users(1), 1)
-
-
-

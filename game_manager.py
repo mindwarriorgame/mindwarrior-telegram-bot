@@ -223,14 +223,16 @@ class GameManager:
 
         is_resumed = self._maybe_resume()
 
-        since_last_review_secs = int(Counter(self.user['review_counter_state']).get_total_seconds())
+        now_in_active_playtime_seconds = Counter(self.user['active_game_counter_state']).get_total_seconds()
+        since_last_reward_secs = now_in_active_playtime_seconds - self.user['last_reward_time_at_active_counter_time_secs']
 
-        is_cooldown = (since_last_review_secs < 5*60) and self.user['counters_history_serialized'] is not None
+        is_cooldown = (since_last_reward_secs < 5*60) and self.user['counters_history_serialized'] is not None
 
         self._record_counter_time(REVIEW_COUNTER_HISTORY_NAME, self.user['review_counter_state'])
         self.user['review_counter_state'] = Counter('').resume().serialize()
 
         self._reset_user_next_prompt()
+        self.user['last_reward_time_at_active_counter_time_secs'] = int(Counter(self.user['active_game_counter_state']).get_total_seconds())
         self.users_orm.upsert_user(self.user)
 
         if is_cooldown:

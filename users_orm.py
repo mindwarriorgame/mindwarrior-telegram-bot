@@ -39,6 +39,9 @@ class User(TypedDict):
 
     frontend_base_url_override: Optional[str]
 
+    last_reward_time_at_active_counter_time_secs: int
+
+
 class UsersOrm:
 
     def __del__(self) -> None:
@@ -101,6 +104,11 @@ class UsersOrm:
             )
             self.conn.commit()
 
+        if "last_reward_time_at_active_counter_time_secs" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE users ADD COLUMN last_reward_time_at_active_counter_time_secs INTEGER NOT NULL DEFAULT 0"
+            )
+            self.conn.commit()
 
         self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_prompt_time ON users (difficulty, active_game_counter_state_is_null, paused_counter_state_is_null, next_prompt_time)')
         self.conn.commit()
@@ -134,7 +142,8 @@ class UsersOrm:
             autopause_config_serialized,
             diamonds,
             spent_diamonds,
-            frontend_base_url_override
+            frontend_base_url_override,
+            last_reward_time_at_active_counter_time_secs
                 FROM users WHERE user_id = ?""", (user_id,))
         return self._to_user_obj(self.cursor.fetchone(), user_id)
 
@@ -158,7 +167,8 @@ class UsersOrm:
             autopause_config_serialized,
             diamonds,
             spent_diamonds,
-            frontend_base_url_override
+            frontend_base_url_override,
+            last_reward_time_at_active_counter_time_secs
                 FROM users WHERE difficulty = ? AND active_game_counter_state_is_null = 0 AND paused_counter_state_is_null = 1 AND next_prompt_time < ? LIMIT ?""",
                             (difficulty, cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -183,7 +193,8 @@ class UsersOrm:
             autopause_config_serialized,
             diamonds,
             spent_diamonds,
-            frontend_base_url_override
+            frontend_base_url_override,
+            last_reward_time_at_active_counter_time_secs
                 FROM users WHERE next_autopause_event_time < ? LIMIT ?""",
                             (cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -228,7 +239,8 @@ class UsersOrm:
                 autopause_config_serialized=None,
                 diamonds=0,
                 spent_diamonds=0,
-                frontend_base_url_override=None
+                frontend_base_url_override=None,
+                last_reward_time_at_active_counter_time_secs=0
             )
         return User(
             user_id=param[0],
@@ -246,8 +258,10 @@ class UsersOrm:
             autopause_config_serialized=param[14],
             diamonds=param[15],
             spent_diamonds=param[16],
-            frontend_base_url_override=param[17]
+            frontend_base_url_override=param[17],
+            last_reward_time_at_active_counter_time_secs=param[18]
         )
+
     def remove_user(self, user_id: int):
         self.cursor.execute('DELETE FROM users WHERE user_id = ?', (user_id,))
         self.conn.commit()
@@ -272,8 +286,9 @@ class UsersOrm:
                 autopause_config_serialized,
                 diamonds,
                 spent_diamonds,
-                frontend_base_url_override
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                frontend_base_url_override,
+                last_reward_time_at_active_counter_time_secs
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 lang_code = excluded.lang_code,
                 difficulty = excluded.difficulty,
@@ -290,8 +305,9 @@ class UsersOrm:
                 next_autopause_event_time = excluded.next_autopause_event_time,
                 autopause_config_serialized = excluded.autopause_config_serialized,
                 diamonds = excluded.diamonds,
-                spent_diamonds=excluded.spent_diamonds,
-                frontend_base_url_override=excluded.frontend_base_url_override
+                spent_diamonds = excluded.spent_diamonds,
+                frontend_base_url_override = excluded.frontend_base_url_override,
+                last_reward_time_at_active_counter_time_secs = excluded.last_reward_time_at_active_counter_time_secs
         ''', (
             user['user_id'],
             user['lang_code'],
@@ -315,9 +331,7 @@ class UsersOrm:
             user['autopause_config_serialized'],
             user['diamonds'],
             user['spent_diamonds'],
-            user['frontend_base_url_override']
+            user['frontend_base_url_override'],
+            user.get('last_reward_time_at_active_counter_time_secs', 0)
         ))
         self.conn.commit()
-
-
-

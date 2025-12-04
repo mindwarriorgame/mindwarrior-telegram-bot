@@ -989,7 +989,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' - spent_diamonds: 0\n'
                                             '\n'
-                                            ' - frontend_base_url_override: None</code>',
+                                            ' - frontend_base_url_override: None\n'
+                                            '\n'
+                                            ' - last_reward_time_at_active_counter_time_secs: 0</code>',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)
@@ -1046,6 +1048,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             counter = Counter(user["review_counter_state"])
             counter.move_time_back(10)
             user['review_counter_state'] = counter.serialize()
+            user['last_reward_time_at_active_counter_time_secs'] -= 10*60;
             self.users_orm.upsert_user(user)
             data = self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
@@ -1070,6 +1073,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         counter = Counter(user["review_counter_state"])
         counter.move_time_back(10)
         user['review_counter_state'] = counter.serialize()
+        user['last_reward_time_at_active_counter_time_secs'] -= 10*60;
         self.users_orm.upsert_user(user)
         data = self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
@@ -1102,6 +1106,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             counter = Counter(user["review_counter_state"])
             counter.move_time_back(10)
             user['review_counter_state'] = counter.serialize()
+            user['last_reward_time_at_active_counter_time_secs'] -= 10*60;
             self.users_orm.upsert_user(user)
             data = self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
@@ -1125,6 +1130,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         counter = Counter(user["review_counter_state"])
         counter.move_time_back(10)
+        user['last_reward_time_at_active_counter_time_secs'] -= 10*60;
         user['review_counter_state'] = counter.serialize()
         self.users_orm.upsert_user(user)
         data = self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
