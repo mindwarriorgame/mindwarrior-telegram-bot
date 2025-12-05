@@ -1,6 +1,7 @@
 import datetime
 import os
 import unittest
+from unittest.mock import patch
 
 import time_machine
 import time
@@ -24,6 +25,31 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
     users_orm: UsersOrm
 
     def setUp(self):
+        # ✅ Patch where the function is *used*
+        patcher = patch(
+            "game_manager.get_frontend_base_urls",
+            return_value=[
+                {
+                    "id": "nl",
+                    "base_url": "http://frontend",
+                    "is_enabled": True,
+                },
+                {
+                    "id": "lh",
+                    "base_url": "http://localhost",
+                    "is_enabled": True,
+                },
+                {
+                    "id": "bs",
+                    "base_url": "http://bs",
+                    "is_enabled": False,
+                },
+            ],
+        )
+        self.mock_get_frontend_base_urls = patcher.start()
+        self.addCleanup(patcher.stop)
+
+
         try:
             os.unlink('test.db')
         except FileNotFoundError:
@@ -40,7 +66,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             pass
 
     def _create_game_manager(self, user: User):
-        return GameManager(user, 'prod', 'http://frontend')
+        return GameManager(user, 'prod')
 
     @time_machine.travel("2022-04-21", tick=False)
     def test_on_start_game_starts(self):
@@ -131,7 +157,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         with time_machine.travel("2022-04-21 05:50", tick=False):
 
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
             
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
@@ -180,7 +206,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         with time_machine.travel("2022-04-21 05:50", tick=False):
 
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
             
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
@@ -200,7 +226,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             with time_machine.travel("2022-04-21 06:10", tick=False):
                 
                 self.users_orm.upsert_user(user)
-                data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+                data = GameManager.process_tick(self.users_orm, "prod")
                 user = self.users_orm.get_user_by_id(1)
                 
                 self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
@@ -240,7 +266,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         with time_machine.travel("2022-04-21 05:50", tick=False):
             
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
             
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
@@ -261,7 +287,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         with time_machine.travel("2022-04-21 06:10", tick=False):
             
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
             
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
@@ -915,7 +941,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self._create_game_manager(user).on_settings_command(), {'buttons': [{'data': 'sleep', 'text': '💤 Sleep Scheduler'},
                                                                                 {'data': 'difficulty', 'text': '💪 Game Difficulty'},
                                                                                 {'data': 'data', 'text': '💾 Personal Data'},
-                                                                                {'data': 'feedback', 'text': '📢 Feedback'}],
+                                                                                {'data': 'feedback', 'text': '📢 Feedback'},
+                                                                                {'data': 'change_server', 'text': '🌐 Change server'}],
                                                                     'image': None,
                                                                     'menu_commands': [],
                                                                     'message': 'Please use the buttons below to configure the game 🔧',
@@ -1014,7 +1041,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             user['next_prompt_time'] = datetime.datetime(2022, 4, 19, 1, 0).astimezone(datetime.timezone.utc)
             
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
 
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
@@ -1210,7 +1237,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         
         self.users_orm.upsert_user(user)
-        data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+        data = GameManager.process_tick(self.users_orm, "prod")
         user = self.users_orm.get_user_by_id(1)
 
         self.assertEqual(data, [])
@@ -1219,7 +1246,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         with time_machine.travel("2023-04-20 22:31", tick=False):
             
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
             
             self.assertEqual(data, [{'buttons': [],
@@ -1236,7 +1263,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         with time_machine.travel("2023-04-21 05:59", tick=False):
             
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
             
             self.assertEqual(data, [])
@@ -1244,7 +1271,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         with time_machine.travel("2023-04-21 06:01", tick=False):
             
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
             
             self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
@@ -1267,7 +1294,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "", "")
+            data = GameManager.process_tick(self.users_orm, "")
             user = self.users_orm.get_user_by_id(1)
 
             self.assertEqual(data, [])
@@ -1278,7 +1305,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self._create_game_manager(user).on_data_provided('reviewed_at:' + str(int(time.time())) + ';next_review:12:15 am,,12:16 am,,12:17 am')
 
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "", "")
+            data = GameManager.process_tick(self.users_orm, "")
             user = self.users_orm.get_user_by_id(1)
 
             self.assertEqual(data, [])
@@ -1288,7 +1315,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self.assertIsNone(user['paused_counter_state'])
 
             self.users_orm.upsert_user(user)
-            data = GameManager.process_tick(self.users_orm, "prod", "http://frontend")
+            data = GameManager.process_tick(self.users_orm, "prod")
             user = self.users_orm.get_user_by_id(1)
 
             self.assertEqual(data, [{'buttons': [],
@@ -1505,3 +1532,30 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                          '\n' +
                          ' ‣ /settings - configure sleep scheduler'
                          )
+        
+    def test_change_server(self):
+        ret = self._create_game_manager(self.user).change_server_command()
+
+        self.assertEqual(ret, {
+            "to_chat_id": 1,
+            "message": (
+                "🌐 Select the game server.\n"
+                "\n"
+                "⚠️ Changing the server will also change the mini app's web domain. "
+                "Your <i>Formula</i> is stored in your browser's localStorage per domain, "
+                "so you might need to restore your old <i>Formula</i> from a backup.\n"
+                "\n"
+                "To be safe, copy your <i>Formula</i> (\"Copy\") before switching the server, "
+                "then go to /formula and paste it (\"Paste\") there after the switch."
+            ),
+            "menu_commands": [],
+            "image": None,
+            "buttons": [
+                {"text": "Server nl", "data": "set_server:nl"},
+                {"text": "Server lh", "data": "set_server:lh"}
+            ],
+        })
+
+        self._create_game_manager(self.user).on_set_server_command("lh")
+        self.assertEqual(self.user['frontend_base_url_override'], "http://localhost")
+

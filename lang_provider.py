@@ -116,6 +116,12 @@ class Lang:
     shop_diamonds_left: str
     shop_no_grumpy_cat: str
 
+    menu_change_server: str
+
+    change_server_descr: str
+    change_server_done: str
+    change_server_current: str
+
 fr = Lang(
     lang_code='fr',
     lang_name='Français',
@@ -317,6 +323,23 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     shop_no_enough_diamonds = "🚫 Pas assez de diamants pour l'achat",
     shop_diamonds_left = "Diamants restants : 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 Aucun chat grincheux à chasser",
+    
+    menu_change_server = "🌐 Changer de serveur",
+
+    change_server_descr = (
+        "🌐 Sélectionnez le serveur de jeu.\n"
+        "\n"
+        "⚠️ Changer de serveur modifiera également le domaine web de la mini-application. "
+        "Votre <i>Formule</i> est stockée dans le localStorage de votre navigateur selon le domaine, "
+        "vous devrez donc peut-être restaurer votre ancienne <i>Formule</i> à partir d’une sauvegarde.\n"
+        "\n"
+        "Par sécurité, copiez votre <i>Formule</i> (« Copy ») avant de changer de serveur, puis allez sur /formula "
+        "et collez-la (« Paste ») après le changement."
+    ),
+
+    change_server_done = "Le serveur a été changé.",
+
+    change_server_current = "serveur actuel"
 
 )
 
@@ -523,6 +546,24 @@ Presiona el botón de abajo para comenzar el juego.""",
     shop_no_enough_diamonds = "🚫 No hay suficientes diamantes para la compra",
     shop_diamonds_left = "Diamantes restantes: 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 No hay gato gruñón que espantar",
+
+    menu_change_server = "🌐 Cambiar servidor",
+
+    change_server_descr = (
+        "🌐 Selecciona el servidor del juego.\n"
+        "\n"
+        "⚠️ Al cambiar de servidor también cambiará el dominio web de la mini app. "
+        "Tu <i>Fórmula</i> se guarda en el localStorage del navegador por dominio, "
+        "así que puede que tengas que restaurar tu antigua <i>Fórmula</i> desde una copia de seguridad.\n"
+        "\n"
+        "Para estar seguro, copia tu <i>Fórmula</i> («Copy») antes de cambiar de servidor; luego ve a /formula "
+        "y pégala allí («Paste») después del cambio."
+    ),
+
+    change_server_done = "El servidor se ha cambiado.",
+
+    change_server_current = "servidor actual"
+
 )
 
 
@@ -728,7 +769,24 @@ Press the button below to start the game.""",
 
     shop_no_enough_diamonds = "🚫 Not enough diamonds for the purchase",
     shop_diamonds_left = "Diamonds left: 💎 {diamonds}",
-    shop_no_grumpy_cat = "🤷 No grumpy cat to shoo"
+    shop_no_grumpy_cat = "🤷 No grumpy cat to shoo",
+
+    menu_change_server = "🌐 Change server",
+
+    change_server_descr = (
+        "🌐 Select the game server.\n"
+        "\n"
+        "⚠️ Changing the server will also change the mini app's web domain. "
+        "Your <i>Formula</i> is stored in your browser's localStorage per domain, "
+        "so you might need to restore your old <i>Formula</i> from a backup.\n"
+        "\n"
+        "To be safe, copy your <i>Formula</i> (\"Copy\") before switching the server, then go to /formula "
+        "and paste it (\"Paste\") there after the switch."
+    ),
+
+    change_server_done="The server has been changed.",
+
+    change_server_current = "current server"
 )
 
 de = Lang(
@@ -933,6 +991,24 @@ Drücke den Button unten, um das Spiel zu starten.""",
     shop_no_enough_diamonds = "🚫 Nicht genug Diamanten für den Kauf",
     shop_diamonds_left = "Verbleibende Diamanten: 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 Keine mürrische Katze zum Wegscheuchen",
+    
+    menu_change_server = "🌐 Server wechseln",
+
+    change_server_descr = (
+        "🌐 Wähle den Spielserver aus.\n"
+        "\n"
+        "⚠️ Beim Wechsel des Servers ändert sich auch die Web-Domain der Mini-App. "
+        "Deine <i>Formel</i> wird im localStorage deines Browsers pro Domain gespeichert, "
+        "daher musst du deine alte <i>Formel</i> eventuell aus einem Backup wiederherstellen.\n"
+        "\n"
+        "Zur Sicherheit kopiere deine <i>Formel</i> („Copy“), bevor du den Server wechselst, wechsle dann zu /formula "
+        "und füge sie dort („Paste“) nach dem Wechsel wieder ein."
+    ),
+
+    change_server_done = "Der Server wurde geändert.",
+
+    change_server_current = "aktueller Server"
+
 )
 
 
@@ -1137,6 +1213,25 @@ ru = Lang(
     shop_no_enough_diamonds = "🚫 Недостаточно алмазов для покупки",
     shop_diamonds_left = "Осталось алмазов: 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 Нет сердитого кота, которого можно прогнать",
+
+    menu_change_server = "🌐 Сменить сервер",
+
+    change_server_descr = (
+        "🌐 Выберите игровой сервер.\n"
+        "\n"
+        "⚠️ При смене сервера также изменится веб-домен мини-приложения. "
+        "Ваша <i>Формула</i> хранится в localStorage браузера отдельно для каждого домена, "
+        "поэтому, возможно, вам придётся восстановить старую <i>Формулу</i> из резервной копии.\n"
+        "\n"
+        "На всякий случай скопируйте <i>Формулу</i> («Copy») перед сменой сервера, затем перейдите на /formula "
+        "и нажмите вставьте ее («Paste») после переключения."
+    ),
+
+    change_server_done = "Сервер изменён.",
+
+    change_server_current = "текущий сервер"
+
+
 )
 
 class LangProvider:

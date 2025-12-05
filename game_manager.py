@@ -10,11 +10,13 @@ from autopause_manager import AutopauseManager
 from badges_manager import BadgesManager
 from board_serializer import serialize_board, serialize_progress
 from counter import Counter
+from frontend_base_url_extractor import get_frontend_base_urls
 from graph_renderer import REVIEW_COUNTER_HISTORY_NAME, PAUSED_COUNTER_HISTORY_NAME, GraphRenderer
 from history import add_timer_rec_to_history, get_timer_recs_from_history
 from lang_provider import LangProvider, Lang, en, ru
 from users_orm import UsersOrm, User
 
+SET_SERVER_PREFIX = "set_server:"
 
 class Button(TypedDict):
     text: str
@@ -48,9 +50,8 @@ def now_utc() -> datetime.datetime:
     return datetime.datetime.now(tz=datetime.timezone.utc)
 
 class GameManager:
-    def __init__(self, user: User, env, default_frontend_base_url):
+    def __init__(self, user: User, env):
         self.env = env
-        self.default_frontend_base_url: str = default_frontend_base_url
         self.user = user
 
         lang_code = self.user['lang_code']
@@ -108,6 +109,36 @@ class GameManager:
         if self.user["active_game_counter_state"] is None:
             return [self._render_single_message(self.lang.start_game_prompt, None, self._render_start_game_button())]
         return [self._render_single_message("Invalid data", None, None)]
+    
+    def change_server_command(self) -> Reply:
+        parsed_base_urls = get_frontend_base_urls()
+        buttons: list[Button] = []
+        for parsed_base_url in parsed_base_urls:
+            if parsed_base_url['is_enabled'] == True:
+                is_current = False
+                if self.user['frontend_base_url_override'] is None and parsed_base_url['id'] == 'ny':
+                    is_current = True
+                if self.user['frontend_base_url_override'] == parsed_base_url['base_url']:
+                    is_current = True
+                buttons.append({
+                    "text": "Server " + parsed_base_url['id'] + (" ({c})".format(c=self.lang.change_server_current) if is_current else ""),
+                    "data": SET_SERVER_PREFIX + parsed_base_url['id']
+                })
+        return {
+            'to_chat_id': self.user['user_id'],
+            "message": self.lang.change_server_descr,
+            "menu_commands": [],
+            "image": None,
+            'buttons': buttons
+        }
+    
+    def on_set_server_command(self, server_id: str) -> Reply:
+        parsed_base_urls = get_frontend_base_urls()
+        for parsed_base_url in parsed_base_urls:
+            if parsed_base_url['id'] == server_id:
+                self.user['frontend_base_url_override'] = parsed_base_url['base_url']
+                return self._render_single_message(self.lang.change_server_done, None, None)
+        return self._render_single_message("Server {server} not found".format(server_id), None, None)
 
     def _format_time_minutes(self, time_secs: int, skip_zeros = False) -> str:
         days = int(time_secs // 86400)
@@ -407,7 +438,7 @@ class GameManager:
         return self._render_edit_formula()
 
     @staticmethod
-    def process_tick(users_orm: UsersOrm, env, default_frontend_base_url) -> list[Reply]:
+    def process_tick(users_orm: UsersOrm, env) -> list[Reply]:
         replies: list[Reply] = []
         quota = 20
         for difficulty in range(0, 5):
@@ -416,7 +447,7 @@ class GameManager:
             users = users_orm.get_some_users_for_prompt(quota, difficulty)
             for user in users:
                 quota -= 3
-                manager = GameManager(user, env, default_frontend_base_url)
+                manager = GameManager(user, env)
                 if user['next_prompt_type'] == NEXT_PROMPT_TYPE_PENALTY:
                     replies += [manager._process_penalty_prompt()]
                 else:
@@ -425,7 +456,7 @@ class GameManager:
 
         autopaused_events = users_orm.get_some_next_autopause_events(quota)
         for user in autopaused_events:
-            manager = GameManager(user, env, default_frontend_base_url)
+            manager = GameManager(user, env)
             replies += manager._process_autopause()
             users_orm.upsert_user(user)
 
@@ -874,7 +905,8 @@ class GameManager:
             { "data": "sleep", "text": self.lang.menu_sleep },
             { "data": "difficulty", "text": self.lang.menu_difficulty },
             { "data": "data", "text": self.lang.menu_data },
-            { "data": "feedback", "text": self.lang.menu_feedback }
+            { "data": "feedback", "text": self.lang.menu_feedback },
+            { "data": "change_server", "text": self.lang.menu_change_server }
         ]
 
         return {
@@ -889,7 +921,8 @@ class GameManager:
         if self.user['frontend_base_url_override'] is not None:
             return self.user['frontend_base_url_override']
         else:
-            return self.default_frontend_base_url
+            parsed_base_urls = get_frontend_base_urls()
+            return parsed_base_urls[0]['base_url']
 
 
 

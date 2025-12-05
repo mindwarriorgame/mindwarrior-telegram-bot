@@ -7,7 +7,7 @@ from telegram import Bot, MaybeInaccessibleMessage, WebAppInfo, Update, \
     InlineKeyboardMarkup, InlineKeyboardButton, Message
 from telegram.ext import CommandHandler, Application, MessageHandler, filters, CallbackQueryHandler
 
-from game_manager import GameManager, Reply
+from game_manager import SET_SERVER_PREFIX, GameManager, Reply
 from lang_provider import LangProvider
 from users_orm import UsersOrm, User
 # import pydevd_pycharm
@@ -17,14 +17,13 @@ TOKEN = os.environ.get('TOKEN')
 if TOKEN is None:
     raise Exception("No token was provided!")
 ENV = os.environ.get('ENV')
-FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL')
 
 bot = Bot(token=TOKEN)
 
 user_orm = UsersOrm("mindwarrior2.db")
 
 async def process_ticks():
-    replies = GameManager.process_tick(user_orm, ENV, FRONTEND_BASE_URL)
+    replies = GameManager.process_tick(user_orm, ENV)
     for reply in replies:
         try:
             await send_reply_with_bot(reply)
@@ -97,7 +96,7 @@ def get_message(update: Update) -> Message | None:
 
 def get_user_and_game_manager(chat_id: int):
     user = user_orm.get_user_by_id(chat_id)
-    return (user, GameManager(user, ENV, FRONTEND_BASE_URL))
+    return (user, GameManager(user, ENV))
 
 async def start_command(update, context):
     message = get_message(update)
@@ -247,6 +246,18 @@ async def shop_progress_command(update: Update, context):
 
     await send_reply(message, ret)
 
+async def change_server_command(update: Update, context):
+    message = get_message(update)
+    if not message:
+        return
+    chat_id = message.chat.id
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.change_server_command()
+    user_orm.upsert_user(user)
+
+    await send_reply(message, ret)
+
 async def settings_command(update: Update, context):
     message = get_message(update)
     if not message:
@@ -328,6 +339,8 @@ async def button(update: Update, ctx) -> None:
             await send_reply(message, game_manager.on_lang_input(lang_code))
             user_orm.upsert_user(user)
             return
+    if not query.data:
+        return
 
     if query.data == "data":
         await data_command(update, ctx)
@@ -341,6 +354,13 @@ async def button(update: Update, ctx) -> None:
         await shop_unblock_command(update, ctx)
     elif query.data == "shop_progress":
         await shop_progress_command(update, ctx)
+    elif query.data == "change_server":
+        await change_server_command(update, ctx)
+    elif SET_SERVER_PREFIX in query.data:
+        user, game_manager = get_user_and_game_manager(chat_id)
+        await send_reply(message, game_manager.on_set_server_command(query.data.split(SET_SERVER_PREFIX)[1]))
+        user_orm.upsert_user(user)
+        return
 
 
 async def main():
