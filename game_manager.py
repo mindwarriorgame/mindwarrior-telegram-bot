@@ -1,7 +1,7 @@
 import copy
 import datetime
 import uuid
-from typing import Tuple, TypedDict, Optional, NotRequired
+from typing import Tuple, TypedDict, Optional, NotRequired, cast
 import time
 
 import numpy as np
@@ -105,10 +105,39 @@ class GameManager:
             ret = [self._render_single_message(self.lang.data_deleted, None, None)]
             self.user['user_id'] = -1
             return ret
+        
+        if "stash" in user_message:
+            return [self.on_stash()]
+        
+        if "pop" in user_message:
+            return [self.on_pop()]
 
         if self.user["active_game_counter_state"] is None:
             return [self._render_single_message(self.lang.start_game_prompt, None, self._render_start_game_button())]
         return [self._render_single_message("Invalid data", None, None)]
+    
+    def on_stash(self) -> Reply:
+        if self.user['active_game_counter_state'] is None:
+            return self._render_single_message("Cannot stash inactive user", None, None)
+        
+        user_orm2 = UsersOrm("mindwarrior_stash.db")
+        stashed_user = user_orm2.get_user_by_id(self.user['user_id'])
+        if stashed_user.get('active_game_counter_state') is not None:
+            return self._render_single_message("Already stashed", None, None)
+        
+        user_orm2.upsert_user(self.user)
+        return self._render_single_message("Stashed!", None, None)
+    
+    def on_pop(self) -> Reply:
+        user_orm2 = UsersOrm("mindwarrior_stash.db")
+        stashed_user = user_orm2.get_user_by_id(self.user['user_id'])
+        if stashed_user.get('active_game_counter_state') is None:
+            return self._render_single_message("No active stash user found", None, None)
+        for key in User.__annotations__.keys():
+            self.user[key] = stashed_user[key]
+        user_orm2.remove_user(stashed_user['user_id'])
+        return self._render_single_message("User is restored", None, None)
+
     
     def change_server_command(self) -> Reply:
         parsed_base_urls = get_frontend_base_urls()
