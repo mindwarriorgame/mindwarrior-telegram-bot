@@ -83,23 +83,23 @@ class BadgesManager:
     def _max_grumpy_cat_healthpoints(self):
         return 5 * (self.difficulty + 1)
 
-    def on_game_started(self, active_play_time_secs: float) -> Optional[str]:
+    def on_game_started(self, active_play_time_secs: int) -> Optional[str]:
         # "terminate_if_found" is False we need to initialize all counters. That's a rare case when two badges might be have given
         # on start; we should be OK picking the first one.
         self.data["c0_hp_next_delta"] = 3
         self.data["c0_hp"] = 0
         self.data["c0_lock_started_at"] = 0
         self.data["c0_active_time_penalty"] = 0
-        return self._chain_badge_counters("on_game_started", int(active_play_time_secs), False)
+        return self._chain_badge_counters("on_game_started", active_play_time_secs, False)
 
-    def on_formula_updated(self, active_play_time_secs: float) -> Optional[str]:
-        return self._chain_badge_counters("on_formula_updated", int(active_play_time_secs),True)
+    def on_formula_updated(self, active_play_time_secs: int) -> Optional[str]:
+        return self._chain_badge_counters("on_formula_updated", active_play_time_secs,True)
 
-    def on_prompt(self, active_play_time_secs: float) -> Optional[str]:
+    def on_prompt(self, active_play_time_secs: int) -> Optional[str]:
         self.data["c0_hp_next_delta"] = 2
-        return self._chain_badge_counters("on_prompt", int(active_play_time_secs), False)
+        return self._chain_badge_counters("on_prompt", active_play_time_secs, False)
 
-    def on_shoo_cat(self, active_play_time_secs: float) -> Optional[str]:
+    def on_shoo_cat(self, active_play_time_secs: int) -> Optional[str]:
         if self.count_active_grumpy_cats_on_board() < 1:
             raise AssertionError("Should never happen")
         
@@ -107,7 +107,7 @@ class BadgesManager:
         if self.count_active_grumpy_cats_on_board() > 0:
             self.data["c0_hp"] = self._max_grumpy_cat_healthpoints()
         else:
-            self.data["c0_active_time_penalty"] += int(active_play_time_secs) - self.data["c0_lock_started_at"]
+            self.data["c0_active_time_penalty"] += active_play_time_secs - self.data["c0_lock_started_at"]
 
         self.data["last_badge"] = "c0_removed"
         return self.data["last_badge"]
@@ -130,11 +130,11 @@ class BadgesManager:
         badge_to_put_to_board = inactive_badges_not_c0[0]
         return self._put_badge_to_board(active_play_time_secs, badge_to_put_to_board)
 
-    def on_penalty(self, active_play_time_secs: float) -> Optional[str]:
+    def on_penalty(self, active_play_time_secs: int) -> Optional[str]:
         self.data["c0_hp_next_delta"] = 1
-        return self._chain_badge_counters("on_penalty", int(active_play_time_secs), False)
+        return self._chain_badge_counters("on_penalty", active_play_time_secs, False)
 
-    def on_review(self, active_play_time_secs: float) -> Optional[str]:
+    def on_review(self, active_play_time_secs: int) -> Optional[str]:
         old_delta = self.data["c0_hp_next_delta"]
         self.data["c0_hp_next_delta"] = 3
 
@@ -145,7 +145,7 @@ class BadgesManager:
             if self.data["c0_hp"] == 0:
                 return self.on_shoo_cat(active_play_time_secs)
 
-        return self._chain_badge_counters("on_review", int(active_play_time_secs), True)
+        return self._chain_badge_counters("on_review", active_play_time_secs, True)
 
     def get_grumpy_cat_healthpoints(self):
         return self.data["c0_hp"]
@@ -204,7 +204,7 @@ class BadgesManager:
             # No new badge => no changes on the board
             return None
         
-    def _maybe_start_new_level(self, active_play_time_secs: float):
+    def _maybe_start_new_level(self, active_play_time_secs: int):
         if not self.is_level_completed():
             return
         
@@ -234,7 +234,7 @@ class BadgesManager:
                 inactive_badges.append(cell["badge"])
         return inactive_badges
 
-    def progress(self, active_play_time_secs: float):
+    def progress(self, active_play_time_secs: int):
         badges = ["f0", "s0", "s1", "s2", "t0", "c1", "c2", "c0"]
 
         all_progress = {}
@@ -249,7 +249,7 @@ class BadgesManager:
                         "progress_pct": 100 - (self.data["c0_hp"] * 100 // self._max_grumpy_cat_healthpoints())
                     }
                 else:
-                    maybe_progress = counter.progress(badge, self._adjust_active_play_time_secs(int(active_play_time_secs)), self.data["badges_state"].get(counter.__class__.__name__), self.difficulty, self._get_inactive_badges_on_board(self.data['board']))
+                    maybe_progress = counter.progress(badge, self._adjust_active_play_time_secs(active_play_time_secs), self.data["badges_state"].get(counter.__class__.__name__), self.difficulty, self._get_inactive_badges_on_board(self.data['board']))
 
                 if maybe_progress is not None:
                     all_progress[badge] = maybe_progress

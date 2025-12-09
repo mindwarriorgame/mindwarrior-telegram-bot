@@ -249,7 +249,7 @@ class GameManager:
 
         since_last_review_secs = None
         if abs(counter_active_game.get_total_seconds() - counter_review_state.get_total_seconds()) > 60:
-            since_last_review_secs = int(Counter(self.user['review_counter_state']).get_total_seconds())
+            since_last_review_secs = Counter(self.user['review_counter_state']).get_total_seconds()
 
         return self._render_review_screen(since_last_review_secs)
 
@@ -293,7 +293,7 @@ class GameManager:
                                                        is_resumed=is_resumed)
 
         else:
-            self.user['last_reward_time_at_active_counter_time_secs'] = int(Counter(self.user['active_game_counter_state']).get_total_seconds())
+            self.user['last_reward_time_at_active_counter_time_secs'] = Counter(self.user['active_game_counter_state']).get_total_seconds()
             maybe_badge_msg, maybe_badge_button =  self._handle_badge_event('on_review')
             badges_manager = BadgesManager(self.user['difficulty'], self.user['badges_serialized'])
             diamonds_msg = None
@@ -524,7 +524,7 @@ class GameManager:
         counter = Counter(serialized_counter)
         self.user['counters_history_serialized'] = add_timer_rec_to_history(self.user['counters_history_serialized'], {
             'counter_name': counter_name,
-            'counter_stopped_duration_secs': int(counter.get_total_seconds()),
+            'counter_stopped_duration_secs': counter.get_total_seconds(),
             'event_datetime': now_utc()
         })
 
@@ -663,7 +663,7 @@ class GameManager:
         badges_manager = BadgesManager(self.user['difficulty'], self.user['badges_serialized'])
         active_play_time_seconds = Counter(self.user['active_game_counter_state']).get_total_seconds()
         is_paused = self.user['paused_counter_state'] is not None
-        since_last_review_secs = int(Counter(self.user['review_counter_state']).get_total_seconds())
+        since_last_review_secs = Counter(self.user['review_counter_state']).get_total_seconds()
 
         return {
             'to_chat_id': self.user['user_id'],
@@ -671,7 +671,7 @@ class GameManager:
                 level=badges_manager.get_level() + 2 if badges_manager.is_level_completed() else badges_manager.get_level() + 1,
                 difficulty=self.lang.difficulties[self.user['difficulty']],
                 difficulty_details=str(self.user['difficulty'] + 1) + "/" + str(len(self.lang.difficulties)),
-                time=self._format_time_minutes(int(active_play_time_seconds)),
+                time=self._format_time_minutes(active_play_time_seconds),
                 diamonds=self.user['diamonds'],
                 spent_diamonds=self.user['spent_diamonds'],
                 paused="⚪" if not is_paused else "🟢",

@@ -27,7 +27,7 @@ class TimeBadgeCounter:
         if state is None:
             return None, str(active_play_time_secs + self._calculate_interval_secs(difficulty))
 
-        pending_at = int(state)
+        pending_at = int(float(state))
         if pending_at < active_play_time_secs:
             return "t0", str(active_play_time_secs + self._calculate_interval_secs(difficulty))
 
@@ -43,7 +43,7 @@ class TimeBadgeCounter:
         if state is None:
             state = str(active_play_time_secs + self._calculate_interval_secs(difficulty))
 
-        pending_at = int(state)
+        pending_at = int(float(state))
 
         time_left = max(pending_at - active_play_time_secs, 0)
         time_passed = max(self._calculate_interval_secs(difficulty) - time_left, 0)

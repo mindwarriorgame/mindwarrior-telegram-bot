@@ -34,9 +34,9 @@ class Counter:
         self._data['total_seconds_intermediate'] = 0
         self.refresh()
 
-    def get_total_seconds(self) -> float:
+    def get_total_seconds(self) -> int:
         self.refresh()
-        return self._data['total_seconds_intermediate']
+        return int(self._data['total_seconds_intermediate'])
 
     def is_active(self) -> bool:
         self.refresh()

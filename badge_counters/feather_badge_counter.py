@@ -20,7 +20,7 @@ class FeatherBadgeCounter:
         if state is None:
             return None, str(active_play_time_secs + self._calculate_interval_secs(difficulty))
 
-        time_to_fire = int(state)
+        time_to_fire = int(float(state))
         if time_to_fire < active_play_time_secs:
             return "f0", str(active_play_time_secs + self._calculate_interval_secs(difficulty))
 
@@ -47,7 +47,7 @@ class FeatherBadgeCounter:
         if state is None:
             state = str(active_play_time_secs + self._calculate_interval_secs(difficulty))
 
-        time_to_fire = int(state)
+        time_to_fire = int(float(state))
 
         time_left = max(time_to_fire - active_play_time_secs, 0)
         time_passed = max(self._calculate_interval_secs(difficulty) - time_left, 0)

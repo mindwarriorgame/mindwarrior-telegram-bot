@@ -17,10 +17,10 @@ class CatBadgeCounter:
         return None, self._generate_state(0, active_play_time_secs, "game_started")
 
     def _get_cumulative_counter_secs(self, state: str) -> int:
-        return int(state.split(",")[0].split("=")[1])
+        return int(float(state.split(",")[0].split("=")[1]))
 
     def _get_counter_last_updated(self, state: str) -> int:
-        return int(state.split(",")[1].split("=")[1])
+        return int(float(state.split(",")[1].split("=")[1]))
 
     def _get_update_reason(self, state: str) -> str:
         return state.split(",")[2].split("=")[1]
