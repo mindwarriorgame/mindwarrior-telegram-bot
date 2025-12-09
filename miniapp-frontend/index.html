@@ -4,7 +4,7 @@
     <title>MindWarrior</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <script src="server-time.js"></script>
+    <script src="server-time.js?v=1"></script>
 
     <script>
         window.langs = {
@@ -975,7 +975,7 @@
             this.dataProvider = dataProvider;
             const data = this.dataProvider();
             this._showData(data);
-            const url = `https://boo.great-site.net?env=${env}&lang_code=${langCode}&query_id=` + encodeURIComponent(this.queryId) + '&data=' + encodeURIComponent(data)+'&_=' + new Date().getTime();
+            const url = window.getServerBaseUrl() + `/index.php?env=${env}&lang_code=${langCode}&query_id=` + encodeURIComponent(this.queryId) + '&data=' + encodeURIComponent(data)+'&_=' + new Date().getTime();
             const corsUrl = url; //'https://corsproxy.io/?' + encodeURIComponent(url);
 
             if (!AbortSignal.timeout) {

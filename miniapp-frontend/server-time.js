@@ -1,3 +1,14 @@
+
+// TODO move to a separate file maybe?
+window.getServerBaseUrl = function() {
+    let baseUrl = "https://boo.great-site.net";
+    if (window.location.href.indexOf("ru.mindwarriorgame.org") >= 0) {
+        baseUrl = "https://ru.mindwarriorgame.org/miniapp-backend";
+    }
+    console.log("Base URL detected", baseUrl, window.location.href);
+    return baseUrl;
+}
+
 class ServerTime {
     constructor() {
         this.clientStartedAt = parseInt(window.localStorage.getItem('clientTime') || Date.now());
@@ -6,7 +17,7 @@ class ServerTime {
         syncOffset = () => {
             const started = Date.now();
             let finished = Date.now();
-            fetch('https://boo.great-site.net/time.php', {method: 'POST', mode: 'cors'})
+            fetch(window.getServerBaseUrl() + '/time.php', {method: 'POST', mode: 'cors'})
                 .then(response => {
                     if (response.ok) {
                         finished = Date.now();
