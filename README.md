@@ -33,6 +33,12 @@ And add a check to show a better error message. OR just handle the "expired" err
 
 ## Update the last message with a cooldown counter
 
+## Merge all the "next*_at" into "next_event_at"
+
+## Add "broom" purchase to the shop
+
+On penalty shoos the grumpy cat and puts the user to sleep
+
 ## Standalone app
 
 Figure out how to package the code as a standalone app that doesn't need network (close-to-0 permissons).
