@@ -115,12 +115,17 @@ class Lang:
     shop_no_enough_diamonds: str
     shop_diamonds_left: str
     shop_no_grumpy_cat: str
+    shop_button_buy_broom: str
 
     menu_change_server: str
 
     change_server_descr: str
     change_server_done: str
     change_server_current: str
+
+    you_have_broom: str
+    you_already_have_broom: str
+    you_used_broom: str
 
 fr = Lang(
     lang_code='fr',
@@ -309,20 +314,29 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                          "\n"
                          "Activé? {is_enabled}\n"
                          "Heure de sommeil: {bed_time} - {wakeup_time}\n",
-    shop_description = (
-        "Bienvenue dans la boutique 🛍️!\n"
-        "\n"
-        "Vous pouvez y dépenser les diamants gagnés.\n"
-        "\n"
-        "Votre solde : 💎 {diamonds}"
-    ),
+    shop_description = \
+        "Bienvenue dans la boutique 🛍️ !\n" \
+        "\n" \
+        "Ici, tu peux dépenser tes diamants durement gagnés :\n" \
+        " ‣ 🧹😾 chasse le chat grognon, tout de suite !\n" \
+        " ‣ 🏆 obtiens immédiatement le prochain succès\n" \
+        " ‣ 🥾 protecteur anti-chat grognon à usage unique : chasse le chat quand il apparaît et t’endort\n" \
+        "\n" \
+        "Ton solde : 💎 {diamonds}",
 
     shop_button_kick_grumpy_cat = "🧹😾 Chasser le chat : -💎 {price}",
     shop_button_next_achivement = "🏆 Obtenir un succès : -💎 {price}",
+    shop_button_buy_broom = "🥾 Acheter le protecteur anti-chat grognon : -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 Pas assez de diamants pour l'achat",
     shop_diamonds_left = "Diamants restants : 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 Aucun chat grincheux à chasser",
+
+    you_have_broom = "Tu as le protecteur 🥾 !",
+    you_already_have_broom = "Tu as déjà le protecteur 🥾 !",
+    you_used_broom = \
+        "🥾 a été activé, 😾 a été chassé. Tu dors maintenant 💤\n" \
+        "Relis ta <i>Formule</i> pour te réveiller !",
     
     menu_change_server = "🌐 Changer de serveur",
 
@@ -532,20 +546,29 @@ Presiona el botón de abajo para comenzar el juego.""",
                          "\n"
                          "Activado? {is_enabled}\n"
                          "Hora de dormir: {bed_time} - {wakeup_time}\n",
-    shop_description = (
-        "¡Bienvenido a la tienda 🛍️!\n"
-        "\n"
-        "Aquí puedes gastar los diamantes que has ganado.\n"
-        "\n"
-        "Tu saldo: 💎 {diamonds}"
-    ),
+    shop_description = \
+        "¡Bienvenido a la tienda 🛍️!\n" \
+        "\n" \
+        "Aquí puedes gastar tus diamantes ganados con esfuerzo:\n" \
+        " ‣ 🧹😾 espanta al gato gruñón, ¡ahora mismo!\n" \
+        " ‣ 🏆 consigue de inmediato el siguiente logro\n" \
+        " ‣ 🥾 protector de un solo uso contra el gato gruñón: lo espanta cuando aparece y te pone a dormir\n" \
+        "\n" \
+        "Tu saldo: 💎 {diamonds}",
 
     shop_button_kick_grumpy_cat = "🧹😾 Echar al gato: -💎 {price}",
     shop_button_next_achivement = "🏆 Conseguir un logro: -💎 {price}",
+    shop_button_buy_broom = "🥾 Comprar protector contra el gato: -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 No hay suficientes diamantes para la compra",
     shop_diamonds_left = "Diamantes restantes: 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 No hay gato gruñón que espantar",
+
+    you_have_broom = "¡Tienes el protector 🥾!",
+    you_already_have_broom = "¡Ya tienes el protector 🥾!",
+    you_used_broom = \
+            "🥾 se ha activado, 😾 se ha ido. Ahora estás durmiendo 💤\n" \
+            "¡Revisa tu <i>Fórmula</i> para despertarte!",
 
     menu_change_server = "🌐 Cambiar servidor",
 
@@ -757,19 +780,27 @@ Press the button below to start the game.""",
                          "\n"
                          "Enabled? {is_enabled}\n"
                          "Sleep time: {bed_time} - {wakeup_time}\n",
-    shop_description = 
-        "Welcome to the shop 🛍️!\n"
-        "\n"
-        "Here you can spend your hard-earned diamonds.\n"
-        "\n"
+    shop_description = "Welcome to the shop 🛍️!\n" \
+        "\n" \
+        "Here you can spend your hard-earned diamonds:\n" \
+        " ‣ 🧹😾 shoo the grumpy cat away, now!\n" \
+        " ‣ 🏆 immediately get the next achievement\n" \
+        " ‣ 🥾 anti-grumpy-cat single-use protector: drives the cat away when it appears and puts you to sleep\n" \
+        "\n" \
         "Your balance: 💎 {diamonds}",
 
     shop_button_kick_grumpy_cat = "🧹😾 Shoo the cat away: -💎 {price}",
     shop_button_next_achivement = "🏆 Get an achievement: -💎 {price}",
+    shop_button_buy_broom = "🥾 Buy cat protector: -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 Not enough diamonds for the purchase",
     shop_diamonds_left = "Diamonds left: 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 No grumpy cat to shoo",
+
+    you_have_broom = "You have the protector 🥾!",
+    you_already_have_broom = "You already have the protector 🥾!",
+    you_used_broom = "🥾 was activated, 😾 was driven away. You are sleeping now 💤\n" \
+        "Review your <i>Formula</i> to wake up!",
 
     menu_change_server = "🌐 Change server",
 
@@ -978,19 +1009,29 @@ Drücke den Button unten, um das Spiel zu starten.""",
                          "\n"
                          "Aktiviert? {is_enabled}\n"
                          "Schlafenszeit: {bed_time} - {wakeup_time}\n",
-    shop_description = (
-        "Willkommen im Shop 🛍️!\n"
-        "\n"
-        "Hier kannst du deine verdienten Diamanten ausgeben.\n"
-        "\n"
-        "Dein Kontostand: 💎 {diamonds}"
-    ),
+    shop_description = \
+        "Willkommen im Shop 🛍️!\n" \
+        "\n" \
+        "Hier kannst du deine hart verdienten Diamanten ausgeben:\n" \
+        " ‣ 🧹😾 vertreibe die Grummelkatze – sofort!\n" \
+        " ‣ 🏆 erhalte sofort den nächsten Erfolg\n" \
+        " ‣ 🥾 Anti-Grummelkatzen-Einwegschutz: vertreibt die Katze, wenn sie erscheint, und lässt dich einschlafen\n" \
+        "\n" \
+        "Dein Kontostand: 💎 {diamonds}",
+
     shop_button_kick_grumpy_cat = "🧹😾 Katze verjagen: -💎 {price}",
     shop_button_next_achivement = "🏆 Erfolg freischalten: -💎 {price}",
+    shop_button_buy_broom = "🥾 Katzenschutz kaufen: -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 Nicht genug Diamanten für den Kauf",
     shop_diamonds_left = "Verbleibende Diamanten: 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 Keine mürrische Katze zum Wegscheuchen",
+
+    you_have_broom = "Du hast den Katzenschutz 🥾!",
+    you_already_have_broom = "Du hast den Katzenschutz 🥾 bereits!",
+    you_used_broom = \
+            "🥾 wurde aktiviert, 😾 wurde verjagt. Du schläfst jetzt 💤\n" \
+            "Überprüfe deine <i>Formel</i>, um aufzuwachen!",
     
     menu_change_server = "🌐 Server wechseln",
 
@@ -1201,18 +1242,29 @@ ru = Lang(
                          "Включено? {is_enabled}\n"
                          "Время сна: {bed_time} - {wakeup_time}\n",
     
-    shop_description="Добро пожаловать в магазин 🛍️!\n"
-    "\n"
-    "Здесь вы можете потратить заработанные алмазы.\n"
-    "\n"
-    "На вашем счету: 💎 {diamonds}",
+    shop_description = \
+        "Добро пожаловать в магазин 🛍️!\n" \
+        "\n" \
+        "Здесь вы можете потратить свои честно заработанные алмазы:\n" \
+        " ‣ 🧹😾 прогнать недовольного кота прямо сейчас\n" \
+        " ‣ 🏆 получить следующее достижение, сейчас!\n" \
+        " ‣ 🥾 одноразовая защита от недовольного кота: прогоняет кота, как только он появляется, и переводит игру в состояние сна\n" \
+        "\n" \
+        "Ваш баланс: 💎 {diamonds}",
 
     shop_button_kick_grumpy_cat="🧹😾 Прогнать кота: -💎 {price}",
     shop_button_next_achivement="🏆 Получить достижение: -💎 {price}",
+    shop_button_buy_broom = "🥾 Купить защиту от недовольного кота: -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 Недостаточно алмазов для покупки",
     shop_diamonds_left = "Осталось алмазов: 💎 {diamonds}",
     shop_no_grumpy_cat = "🤷 Нет сердитого кота, которого можно прогнать",
+
+    you_have_broom = "У вас есть защита 🥾!",
+    you_already_have_broom = "У вас уже есть защита 🥾!",
+    you_used_broom = \
+            "🥾 активирована, 😾 прогнан. Игра в режиме сна 💤\n" \
+            "Откройте свою <i>Формулу</i>, чтобы вернуться к игре!",
 
     menu_change_server = "🌐 Сменить сервер",
 
