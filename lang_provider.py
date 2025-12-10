@@ -269,8 +269,8 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
                    "\n"
                    "{pause_prompt}",
 
-    badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
-    badge_new = "🏆 Vous avez un nouvel accomplissement !\nAppuyez sur le bouton \"Voir les réussites\" ci-dessous.",
+    badge_unhappy_cat = "😾 Oups ! Un chat grincheux s'est faufilé !",
+    badge_new = "🏆 Vous avez un nouvel accomplissement !",
     diamond_new = "💎 Vous avez reçu un diamant ! 💎 {count} (+1)",
     view_badges_button = "Voir les réussites 🏆",
     locked_achievements = "⛔🏆😾 Un chat grincheux bloque de nouvelles réussites !",
@@ -492,8 +492,8 @@ Presiona el botón de abajo para comenzar el juego.""",
                    "\n"
                    "{pause_prompt}",
 
-    badge_unhappy_cat = "😾 ¡Ups! ¡Un gato gruñón se coló!\nPresiona el botón \"Ver logros\" abajo.",
-    badge_new = "🏆 ¡Tienes un nuevo logro!\nPresiona el botón \"Ver logros\" abajo.",
+    badge_unhappy_cat = "😾 ¡Ups! ¡Un gato gruñón se coló!",
+    badge_new = "🏆 ¡Tienes un nuevo logro!",
     diamond_new = "💎 ¡Has recibido un diamante! 💎 {count} (+1)",
     view_badges_button = "Ver logros 🏆",
     locked_achievements = "⛔🏆😾 ¡Un gato gruñón bloquea nuevos logros!",
@@ -716,8 +716,8 @@ Press the button below to start the game.""",
                    "\n"
                    "{pause_prompt}",
 
-    badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!\nPress \"View achievements\" button below.",
-    badge_new = "🏆 You've got a new achievement!\nPress \"View achievements\" button below.",
+    badge_unhappy_cat = "😾 Oops! A grumpy cat sneaked in!",
+    badge_new = "🏆 You've got a new achievement!",
     diamond_new = "💎 You've got a new diamond! 💎 {count} (+1)", 
     view_badges_button = "View achievements 🏆",
     locked_achievements = "⛔🏆😾 A grumpy cat is blocking new achievements!",
@@ -937,8 +937,8 @@ Drücke den Button unten, um das Spiel zu starten.""",
                    "\n"
                    "{pause_prompt}",
 
-    badge_unhappy_cat = "😾 Ups! Eine grimmige Katze hat sich eingeschlichen!\nDrücke den Button \"Erfolge ansehen\" unten.",
-    badge_new = "🏆 Du hast einen neuen Erfolg erzielt!\nDrücke den Button \"Erfolge ansehen\" unten.",
+    badge_unhappy_cat = "😾 Ups! Eine grimmige Katze hat sich eingeschlichen!",
+    badge_new = "🏆 Du hast einen neuen Erfolg erzielt!",
     diamond_new = "💎 Du hast einen Diamanten erhalten! 💎 {count}",
     view_badges_button = "Erfolge ansehen 🏆",
     locked_achievements = "⛔🏆😾 Eine grimmige Katze blockiert neue Erfolge!",
@@ -1161,8 +1161,8 @@ ru = Lang(
                    "\n"
                    "{pause_prompt}",
 
-    badge_unhappy_cat = "😾 Ой! Похоже, к вам забрался недовольный кот!\nНажмите кнопку \"Посмотреть достижения\" снизу.",
-    badge_new = "🏆 Вы получили новое достижение\nНажмите кнопку \"Посмотреть достижения\" снизу.",
+    badge_unhappy_cat = "😾 Ой! Похоже, к вам забрался недовольный кот!",
+    badge_new = "🏆 Вы получили новое достижение!",
     diamond_new = "💎 Вы получили алмаз! 💎 {count} (+1)",
     view_badges_button = "Посмотреть достижения 🏆",
     locked_achievements = "⛔🏆😾 Недовольный кот блокирует достижения!",

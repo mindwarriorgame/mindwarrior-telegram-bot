@@ -87,7 +87,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'message': 'The game has started 🏁\n'
                                             '\n'
                                             "🏆 You've got a new achievement!\n"
-                                            'Press "View achievements" button below.\n'
                                             '\n'
                                             '💪<a '
                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
@@ -202,6 +201,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['difficulty'] = 1
         
         self._create_game_manager(user).on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+        user['diamonds'] = 100
 
         with time_machine.travel("2022-04-21 05:50", tick=False):
 
@@ -238,7 +238,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                          'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                                     '\n'
                                                     '😾 Oops! A grumpy cat sneaked in!\n'
-                                                    'Press "View achievements" button below.\n'
+                                                    'Shoo the grumpy cat for 💎 20 /shop\n'
                                                     '\n'
                                                     ' ‣ /pause - pause the game\n'
                                                     '\n'
@@ -390,7 +390,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'message': 'The game has started 🏁\n'
                                             '\n'
                                             "🏆 You've got a new achievement!\n"
-                                            'Press "View achievements" button below.\n'
                                             '\n'
                                             '💪<a '
                                             'href="https://mindwarriorgame.org/faq.en.html#difficulty">Difficulty '
@@ -765,7 +764,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '<i>Formula</i> has been reviewed 🎉\n'
                                             '\n'
                                             "🏆 You've got a new achievement!\n"
-                                            'Press "View achievements" button below.\n'
                                             "\n"
                                             "💎 You've got a new diamond! 💎 1 (+1)\n"
                                             '\n'
@@ -1053,7 +1051,6 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                      'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                                 '\n'
                                                 '😾 Oops! A grumpy cat sneaked in!\n'
-                                                'Press "View achievements" button below.\n'
                                                 '\n'
                                                 ' ‣ /pause - pause the game\n'
                                                 '\n'

@@ -444,7 +444,7 @@ class GameManager:
         
         badges_manager = BadgesManager(self.user['difficulty'], self.user['badges_serialized'])
         if badges_manager.count_active_grumpy_cats_on_board() > 0:
-            return self._render_single_message(self.lang.locked_achievements, None, None)
+            return self._render_single_message(self._wrap_shoo_cat_for_diamonds(self.lang.locked_achievements), None, None)
         
         self.user['diamonds'] -= price
         self.user['spent_diamonds'] += price
@@ -862,15 +862,22 @@ class GameManager:
         if badge == "c0_removed":
             if badges_manager.count_active_grumpy_cats_on_board() == 0:
                 return self.lang.grumpy_cat_kicked_out + "\n" + self.lang.achievements_unblocked, view_achievements_button
-            return self.lang.grumpy_cat_kicked_out + "\n" + self.lang.remained_grumpy_cats.format(count=badges_manager.count_active_grumpy_cats_on_board()), view_achievements_button
+            return self.lang.grumpy_cat_kicked_out + "\n" + self._wrap_shoo_cat_for_diamonds(self.lang.remained_grumpy_cats.format(count=badges_manager.count_active_grumpy_cats_on_board())), view_achievements_button
 
         if badge is None:
             if badges_manager.count_active_grumpy_cats_on_board() > 0:
-                return self.lang.kicking_out_grumpy_cat if event == 'on_review' else self.lang.locked_achievements, view_achievements_button
+                return self.lang.kicking_out_grumpy_cat if event == 'on_review' else self._wrap_shoo_cat_for_diamonds(self.lang.locked_achievements), view_achievements_button
 
             return None, None if event == 'on_formula_updated' else view_achievements_button
 
-        return self.lang.badge_unhappy_cat if badge == "c0" else self.lang.badge_new, view_achievements_button
+        return self._wrap_shoo_cat_for_diamonds(self.lang.badge_unhappy_cat) if badge == "c0" else self.lang.badge_new, view_achievements_button
+
+    def _wrap_shoo_cat_for_diamonds(self, grumpy_cat_msg: str) -> str:
+        diamonds = self.user['diamonds']
+        price = self._calculate_shop_price()
+        if diamonds >= price:
+            return grumpy_cat_msg + "\n" + self.lang.kick_grumpy_cat_for_diamonds.format(diamonds=price)
+        return grumpy_cat_msg
 
     def _pause_user(self):
         paused_counter = Counter("")
