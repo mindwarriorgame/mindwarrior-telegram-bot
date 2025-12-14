@@ -317,6 +317,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     shop_description = "Bienvenue dans la boutique 🛍️ !\n" \
         "\n" \
         "Dépensez vos diamants durement gagnés pour :\n" \
+        "\n"
         " ‣ 🧹😾 Chasser le chat grincheux — maintenant !\n" \
         " ‣ 🏆 Débloquer instantanément le prochain succès\n" \
         " ‣ 🧄 Répulsif à chat à usage unique : bloque la prochaine attaque du chat grincheux et met le jeu en pause.\n" \
@@ -547,6 +548,7 @@ Presiona el botón de abajo para comenzar el juego.""",
     shop_description = "¡Bienvenido a la tienda 🛍️!\n" \
         "\n" \
         "Gasta tus diamantes ganados con esfuerzo en:\n" \
+        "\n"
         " ‣ 🧹😾 ¡Ahuyenta al gato gruñón — ahora!\n" \
         " ‣ 🏆 Desbloquea al instante el siguiente logro\n" \
         " ‣ 🧄 Repelente de gato de un solo uso: bloquea el próximo ataque del gato gruñón y pone el juego en pausa.\n" \
@@ -779,6 +781,7 @@ Press the button below to start the game.""",
     shop_description = "Welcome to the shop 🛍️!\n"
         "\n"
         "Spend your hard-earned diamonds on:\n"
+        "\n"
         " ‣ 🧹😾 Shoo the grumpy cat away — now!\n"
         " ‣ 🏆 Instantly unlock the next achievement\n"
         " ‣ 🧄 One-time cat repeller: blocks the next grumpy cat attack and pauses the game.\n"
@@ -1008,6 +1011,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
     shop_description = "Willkommen im Shop 🛍️!\n" \
         "\n" \
         "Gib deine hart verdienten Diamanten aus für:\n" \
+        "\n"
         " ‣ 🧹😾 Verjage die grummelige Katze — sofort!\n" \
         " ‣ 🏆 Schalte sofort die nächste Errungenschaft frei\n" \
         " ‣ 🧄 Einmaliger Katzen-Abwehrer: blockiert den nächsten Angriff der grummeligen Katze und pausiert das Spiel.\n" \
@@ -1239,6 +1243,7 @@ ru = Lang(
     shop_description = "Добро пожаловать в магазин 🛍️!\n" \
         "\n" \
         "Здесь вы можете потратить свои алмазы на:\n" \
+        "\n"
         " ‣ 🧹😾 Прогнать недовольного кота — прямо сейчас!\n" \
         " ‣ 🏆 Мгновенно открыть следующее достижение\n" \
         " ‣ 🧄 Одноразовый отпугиватель кота: блокирует очередную атаку недовольного кота и ставит игру на паузу.\n" \

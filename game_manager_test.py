@@ -1362,7 +1362,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             'message': (
                 "Welcome to the shop 🛍️!\n"
                 "\n"
-                "Here you can spend your hard-earned diamonds.\n"
+                "Spend your hard-earned diamonds on:\n"
+                "\n"
+                ' ‣ 🧹😾 Shoo the grumpy cat away — now!\n'
+                ' ‣ 🏆 Instantly unlock the next achievement\n'
+                ' ‣ 🧄 One-time cat repeller: blocks the next grumpy cat attack and '
+                'pauses the game.\n'
                 "\n"
                 "Your balance: 💎 37"
             ),
