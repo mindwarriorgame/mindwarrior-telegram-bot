@@ -239,6 +239,8 @@ class GameManager:
         self.user['counters_history_serialized'] = None
         self.user['badges_serialized'] = ""
         self.user['diamonds'] = 0
+        self.user['spent_diamonds'] = 0
+        self.user['has_repeller'] = True
 
     def on_review_command(self) -> Reply:
         if self.user['active_game_counter_state'] is None:

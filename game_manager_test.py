@@ -458,6 +458,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['active_game_counter_state'] = counter.serialize()
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
+        user['diamonds'] = 40
+        user['spent_diamonds'] = 50
+        user['has_repeller'] = False
         self.users_orm.upsert_user(user)
         
         data = self._create_game_manager(user).on_data_provided('set_difficulty:3;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
@@ -495,6 +498,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         self.assertIsNone(user['counters_history_serialized'])
         self.assertEqual(user['badges_serialized'], '')
+
+        self.assertEqual(user['diamonds'], 0)
+        self.assertEqual(user['spent_diamonds'], 0)
+        self.assertEqual(user['has_repeller'], True)
 
     @time_machine.travel("2022-04-22", tick=False)
     def test_set_difficulty_sets_next_reminder_for_low_levels(self):
@@ -1015,7 +1022,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' - frontend_base_url_override: None\n'
                                             '\n'
-                                            ' - last_reward_time_at_active_counter_time_secs: 0</code>',
+                                            ' - last_reward_time_at_active_counter_time_secs: 0\n'
+                                            '\n'
+                                            ' - has_repeller: True</code>',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)
