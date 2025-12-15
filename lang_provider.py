@@ -115,7 +115,7 @@ class Lang:
     shop_no_enough_diamonds: str
     shop_diamonds_left: str
     shop_no_grumpy_cat: str
-    shop_button_buy_broom: str
+    shop_button_buy_repeller: str
 
     menu_change_server: str
 
@@ -126,6 +126,7 @@ class Lang:
     you_have_grumpy_cat_repeller: str
     you_already_have_grumpy_cat_repeller: str
     you_used_grumpy_cat_repeller: str
+    congrats_you_have_repeller: str
 
 fr = Lang(
     lang_code='fr',
@@ -326,7 +327,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     shop_button_kick_grumpy_cat = "🧹😾 Chasser le chat : -💎 {price}",
     shop_button_next_achivement = "🏆 Obtenir un succès : -💎 {price}",
-    shop_button_buy_broom = "🧄 Acheter le répulsif à chat : -💎 {price}",
+    shop_button_buy_repeller = "🧄 Acheter le répulsif à chat : -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 Pas assez de diamants pour l'achat",
     shop_diamonds_left = "Diamants restants : 💎 {diamonds}",
@@ -336,6 +337,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     you_already_have_grumpy_cat_repeller = "Vous avez déjà le répulsif 🧄",
     you_used_grumpy_cat_repeller = "🧄😾 Répulsif activé — le chat s'est enfui ! Le jeu est en mode veille 💤\n" \
             "Consultez <i>Formule</i> pour reprendre.",
+    congrats_you_have_repeller = "Félicitations ! Tu as maintenant le répulsif 🧄",
     
     menu_change_server = "🌐 Changer de serveur",
 
@@ -557,7 +559,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     shop_button_kick_grumpy_cat = "🧹😾 Echar al gato: -💎 {price}",
     shop_button_next_achivement = "🏆 Conseguir un logro: -💎 {price}",
-    shop_button_buy_broom = "🧄 Comprar repelente de gato: -💎 {price}",
+    shop_button_buy_repeller = "🧄 Comprar repelente de gato: -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 No hay suficientes diamantes para la compra",
     shop_diamonds_left = "Diamantes restantes: 💎 {diamonds}",
@@ -567,6 +569,7 @@ Presiona el botón de abajo para comenzar el juego.""",
     you_already_have_grumpy_cat_repeller = "Ya tienes el repelente 🧄",
     you_used_grumpy_cat_repeller = "🧄😾 Repelente activado — ¡el gato salió corriendo! El juego está en modo sueño 💤\n" \
             "Revisa <i>Fórmula</i> para reanudar.",
+    congrats_you_have_repeller = "¡Felicidades! Ahora tienes el repelente 🧄",
 
     menu_change_server = "🌐 Cambiar servidor",
 
@@ -790,7 +793,7 @@ Press the button below to start the game.""",
 
     shop_button_kick_grumpy_cat = "🧹😾 Shoo the cat away: -💎 {price}",
     shop_button_next_achivement = "🏆 Get an achievement: -💎 {price}",
-    shop_button_buy_broom = "🧄 Buy cat repeller: -💎 {price}",
+    shop_button_buy_repeller = "🧄 Buy cat repeller: -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 Not enough diamonds for the purchase",
     shop_diamonds_left = "Diamonds left: 💎 {diamonds}",
@@ -800,7 +803,7 @@ Press the button below to start the game.""",
     you_already_have_grumpy_cat_repeller = "You already have the repeller 🧄",
     you_used_grumpy_cat_repeller = "🧄😾 Repeller activated — the cat ran away! The game is in sleep mode 💤\n" \
         "Review your <i>Formula</i> to resume.",
-
+    congrats_you_have_repeller = "Congratulations! Now you have the repeller 🧄",
     menu_change_server = "🌐 Change server",
 
     change_server_descr = (
@@ -1020,7 +1023,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     shop_button_kick_grumpy_cat = "🧹😾 Katze verjagen: -💎 {price}",
     shop_button_next_achivement = "🏆 Erfolg freischalten: -💎 {price}",
-    shop_button_buy_broom = "🧄 Katzen-Abwehrer kaufen: -💎 {price}",
+    shop_button_buy_repeller = "🧄 Katzen-Abwehrer kaufen: -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 Nicht genug Diamanten für den Kauf",
     shop_diamonds_left = "Verbleibende Diamanten: 💎 {diamonds}",
@@ -1030,6 +1033,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
     you_already_have_grumpy_cat_repeller = "Du hast den Abwehrer bereits 🧄",
     you_used_grumpy_cat_repeller = "🧄😾 Abwehrer aktiviert — die Katze ist abgehauen! Das Spiel ist im Schlafmodus 💤\n" \
             "Sieh dir <i>Formel</i> an, um fortzufahren.",
+    congrats_you_have_repeller = "Herzlichen Glückwunsch! Jetzt hast du den Abwehrer 🧄",
     
     menu_change_server = "🌐 Server wechseln",
 
@@ -1252,7 +1256,7 @@ ru = Lang(
 
     shop_button_kick_grumpy_cat="🧹😾 Прогнать кота: -💎 {price}",
     shop_button_next_achivement="🏆 Получить достижение: -💎 {price}",
-    shop_button_buy_broom = "🧄 Купить отпугиватель кота: -💎 {price}",
+    shop_button_buy_repeller = "🧄 Купить отпугиватель кота: -💎 {price}",
 
     shop_no_enough_diamonds = "🚫 Недостаточно алмазов для покупки",
     shop_diamonds_left = "Осталось алмазов: 💎 {diamonds}",
@@ -1262,6 +1266,7 @@ ru = Lang(
     you_already_have_grumpy_cat_repeller = "У вас уже есть отпугиватель 🧄",
     you_used_grumpy_cat_repeller = "🧄😾 Отпугиватель активирован — кот убежал! Игра на паузе 💤\n" \
             "Просмотрите <i>Формулу</i>, чтобы продолжить.",
+    congrats_you_have_repeller = "Поздравляем! Теперь у вас есть отпугиватель 🧄",
 
     menu_change_server = "🌐 Сменить сервер",
 

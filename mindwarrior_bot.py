@@ -246,6 +246,18 @@ async def shop_progress_command(update: Update, context):
 
     await send_reply(message, ret)
 
+async def shop_repeller_command(update: Update, context):
+    message = get_message(update)
+    if not message:
+        return
+    chat_id = message.chat.id
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_shop_repeller_command()
+    user_orm.upsert_user(user)
+
+    await send_reply(message, ret)
+
 async def change_server_command(update: Update, context):
     message = get_message(update)
     if not message:
@@ -354,6 +366,8 @@ async def button(update: Update, ctx) -> None:
         await shop_unblock_command(update, ctx)
     elif query.data == "shop_progress":
         await shop_progress_command(update, ctx)
+    elif query.data == "shop_repeller":
+        await shop_repeller_command(update, ctx)
     elif query.data == "change_server":
         await change_server_command(update, ctx)
     elif SET_SERVER_PREFIX in query.data:

@@ -1378,7 +1378,8 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 ' ‣ 🧄 One-time cat repeller: blocks the next grumpy cat attack and '
                 'pauses the game.\n'
                 "\n"
-                "Your balance: 💎 37"
+                "Your balance: 💎 37\n"
+                "You have the repeller 🧄"
             ),
             'buttons': [
                 {
@@ -1388,6 +1389,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 {
                     'text': '🏆 Get an achievement: -💎 20',
                     'data': 'shop_progress'
+                },
+                {
+                    'text': '🧄 Buy cat repeller: -💎 30', 
+                    'data': 'shop_repeller'
                 }
             ],
             'menu_commands': [],
@@ -1570,3 +1575,40 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self._create_game_manager(self.user).on_set_server_command("lh")
         self.assertEqual(self.user['frontend_base_url_override'], "http://localhost")
 
+
+    def test_already_has_repeller(self):
+        data = self._create_game_manager(self.user).on_shop_repeller_command()
+        self.assertEqual(data, {
+            'buttons': [],
+            'image': None,
+            'menu_commands': [],
+            'message': 'You already have the repeller 🧄',
+            'to_chat_id': 1
+        })
+
+    def test_no_diamonds_for_repeller(self):
+        self.user['diamonds'] = 29
+        self.user['has_repeller'] = False
+        data = self._create_game_manager(self.user).on_shop_repeller_command()
+        self.assertEqual(data, {
+            'buttons': [],
+            'image': None,
+            'menu_commands': [],
+            'message': '🚫 Not enough diamonds for the purchase',
+            'to_chat_id': 1
+        })
+
+    def test_shop_repeller_success(self):
+        self.user['diamonds'] = 30
+        self.user['has_repeller'] = False
+        data = self._create_game_manager(self.user).on_shop_repeller_command()
+        self.assertEqual(data, {
+            'buttons': [],
+            'image': None,
+            'menu_commands': [],
+            'message': 'Congratulations! Now you have the repeller 🧄',
+            'to_chat_id': 1
+        })
+        self.assertEqual(self.user['has_repeller'], True)
+        self.assertEqual(self.user['diamonds'], 0)
+        self.assertEqual(self.user['spent_diamonds'], 30)

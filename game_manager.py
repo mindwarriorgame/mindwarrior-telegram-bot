@@ -396,9 +396,12 @@ class GameManager:
         return self._render_stats(till_next_prompt_time, fname)
 
     def on_shop_command(self) -> Reply:
+        message = self.lang.shop_description.format(diamonds=self.user['diamonds'])
+        if self.user['has_repeller']:
+            message += "\n" + self.lang.you_have_grumpy_cat_repeller
         return {
             'to_chat_id': self.user['user_id'],
-            'message': self.lang.shop_description.format(diamonds=self.user['diamonds']),
+            'message': message,
             'buttons': [
                 {
                     'text': self.lang.shop_button_kick_grumpy_cat.format(price=self._calculate_shop_price()),
@@ -407,6 +410,10 @@ class GameManager:
                 {
                     'text': self.lang.shop_button_next_achivement.format(price=self._calculate_shop_price()),
                     'data': 'shop_progress'
+                },
+                {
+                    'text': self.lang.shop_button_buy_repeller.format(price=int(self._calculate_shop_price() * 1.5)),
+                    'data': 'shop_repeller'
                 }
             ],
             'menu_commands': [],
@@ -461,6 +468,20 @@ class GameManager:
             'menu_commands': self._render_menu_commands(),
             'image': None
         }
+    
+    def on_shop_repeller_command(self) -> Reply:
+        if self.user['has_repeller']:
+            return self._render_single_message(self.lang.you_already_have_grumpy_cat_repeller, None, None)
+        
+        price = int(1.5 * self._calculate_shop_price())
+        if price > self.user['diamonds']:
+            return self._render_single_message(self.lang.shop_no_enough_diamonds, None, None)
+        
+        self.user['has_repeller'] = True
+        self.user['diamonds'] -= price
+        self.user['spent_diamonds'] += price
+        return self._render_single_message(self.lang.congrats_you_have_repeller, None, None)
+        
 
     def on_difficulty_command(self) -> Reply:
         return self._render_difficulty_buttons()
