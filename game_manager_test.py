@@ -202,6 +202,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         
         self._create_game_manager(user).on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
         user['diamonds'] = 100
+        user['has_repeller'] = False
 
         with time_machine.travel("2022-04-21 05:50", tick=False):
 
@@ -262,6 +263,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         badges = BadgesManager(user['difficulty'], user['badges_serialized'])
         badges.on_penalty(0)
         user['badges_serialized'] = badges.serialize()
+        user['has_repeller'] = False
         
         with time_machine.travel("2022-04-21 05:50", tick=False):
             
@@ -1038,6 +1040,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                      '{"badge": "c0", "is_active": null}, '
                                      '{"badge": "c0", "is_active": null}, '
                                      '{"badge": "c1", "is_active": null}]}')
+        user['has_repeller'] = False
         achievement_urls = [
             'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=c0am_c0_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800',
             'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=c0a_c0am_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800'
@@ -1181,6 +1184,40 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
+    @time_machine.travel("2023-04-20", tick=False)
+    def test_repeller_prevents_grumpy_cat(self):
+        user = self.user
+        
+        user['lang_code'] = 'en'
+        self._create_game_manager(user).on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
+        
+        user['badges_serialized'] = ('{"board": ['
+                                     '{"badge": "c0", "is_active": null}, '
+                                     '{"badge": "c0", "is_active": null}, '
+                                     '{"badge": "c1", "is_active": null}]}')
+        achievement_urls = [
+            'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=c0am_c0_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800',
+            'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=c0a_c0am_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800'
+        ]
+
+        user['next_prompt_type'] = 'penalty'
+        user['next_prompt_time'] = datetime.datetime(2022, 4, 19, 1, 0).astimezone(datetime.timezone.utc)
+        
+        self.users_orm.upsert_user(user)
+        data = GameManager.process_tick(self.users_orm, "prod")
+        user = self.users_orm.get_user_by_id(1)
+
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                    'image': None,
+                                    'menu_commands': [],
+                                    'message': 'You forgot to review your <i>Formula</i> 🟥\n'
+                                            '\n'
+                                            '🧄😾 Repeller activated — the cat ran away! The game is paused ⏸️\n'
+                                            'Review your <i>Formula</i> to resume.',
+                                    'to_chat_id': 1}])
+        user = self.users_orm.get_user_by_id(1)
+        self.assertEqual(user['has_repeller'], False)
 
     @time_machine.travel("2023-04-20", tick=False)
     def test_sleep_command_no_autosleep(self):

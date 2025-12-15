@@ -539,6 +539,18 @@ class GameManager:
     def _process_penalty_prompt(self) -> Reply:
         self._reset_user_next_prompt()
 
+        if self.user['has_repeller']:
+            badges_manager = BadgesManager(self.user['difficulty'], self.user['badges_serialized'])
+            maybe_c0 = badges_manager.on_penalty(Counter(self.user['active_game_counter_state']).get_total_seconds())
+            if maybe_c0 == 'c0':
+                self.user['has_repeller'] = False
+                self._pause_user()
+                return self._render_single_message(
+                    self.lang.penalty_text.format(maybe_achievement="", pause_prompt=self.lang.you_used_grumpy_cat_repeller),
+                    None,
+                    self._render_review_button()
+                )
+
         maybe_badge_msg, maybe_badge_button = self._handle_badge_event('on_penalty')
 
         return self._render_penalty(maybe_badge_msg, maybe_badge_button)

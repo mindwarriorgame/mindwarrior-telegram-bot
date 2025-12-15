@@ -335,7 +335,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     you_have_grumpy_cat_repeller = "Vous avez le répulsif 🧄",
     you_already_have_grumpy_cat_repeller = "Vous avez déjà le répulsif 🧄",
-    you_used_grumpy_cat_repeller = "🧄😾 Répulsif activé — le chat s'est enfui ! Le jeu est en mode veille 💤\n" \
+    you_used_grumpy_cat_repeller = "🧄😾 Répulsif activé — le chat s'est enfui ! Le jeu est en pause ⏸️\n" \
             "Consultez <i>Formule</i> pour reprendre.",
     congrats_you_have_repeller = "Félicitations ! Tu as maintenant le répulsif 🧄",
     
@@ -567,7 +567,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     you_have_grumpy_cat_repeller = "Tienes el repelente 🧄",
     you_already_have_grumpy_cat_repeller = "Ya tienes el repelente 🧄",
-    you_used_grumpy_cat_repeller = "🧄😾 Repelente activado — ¡el gato salió corriendo! El juego está en modo sueño 💤\n" \
+    you_used_grumpy_cat_repeller = "🧄😾 Repelente activado — ¡el gato salió corriendo! El juego está en pausa ⏸️\n" \
             "Revisa <i>Fórmula</i> para reanudar.",
     congrats_you_have_repeller = "¡Felicidades! Ahora tienes el repelente 🧄",
 
@@ -801,7 +801,7 @@ Press the button below to start the game.""",
 
     you_have_grumpy_cat_repeller = "You have the repeller 🧄",
     you_already_have_grumpy_cat_repeller = "You already have the repeller 🧄",
-    you_used_grumpy_cat_repeller = "🧄😾 Repeller activated — the cat ran away! The game is in sleep mode 💤\n" \
+    you_used_grumpy_cat_repeller = "🧄😾 Repeller activated — the cat ran away! The game is paused ⏸️\n" \
         "Review your <i>Formula</i> to resume.",
     congrats_you_have_repeller = "Congratulations! Now you have the repeller 🧄",
     menu_change_server = "🌐 Change server",
@@ -1031,7 +1031,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     you_have_grumpy_cat_repeller = "Du hast den Abwehrer 🧄",
     you_already_have_grumpy_cat_repeller = "Du hast den Abwehrer bereits 🧄",
-    you_used_grumpy_cat_repeller = "🧄😾 Abwehrer aktiviert — die Katze ist abgehauen! Das Spiel ist im Schlafmodus 💤\n" \
+    you_used_grumpy_cat_repeller = "🧄😾 Abwehrer aktiviert — die Katze ist abgehauen! Das Spiel ist pausiert ⏸️\n" \
             "Sieh dir <i>Formel</i> an, um fortzufahren.",
     congrats_you_have_repeller = "Herzlichen Glückwunsch! Jetzt hast du den Abwehrer 🧄",
     
@@ -1264,7 +1264,7 @@ ru = Lang(
 
     you_have_grumpy_cat_repeller = "У вас есть отпугиватель 🧄",
     you_already_have_grumpy_cat_repeller = "У вас уже есть отпугиватель 🧄",
-    you_used_grumpy_cat_repeller = "🧄😾 Отпугиватель активирован — кот убежал! Игра на паузе 💤\n" \
+    you_used_grumpy_cat_repeller = "🧄😾 Отпугиватель активирован — кот убежал! Игра на паузе ⏸️\n" \
             "Просмотрите <i>Формулу</i>, чтобы продолжить.",
     congrats_you_have_repeller = "Поздравляем! Теперь у вас есть отпугиватель 🧄",
 
