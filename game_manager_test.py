@@ -1213,7 +1213,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                     'menu_commands': [],
                                     'message': 'You forgot to review your <i>Formula</i> 🟥\n'
                                             '\n'
-                                            '🧄😾 Repeller activated — the cat ran away! The game is paused ⏸️\n'
+                                            '🧄😾 Repeller activated — the cat ran away!\n'
+                                            'The game is paused ⏸️\n'
+                                            '\n'
                                             'Review your <i>Formula</i> to resume.',
                                     'to_chat_id': 1}])
         user = self.users_orm.get_user_by_id(1)
