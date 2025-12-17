@@ -47,6 +47,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=0,
             frontend_base_url_override=None,
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         ))
 
     @time_machine.travel("2022-04-21")
@@ -79,6 +80,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=6,
             frontend_base_url_override='over',
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         ))
 
         user['lang_code'] = 'en'
@@ -97,6 +99,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
         user['spent_diamonds'] = 7
         user['frontend_base_url_override'] = 'newover'
         user['last_reward_time_at_active_counter_time_secs'] = 123
+        user['has_repeller'] = False
         self.users_orm.upsert_user(user)
 
         self.assertEqual(self.users_orm.get_user_by_id(123), User(
@@ -117,6 +120,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=7,
             frontend_base_url_override='newover',
             last_reward_time_at_active_counter_time_secs=123,
+            has_repeller=False
         ))
 
     def test_get_some_users_for_prompt_when_no_user(self):
@@ -142,6 +146,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=8,
             frontend_base_url_override='over',
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [user])
@@ -166,6 +171,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=9,
             frontend_base_url_override='over',
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_next_autopause_events(10), [user])
@@ -193,6 +199,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=8,
             frontend_base_url_override='over',
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -217,6 +224,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=8,
             frontend_base_url_override='over',
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 2), [])
@@ -242,6 +250,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=7,
             frontend_base_url_override=None,
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -267,6 +276,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=10,
             frontend_base_url_override='over',
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.get_some_users_for_prompt(10, 1), [])
@@ -290,6 +300,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=11,
             frontend_base_url_override='over',
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.users_orm.remove_user(124)
@@ -314,6 +325,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=0,
             frontend_base_url_override=None,
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         ))
 
     @time_machine.travel("2022-04-21 00:00:00")
@@ -336,6 +348,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=1,
             frontend_base_url_override='over',
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 1)
@@ -362,6 +375,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=2,
             frontend_base_url_override=None,
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)
@@ -387,6 +401,7 @@ class TestUsersOrm(unittest.IsolatedAsyncioTestCase):
             spent_diamonds=3,
             frontend_base_url_override=None,
             last_reward_time_at_active_counter_time_secs=0,
+            has_repeller=True
         )
         self.users_orm.upsert_user(user)
         self.assertEqual(self.users_orm.count_active_users(1), 0)

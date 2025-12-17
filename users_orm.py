@@ -41,6 +41,8 @@ class User(TypedDict):
 
     last_reward_time_at_active_counter_time_secs: int
 
+    has_repeller: bool
+
 
 class UsersOrm:
 
@@ -78,6 +80,8 @@ class UsersOrm:
                 
                 next_autopause_event_time TEXT,
                 autopause_config_serialized TEXT,
+                            
+                has_repeller INTEGER NOT NULL DEFAULT 1,
                 
                 PRIMARY KEY (user_id)
             )
@@ -107,6 +111,12 @@ class UsersOrm:
         if "last_reward_time_at_active_counter_time_secs" not in columns:
             self.cursor.execute(
                 "ALTER TABLE users ADD COLUMN last_reward_time_at_active_counter_time_secs INTEGER NOT NULL DEFAULT 0"
+            )
+            self.conn.commit()
+
+        if "has_repeller" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE users ADD COLUMN has_repeller INTEGER NOT NULL DEFAULT 1"
             )
             self.conn.commit()
 
@@ -143,7 +153,8 @@ class UsersOrm:
             diamonds,
             spent_diamonds,
             frontend_base_url_override,
-            last_reward_time_at_active_counter_time_secs
+            last_reward_time_at_active_counter_time_secs,
+            has_repeller
                 FROM users WHERE user_id = ?""", (user_id,))
         return self._to_user_obj(self.cursor.fetchone(), user_id)
 
@@ -168,7 +179,8 @@ class UsersOrm:
             diamonds,
             spent_diamonds,
             frontend_base_url_override,
-            last_reward_time_at_active_counter_time_secs
+            last_reward_time_at_active_counter_time_secs,
+            has_repeller
                 FROM users WHERE difficulty = ? AND active_game_counter_state_is_null = 0 AND paused_counter_state_is_null = 1 AND next_prompt_time < ? LIMIT ?""",
                             (difficulty, cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -194,7 +206,8 @@ class UsersOrm:
             diamonds,
             spent_diamonds,
             frontend_base_url_override,
-            last_reward_time_at_active_counter_time_secs
+            last_reward_time_at_active_counter_time_secs,
+            has_repeller
                 FROM users WHERE next_autopause_event_time < ? LIMIT ?""",
                             (cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -240,7 +253,8 @@ class UsersOrm:
                 diamonds=0,
                 spent_diamonds=0,
                 frontend_base_url_override=None,
-                last_reward_time_at_active_counter_time_secs=0
+                last_reward_time_at_active_counter_time_secs=0,
+                has_repeller=True
             )
         return User(
             user_id=param[0],
@@ -259,7 +273,8 @@ class UsersOrm:
             diamonds=param[15],
             spent_diamonds=param[16],
             frontend_base_url_override=param[17],
-            last_reward_time_at_active_counter_time_secs=param[18]
+            last_reward_time_at_active_counter_time_secs=param[18],
+            has_repeller=bool(param[19])
         )
 
     def remove_user(self, user_id: int):
@@ -287,8 +302,9 @@ class UsersOrm:
                 diamonds,
                 spent_diamonds,
                 frontend_base_url_override,
-                last_reward_time_at_active_counter_time_secs
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                last_reward_time_at_active_counter_time_secs,
+                has_repeller
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 lang_code = excluded.lang_code,
                 difficulty = excluded.difficulty,
@@ -307,7 +323,8 @@ class UsersOrm:
                 diamonds = excluded.diamonds,
                 spent_diamonds = excluded.spent_diamonds,
                 frontend_base_url_override = excluded.frontend_base_url_override,
-                last_reward_time_at_active_counter_time_secs = excluded.last_reward_time_at_active_counter_time_secs
+                last_reward_time_at_active_counter_time_secs = excluded.last_reward_time_at_active_counter_time_secs,
+                has_repeller = excluded.has_repeller
         ''', (
             user['user_id'],
             user['lang_code'],
@@ -332,6 +349,8 @@ class UsersOrm:
             user['diamonds'],
             user['spent_diamonds'],
             user['frontend_base_url_override'],
-            user.get('last_reward_time_at_active_counter_time_secs', 0)
+            user.get('last_reward_time_at_active_counter_time_secs', 0),
+
+            1 if user.get('has_repeller', True) else 0
         ))
         self.conn.commit()

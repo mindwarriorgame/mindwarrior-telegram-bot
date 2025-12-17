@@ -239,6 +239,8 @@ class GameManager:
         self.user['counters_history_serialized'] = None
         self.user['badges_serialized'] = ""
         self.user['diamonds'] = 0
+        self.user['spent_diamonds'] = 0
+        self.user['has_repeller'] = True
 
     def on_review_command(self) -> Reply:
         if self.user['active_game_counter_state'] is None:
@@ -394,9 +396,12 @@ class GameManager:
         return self._render_stats(till_next_prompt_time, fname)
 
     def on_shop_command(self) -> Reply:
+        message = self.lang.shop_description.format(diamonds=self.user['diamonds'])
+        if self.user['has_repeller']:
+            message += "\n" + self.lang.you_have_grumpy_cat_repeller
         return {
             'to_chat_id': self.user['user_id'],
-            'message': self.lang.shop_description.format(diamonds=self.user['diamonds']),
+            'message': message,
             'buttons': [
                 {
                     'text': self.lang.shop_button_kick_grumpy_cat.format(price=self._calculate_shop_price()),
@@ -405,6 +410,10 @@ class GameManager:
                 {
                     'text': self.lang.shop_button_next_achivement.format(price=self._calculate_shop_price()),
                     'data': 'shop_progress'
+                },
+                {
+                    'text': self.lang.shop_button_buy_repeller.format(price=int(self._calculate_shop_price() * 1.5)),
+                    'data': 'shop_repeller'
                 }
             ],
             'menu_commands': [],
@@ -459,6 +468,20 @@ class GameManager:
             'menu_commands': self._render_menu_commands(),
             'image': None
         }
+    
+    def on_shop_repeller_command(self) -> Reply:
+        if self.user['has_repeller']:
+            return self._render_single_message(self.lang.you_already_have_grumpy_cat_repeller, None, None)
+        
+        price = int(1.5 * self._calculate_shop_price())
+        if price > self.user['diamonds']:
+            return self._render_single_message(self.lang.shop_no_enough_diamonds, None, None)
+        
+        self.user['has_repeller'] = True
+        self.user['diamonds'] -= price
+        self.user['spent_diamonds'] += price
+        return self._render_single_message(self.lang.congrats_you_have_repeller, None, None)
+        
 
     def on_difficulty_command(self) -> Reply:
         return self._render_difficulty_buttons()
@@ -515,6 +538,18 @@ class GameManager:
 
     def _process_penalty_prompt(self) -> Reply:
         self._reset_user_next_prompt()
+
+        if self.user['has_repeller']:
+            badges_manager = BadgesManager(self.user['difficulty'], self.user['badges_serialized'])
+            maybe_c0 = badges_manager.on_penalty(Counter(self.user['active_game_counter_state']).get_total_seconds())
+            if maybe_c0 == 'c0':
+                self.user['has_repeller'] = False
+                self._pause_user()
+                return self._render_single_message(
+                    self.lang.penalty_text.format(maybe_achievement="", pause_prompt=self.lang.you_used_grumpy_cat_repeller),
+                    None,
+                    self._render_review_button()
+                )
 
         maybe_badge_msg, maybe_badge_button = self._handle_badge_event('on_penalty')
 

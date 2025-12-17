@@ -202,6 +202,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         
         self._create_game_manager(user).on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
         user['diamonds'] = 100
+        user['has_repeller'] = False
 
         with time_machine.travel("2022-04-21 05:50", tick=False):
 
@@ -262,6 +263,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         badges = BadgesManager(user['difficulty'], user['badges_serialized'])
         badges.on_penalty(0)
         user['badges_serialized'] = badges.serialize()
+        user['has_repeller'] = False
         
         with time_machine.travel("2022-04-21 05:50", tick=False):
             
@@ -458,6 +460,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user['active_game_counter_state'] = counter.serialize()
         user['lang_code'] = 'en'
         user['review_counter_state'] = counter.serialize()
+        user['diamonds'] = 40
+        user['spent_diamonds'] = 50
+        user['has_repeller'] = False
         self.users_orm.upsert_user(user)
         
         data = self._create_game_manager(user).on_data_provided('set_difficulty:3;next_review:05:29,,02:29,,00:59,,00:29,,00:14')[0]
@@ -495,6 +500,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         self.assertIsNone(user['counters_history_serialized'])
         self.assertEqual(user['badges_serialized'], '')
+
+        self.assertEqual(user['diamonds'], 0)
+        self.assertEqual(user['spent_diamonds'], 0)
+        self.assertEqual(user['has_repeller'], True)
 
     @time_machine.travel("2022-04-22", tick=False)
     def test_set_difficulty_sets_next_reminder_for_low_levels(self):
@@ -1015,7 +1024,9 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' - frontend_base_url_override: None\n'
                                             '\n'
-                                            ' - last_reward_time_at_active_counter_time_secs: 0</code>',
+                                            ' - last_reward_time_at_active_counter_time_secs: 0\n'
+                                            '\n'
+                                            ' - has_repeller: True</code>',
                                  'to_chat_id': 1}])
 
     @time_machine.travel("2023-04-20", tick=False)
@@ -1029,6 +1040,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                      '{"badge": "c0", "is_active": null}, '
                                      '{"badge": "c0", "is_active": null}, '
                                      '{"badge": "c1", "is_active": null}]}')
+        user['has_repeller'] = False
         achievement_urls = [
             'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=c0am_c0_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800',
             'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=c0a_c0am_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800'
@@ -1172,6 +1184,42 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
+    @time_machine.travel("2023-04-20", tick=False)
+    def test_repeller_prevents_grumpy_cat(self):
+        user = self.user
+        
+        user['lang_code'] = 'en'
+        self._create_game_manager(user).on_data_provided('start_game;next_review:10:00,,11:00,,12:00')
+        
+        user['badges_serialized'] = ('{"board": ['
+                                     '{"badge": "c0", "is_active": null}, '
+                                     '{"badge": "c0", "is_active": null}, '
+                                     '{"badge": "c1", "is_active": null}]}')
+        achievement_urls = [
+            'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=c0am_c0_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800',
+            'http://frontend?lang=en&env=prod&new_badge=c0&level=1&b1=c0a_c0am_c1&bp1=c1_43200_0--c0_10_0&ts=1681912800'
+        ]
+
+        user['next_prompt_type'] = 'penalty'
+        user['next_prompt_time'] = datetime.datetime(2022, 4, 19, 1, 0).astimezone(datetime.timezone.utc)
+        
+        self.users_orm.upsert_user(user)
+        data = GameManager.process_tick(self.users_orm, "prod")
+        user = self.users_orm.get_user_by_id(1)
+
+        self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
+                                                'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
+                                    'image': None,
+                                    'menu_commands': [],
+                                    'message': 'You forgot to review your <i>Formula</i> 🟥\n'
+                                            '\n'
+                                            '🧄😾 Repeller activated — the cat ran away!\n'
+                                            'The game is paused ⏸️\n'
+                                            '\n'
+                                            'Review your <i>Formula</i> to resume.',
+                                    'to_chat_id': 1}])
+        user = self.users_orm.get_user_by_id(1)
+        self.assertEqual(user['has_repeller'], False)
 
     @time_machine.travel("2023-04-20", tick=False)
     def test_sleep_command_no_autosleep(self):
@@ -1362,9 +1410,15 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             'message': (
                 "Welcome to the shop 🛍️!\n"
                 "\n"
-                "Here you can spend your hard-earned diamonds.\n"
+                "Spend your hard-earned diamonds on:\n"
                 "\n"
-                "Your balance: 💎 37"
+                ' ‣ 🧹😾 Shoo the grumpy cat away — now!\n'
+                ' ‣ 🏆 Instantly unlock the next achievement\n'
+                ' ‣ 🧄 One-time cat repeller: blocks the next grumpy cat attack and '
+                'pauses the game.\n'
+                "\n"
+                "Your balance: 💎 37\n"
+                "You have the repeller 🧄"
             ),
             'buttons': [
                 {
@@ -1374,6 +1428,10 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 {
                     'text': '🏆 Get an achievement: -💎 20',
                     'data': 'shop_progress'
+                },
+                {
+                    'text': '🧄 Buy cat repeller: -💎 30', 
+                    'data': 'shop_repeller'
                 }
             ],
             'menu_commands': [],
@@ -1556,3 +1614,40 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self._create_game_manager(self.user).on_set_server_command("lh")
         self.assertEqual(self.user['frontend_base_url_override'], "http://localhost")
 
+
+    def test_already_has_repeller(self):
+        data = self._create_game_manager(self.user).on_shop_repeller_command()
+        self.assertEqual(data, {
+            'buttons': [],
+            'image': None,
+            'menu_commands': [],
+            'message': 'You already have the repeller 🧄',
+            'to_chat_id': 1
+        })
+
+    def test_no_diamonds_for_repeller(self):
+        self.user['diamonds'] = 29
+        self.user['has_repeller'] = False
+        data = self._create_game_manager(self.user).on_shop_repeller_command()
+        self.assertEqual(data, {
+            'buttons': [],
+            'image': None,
+            'menu_commands': [],
+            'message': '🚫 Not enough diamonds for the purchase',
+            'to_chat_id': 1
+        })
+
+    def test_shop_repeller_success(self):
+        self.user['diamonds'] = 30
+        self.user['has_repeller'] = False
+        data = self._create_game_manager(self.user).on_shop_repeller_command()
+        self.assertEqual(data, {
+            'buttons': [],
+            'image': None,
+            'menu_commands': [],
+            'message': 'Congratulations! Now you have the repeller 🧄',
+            'to_chat_id': 1
+        })
+        self.assertEqual(self.user['has_repeller'], True)
+        self.assertEqual(self.user['diamonds'], 0)
+        self.assertEqual(self.user['spent_diamonds'], 30)
