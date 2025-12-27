@@ -9,6 +9,7 @@ class Lang:
     lang_code: str
     lang_name: str
 
+    start_command_text: str
     help_command_text: str
 
     help_command_start_playing_button: str
@@ -54,6 +55,8 @@ class Lang:
     menu_data: str
     menu_feedback: str
     menu_settings: str
+
+    menu_help: str
 
     settings_title: str
 
@@ -132,17 +135,39 @@ fr = Lang(
     lang_code='fr',
     lang_name='Français',
 
-    help_command_text = f"""Hey, étranger ! 👋 Bienvenue sur le bot du <a href="https://mindwarriorgame.org/faq.fr.html">jeu MindWarrior</a> ! 🥷  
+    start_command_text=f"""Salut, étranger ! 👋 Bienvenue sur le bot du jeu MindWarrior ! 🥷  
 
-🧪 Créez votre "<a href="https://mindwarriorgame.org/faq.fr.html#formula">Formule de Résolution Ferme</a>", un message inspirant pour vous-même.
+🧪 1. Crée ta <i>"Formule de résolution inébranlable"</i>, un message inspirant pour toi-même.
 
-💫 <a href="https://mindwarriorgame.org/faq.fr.html#review">Révisez-le</a> tout au long de la journée pour rester motivé et gagnez des récompenses ! <a href="https://mindwarriorgame.org/faq.fr.html#forgot">Et si j'oublie ?</a>
+💫 2. Relis-la tout au long de la journée pour rester motivé(e) et gagner des récompenses !
 
- ‣ <a href="https://mindwarriorgame.org/quick-start.fr.html">Guide de démarrage rapide</a>
- ‣ <a href="https://mindwarriorgame.org/faq.fr.html">FAQ</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.fr.html">Politique de confidentialité</a>
+Perdu(e) ? Utilise la commande /help.
 
-Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
+Appuie sur le bouton ci-dessous pour commencer le jeu.""",
+
+    help_command_text=f"""❓ Ressources d’aide :
+
+<a href="https://www.mindwarriorgame.org/quick-start.fr.html">Guide de démarrage rapide</a>
+
+FAQ :
+ - <a href="https://www.mindwarriorgame.org/faq.fr.html#purpose">Quel est l’objectif du jeu ?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.fr.html#formula">Que dois-je écrire dans ma Formule ?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.fr.html#name">Pourquoi le jeu s’appelle-t-il « MindWarrior » ?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.fr.html#review">etc.</a>
+
+Comment tes données sont traitées :
+ - <a href="https://www.mindwarriorgame.org/privacy-policy.fr.html">Politique de confidentialité</a>
+ - <a href="https://www.mindwarriorgame.org/tos.fr.html">Conditions d’utilisation (CGU)</a>
+
+<a href="https://github.com/orgs/mindwarriorgame/repositories">Sources du jeu</a>
+
+Toujours perdu(e) ?
+
+<a href="https://t.me/MindWarriorSupport_bot">Discute avec nous !</a>
+""",
+
+    menu_help="❓ aide",
+
 
     menu_review = "💫️ réviser la Formule",
     menu_pause = "⏸️ mettre le jeu en pause",
@@ -166,7 +191,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     review_command_text = "Révisez votre <i> Formule</i> 💫\n"
                           "\n"
-                          "<a href='https://mindwarriorgame.org/faq.fr#name.betterworld'>Appuyez sur un bouton ci-dessous</a> pour réviser votre <i>Formule</i>.",
+                          "<a href='https://www.mindwarriorgame.org/faq.fr#name.betterworld'>Appuyez sur un bouton ci-dessous</a> pour réviser votre <i>Formule</i>.",
 
 
     review_command_button_yourself="Améliore-toi 💪",
@@ -207,7 +232,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     paused_command="Le jeu est en pause ⏸️\n"
                    "\n"
                    "Vous ne recevrez pas de rappels concernant votre <i>Formule</i>, "
-                   "et le compteur de temps de jeu actif <a href=\"https://mindwarriorgame.org/faq.fr#pause\">est gelé</a>.\n"
+                   "et le compteur de temps de jeu actif <a href=\"https://www.mindwarriorgame.org/faq.fr#pause\">est gelé</a>.\n"
                    "\n"
                    "Pour reprendre le jeu, "
                    "il vous suffit de revoir votre <i>Formule</i> en utilisant le bouton ci-dessous.",
@@ -215,10 +240,10 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     stats_command=("🏆 Niveau : {level}\n"
                    "⌛ Temps de jeu actif : {time}\n"
                    "💎 Diamants disponibles : {diamonds}, dépensés : {spent_diamonds}\n"
-                   "💪 <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">Difficulté</a> : {difficulty} ({difficulty_details})\n"
-                   "⏸️ <a href=\"https://mindwarriorgame.org/faq.fr.html#pause\">En pause ?</a> {paused}\n"
-                   "❄️ Temps de <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty:~:text=sera%20récompensé%20(-,%22règle%20de%20refroidissement%22,-).\">refroidissement</a> avant la prochaine récompense : {cooldown}\n"
-                   "⏰ Temps avant le prochain <a href=\"https://mindwarriorgame.org/faq.fr.html#forgot\">rappel</a> : {punishment}"),
+                   "💪 <a href=\"https://www.mindwarriorgame.org/faq.fr.html#difficulty\">Difficulté</a> : {difficulty} ({difficulty_details})\n"
+                   "⏸️ <a href=\"https://www.mindwarriorgame.org/faq.fr.html#pause\">En pause ?</a> {paused}\n"
+                   "❄️ Temps de <a href=\"https://www.mindwarriorgame.org/faq.fr.html#difficulty:~:text=sera%20récompensé%20(-,%22règle%20de%20refroidissement%22,-).\">refroidissement</a> avant la prochaine récompense : {cooldown}\n"
+                   "⏰ Temps avant le prochain <a href=\"https://www.mindwarriorgame.org/faq.fr.html#forgot\">rappel</a> : {punishment}"),
 
     resumed="Le jeu est repris.",
     already_paused="Le jeu est déjà en pause ⏸️\n"
@@ -227,7 +252,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     game_started="Le jeu a commencé 🏁\n"
                  "{maybe_achievement}"
                  "\n"
-                 "💪<a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">Niveau de difficulté</a> : {difficulty}\n"
+                 "💪<a href=\"https://www.mindwarriorgame.org/faq.fr.html#difficulty\">Niveau de difficulté</a> : {difficulty}\n"
                  "\n"
                  "Revoir votre <i>Formule</i> avant {next_review}\n"
                  "\n"
@@ -236,7 +261,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     difficulty_command_text="Changer le niveau de difficulté💪\n"
                             "\n"
-                            "Sélectionnez un nouveau <a href=\"https://mindwarriorgame.org/faq.fr.html#difficulty\">niveau de difficulté</a> en utilisant les boutons ci-dessous.\n"
+                            "Sélectionnez un nouveau <a href=\"https://www.mindwarriorgame.org/faq.fr.html#difficulty\">niveau de difficulté</a> en utilisant les boutons ci-dessous.\n"
                             "\n"
                             "<b>⚠️Cela réinitialisera votre progression dans le jeu !</b>\n",
 
@@ -244,7 +269,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
 
     formula_command_text="Mettre à jour votre <i>Formule</i> 🧪\n"
                          "\n"
-                         "Utilisez le bouton ci-dessous pour mettre à jour votre <i><a href=\"https://mindwarriorgame.org/faq.fr.html#formula\">Formule</a></i>.",
+                         "Utilisez le bouton ci-dessous pour mettre à jour votre <i><a href=\"https://www.mindwarriorgame.org/faq.fr.html#formula\">Formule</a></i>.",
     formula_command_button="Mettre à jour la Formule 🧪",
     review_command_timeout="Délai expiré, veuillez réessayer.🤷",
     graph_header="Intervalles entre les revues (min)",
@@ -256,7 +281,7 @@ Appuyez sur le bouton ci-dessous pour commencer le jeu.""",
     graph_xmin='Il y a 6 jours',
     graph_paused="En pause",
 
-    data_view="<a href=\"https://mindwarriorgame.org/privacy-policy.fr\">Nous respectons votre vie privée</a> et souhaitons traiter vos "
+    data_view="<a href=\"https://www.mindwarriorgame.org/privacy-policy.fr\">Nous respectons votre vie privée</a> et souhaitons traiter vos "
               "données de la manière la plus transparente possible. Ci-dessous, vous pouvez trouver toutes vos données "
               "que le jeu stocke sur son serveur:",
     data_view_localstorage_button="Voir les données du localStorage 🔎",
@@ -365,17 +390,39 @@ es = Lang(
     lang_code='es',
     lang_name='Español',
 
-    help_command_text=f"""¡Hola, desconocido! 👋 ¡Bienvenido al bot del <a href="https://mindwarriorgame.org/faq.es.html">juego MindWarrior</a>! 🥷  
+    start_command_text=f"""¡Hola, desconocido! 👋 ¡Bienvenido al bot del juego MindWarrior! 🥷  
 
-🧪 Crea tu "<a href="https://mindwarriorgame.org/faq.es.html#formula">Fórmula de Firme Resolución</a>", un mensaje inspirador para ti mismo.
+🧪 1. Crea tu <i>"Fórmula de Resolución Firme"</i>, un mensaje inspirador para ti.
 
-💫 <a href="https://mindwarriorgame.org/faq.es.html#review">Revísala</a> a lo largo del día para mantenerte motivado y ganar recompensas. <a href="https://mindwarriorgame.org/faq.es.html#forgot">¿Qué pasa si olvido?</a>
+💫 2. Revísala a lo largo del día para mantenerte motivado y ganar recompensas.
 
- ‣ <a href="https://mindwarriorgame.org/quick-start.es.html">Guía rápida</a>
- ‣ <a href="https://mindwarriorgame.org/faq.es.html">Preguntas frecuentes</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.es.html">Política de privacidad</a>
+¿Confundido? Usa el comando /help.
 
-Presiona el botón de abajo para comenzar el juego.""",
+Pulsa el botón de abajo para empezar a jugar.""",
+
+help_command_text=f"""❓ Recursos de ayuda:
+
+<a href="https://www.mindwarriorgame.org/quick-start.es.html">Guía de inicio rápido</a>
+
+Preguntas frecuentes (FAQs):
+ - <a href="https://www.mindwarriorgame.org/faq.es.html#purpose">¿Cuál es el propósito del juego?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.es.html#formula">¿Qué debería escribir en mi Fórmula?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.es.html#name">¿Por qué el juego se llama "MindWarrior"?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.es.html#review">etc.</a>
+
+Cómo se tratan tus datos:
+ - <a href="https://www.mindwarriorgame.org/privacy-policy.es.html">Política de privacidad</a>
+ - <a href="https://www.mindwarriorgame.org/tos.es.html">Términos del servicio (ToS)</a>
+
+<a href="https://github.com/orgs/mindwarriorgame/repositories">Código fuente del juego</a>
+
+¿Sigues confundido?
+
+<a href="https://t.me/MindWarriorSupport_bot">¡Chatea con nosotros!</a>
+""",
+
+    menu_help="❓ ayuda",
+
 
     menu_review="💫️ revisar Fórmula",
     menu_pause="⏸️ pausar el juego",
@@ -399,7 +446,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     review_command_text="Revisa tu <i>Fórmula</i> 💫\n"
                         "\n"
-                        "<a href='https://mindwarriorgame.org/faq.es#name.betterworld'>Presiona cualquier botón de abajo</a> para revisar tu <i>Fórmula</i>.",
+                        "<a href='https://www.mindwarriorgame.org/faq.es#name.betterworld'>Presiona cualquier botón de abajo</a> para revisar tu <i>Fórmula</i>.",
 
     review_command_button_yourself="Mejora a ti mismo 💪",
     review_command_button_world="Mejora el mundo 🙌",
@@ -439,7 +486,7 @@ Presiona el botón de abajo para comenzar el juego.""",
     paused_command="El juego está en pausa ⏸️\n"
                    "\n"
                    "No recibirás recordatorios sobre tu <i>Fórmula</i>, "
-                   "y el contador de tiempo de juego activo <a href=\"https://mindwarriorgame.org/faq.es#pause\">está congelado</a>.\n"
+                   "y el contador de tiempo de juego activo <a href=\"https://www.mindwarriorgame.org/faq.es#pause\">está congelado</a>.\n"
                    "\n"
                    "Para reanudar el juego, "
                    "simplemente revisa tu <i>Fórmula</i> usando el botón de abajo.",
@@ -447,10 +494,10 @@ Presiona el botón de abajo para comenzar el juego.""",
     stats_command=("🏆 Nivel: {level}\n"
                    "⌛ Tiempo de juego activo: {time}\n"
                    "💎 Diamantes disponibles: {diamonds}, gastados: {spent_diamonds}\n"
-                   "💪 <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Dificultad</a>: {difficulty} ({difficulty_details})\n"
-                   "⏸️ <a href=\"https://mindwarriorgame.org/faq.es.html#pause\">¿Pausado?</a> {paused}\n"
-                   "❄️ <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Tiempo de espera</a> antes de la próxima recompensa: {cooldown}\n"
-                   "⏰ Tiempo antes del próximo <a href=\"https://mindwarriorgame.org/faq.es.html#forgot\">recordatorio</a>: {punishment}"),
+                   "💪 <a href=\"https://www.mindwarriorgame.org/faq.es.html#difficulty\">Dificultad</a>: {difficulty} ({difficulty_details})\n"
+                   "⏸️ <a href=\"https://www.mindwarriorgame.org/faq.es.html#pause\">¿Pausado?</a> {paused}\n"
+                   "❄️ <a href=\"https://www.mindwarriorgame.org/faq.es.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Tiempo de espera</a> antes de la próxima recompensa: {cooldown}\n"
+                   "⏰ Tiempo antes del próximo <a href=\"https://www.mindwarriorgame.org/faq.es.html#forgot\">recordatorio</a>: {punishment}"),
 
     resumed="El juego se ha reanudado.",
     already_paused="El juego ya está en pausa ⏸️\n"
@@ -459,7 +506,7 @@ Presiona el botón de abajo para comenzar el juego.""",
     game_started="El juego ha comenzado 🏁\n"
                  "{maybe_achievement}"
                  "\n"
-                 "💪<a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">Nivel de dificultad</a>: {difficulty}\n"
+                 "💪<a href=\"https://www.mindwarriorgame.org/faq.es.html#difficulty\">Nivel de dificultad</a>: {difficulty}\n"
                  "\n"
                  "Revisa tu <i>Fórmula</i> antes de {next_review}\n"
                  "\n"
@@ -469,7 +516,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     difficulty_command_text="Cambiar el nivel de dificultad💪\n"
                             "\n"
-                            "Selecciona un nuevo <a href=\"https://mindwarriorgame.org/faq.es.html#difficulty\">nivel de dificultad</a> usando los botones de abajo.\n"
+                            "Selecciona un nuevo <a href=\"https://www.mindwarriorgame.org/faq.es.html#difficulty\">nivel de dificultad</a> usando los botones de abajo.\n"
                             "\n"
                             "<b>⚠️¡Esto reiniciará tu progreso en el juego!</b>\n",
 
@@ -477,7 +524,7 @@ Presiona el botón de abajo para comenzar el juego.""",
 
     formula_command_text="Actualiza tu <i>Fórmula</i> 🧪\n"
                          "\n"
-                         "Usa el botón de abajo para actualizar tu <i><a href=\"https://mindwarriorgame.org/faq.es.html#formula\">Fórmula</a></i>.",
+                         "Usa el botón de abajo para actualizar tu <i><a href=\"https://www.mindwarriorgame.org/faq.es.html#formula\">Fórmula</a></i>.",
     formula_command_button="Actualiza tu Fórmula 🧪",
     review_command_timeout="Tiempo de espera agotado, por favor intenta de nuevo.🤷",
     graph_header="Intervalos entre revisiones (minutos)",
@@ -490,7 +537,7 @@ Presiona el botón de abajo para comenzar el juego.""",
     graph_xmin='hace 6 días',
     graph_paused="Pausado",
 
-    data_view="<a href=\"https://mindwarriorgame.org/privacy-policy.es\">Respetamos tu privacidad</a> y queremos tratar tus "
+    data_view="<a href=\"https://www.mindwarriorgame.org/privacy-policy.es\">Respetamos tu privacidad</a> y queremos tratar tus "
               "datos de la manera más transparente posible. A continuación, puedes encontrar todos los datos que "
               "el juego almacena en su servidor:",
 
@@ -599,17 +646,36 @@ Presiona el botón de abajo para comenzar el juego.""",
 en = Lang(
     lang_code='en',
     lang_name='English',
-    help_command_text=f"""Hey, stranger! 👋 Welcome to <a href="https://mindwarriorgame.org/faq.en.html">MindWarrior game</a> bot! 🥷  
+    start_command_text=f"""Hey, stranger! 👋 Welcome to MindWarrior game bot! 🥷  
 
-🧪 Craft your "<a href="https://mindwarriorgame.org/faq.en.html#formula">Formula of Firm Resolution</a>", an inspirational message to yourself.
+🧪 1. Create your <i>"Formula of Firm Resolution"</i>, an inspirational message to yourself.
 
-💫 <a href="https://mindwarriorgame.org/faq.en.html#review">Review it</a> throughout your day to stay motivated, and earn rewards! <a href="https://mindwarriorgame.org/faq.en.html#forgot">What if I forget?</a>
+💫 2. Review it throughout your day to stay motivated, and earn rewards!
 
- ‣ <a href="https://mindwarriorgame.org/quick-start.en.html">Quick-start guide</a>
- ‣ <a href="https://mindwarriorgame.org/faq.en.html">FAQs</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.en.html">Privacy policy</a>
+Confused? Use /help command.
 
 Press the button below to start the game.""",
+
+    help_command_text=f"""Help resources:
+
+<a href="https://www.mindwarriorgame.org/quick-start.en.html">Quick-start guide</a>
+
+FAQs:
+ - <a href="https://www.mindwarriorgame.org/faq.en.html#purpose">What is the purpose of the game?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.en.html#formula">What should I write in my Formula?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.en.html#name">Why is the game called "MindWarrior"?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.en.html#review">etc.</a>
+
+How your data is being treated:
+ - <a href="https://www.mindwarriorgame.org/privacy-policy.en.html">Privacy Policy</a>
+ - <a href="https://www.mindwarriorgame.org/tos.en.html">ToS</a>
+
+<a href="https://github.com/orgs/mindwarriorgame/repositories">Game sources</a>
+
+Still confused?
+
+<a href="https://t.me/MindWarriorSupport_bot">Chat with us!</a>
+""",
 
     menu_review="💫️ review Formula",
     menu_pause="⏸️ pause the game",
@@ -617,6 +683,7 @@ Press the button below to start the game.""",
     menu_shop = "🛍️ shop",
     menu_formula="️🧪 update Formula",
     menu_settings="🔧 settings",
+    menu_help="❓ help",
 
     settings_title='Please use the buttons below to configure the game 🔧',
 
@@ -628,13 +695,13 @@ Press the button below to start the game.""",
     feedback_text = "Questions, suggestions, or feedback? "
                     "Please feel free to raise a <a href=\"https://github.com/mindwarriorgame/mindwarrior-telegram-bot/issues\">GitHub issue</a> to discuss! 😉",
 
-    help_command_start_playing_button="Write \"Formula\" and start playing! 🏁",
+    help_command_start_playing_button="Create \"Formula\" and start playing! 🏁",
 
     start_game_prompt="Please press the button below to enter your <i>Formula</i> and start the game.",
 
     review_command_text="Review your <i> Formula</i> 💫\n"
                         "\n"
-                        "<a href='https://mindwarriorgame.org/faq.en#name.betterworld'>Press any button below</a> to review your <i>Formula</i>.",
+                        "<a href='https://www.mindwarriorgame.org/faq.en#name.betterworld'>Press any button below</a> to review your <i>Formula</i>.",
 
     review_command_button_yourself="Improve yourself 💪",
     review_command_button_world="Improve the world 🙌",
@@ -676,7 +743,7 @@ Press the button below to start the game.""",
     paused_command="The game is paused ⏸️\n"
                    "\n"
                    "You will not be receiving reminders about your <i>Formula</i>, "
-                   "and the active play time counter <a href=\"https://mindwarriorgame.org/faq.en#pause\">are frozen</a>.\n"
+                   "and the active play time counter <a href=\"https://www.mindwarriorgame.org/faq.en#pause\">are frozen</a>.\n"
                    "\n"
                    "To resume the game, "
                    "simply review your <i>Formula</i> using the button below.",
@@ -684,10 +751,10 @@ Press the button below to start the game.""",
     stats_command=("🏆 Level : {level}\n"
                    "⌛ Active play time: {time}\n"
                    "💎 Diamonds available: {diamonds}, spent: {spent_diamonds}\n"
-                   "💪 <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty</a>: {difficulty} ({difficulty_details})\n"
-                   "⏸️ <a href=\"https://mindwarriorgame.org/faq.en.html#pause\">Paused?</a> {paused}\n"
-                   "❄️ <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Cool-down</a> time before next reward: {cooldown}\n"
-                   "⏰ Time before next <a href=\"https://mindwarriorgame.org/faq.en.html#forgot\">reminder</a>: {punishment}"),
+                   "💪 <a href=\"https://www.mindwarriorgame.org/faq.en.html#difficulty\">Difficulty</a>: {difficulty} ({difficulty_details})\n"
+                   "⏸️ <a href=\"https://www.mindwarriorgame.org/faq.en.html#pause\">Paused?</a> {paused}\n"
+                   "❄️ <a href=\"https://www.mindwarriorgame.org/faq.en.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Cool-down</a> time before next reward: {cooldown}\n"
+                   "⏰ Time before next <a href=\"https://www.mindwarriorgame.org/faq.en.html#forgot\">reminder</a>: {punishment}"),
 
     resumed="The game is resumed.",
     already_paused="The game is already paused ⏸️\n"
@@ -696,7 +763,7 @@ Press the button below to start the game.""",
     game_started="The game has started 🏁\n"
                  "{maybe_achievement}"
                  "\n"
-                 "💪<a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">Difficulty level</a>: {difficulty}\n"
+                 "💪<a href=\"https://www.mindwarriorgame.org/faq.en.html#difficulty\">Difficulty level</a>: {difficulty}\n"
                  "\n"
                  "Review your <i>Formula</i> before {next_review}\n"
                  "\n"
@@ -706,7 +773,7 @@ Press the button below to start the game.""",
 
     difficulty_command_text="Change the difficulty level💪\n"
                             "\n"
-                            "Select a new <a href=\"https://mindwarriorgame.org/faq.en.html#difficulty\">difficulty level</a> using the buttons below.\n"
+                            "Select a new <a href=\"https://www.mindwarriorgame.org/faq.en.html#difficulty\">difficulty level</a> using the buttons below.\n"
                             "\n"
                             "<b>⚠️This will reset your game progress!</b>\n",
 
@@ -714,7 +781,7 @@ Press the button below to start the game.""",
 
     formula_command_text="Update your <i>Formula</i> 🧪\n"
                          "\n"
-                         "Use the button below to update your <i><a href=\"https://mindwarriorgame.org/faq.en.html#formula\">Formula</a></i>.",
+                         "Use the button below to update your <i><a href=\"https://www.mindwarriorgame.org/faq.en.html#formula\">Formula</a></i>.",
     formula_command_button="Update your Formula 🧪",
     review_command_timeout="Timeout, please try again.🤷",
     graph_header="Intervals between review (mins)",
@@ -726,7 +793,7 @@ Press the button below to start the game.""",
     graph_xmin='6 days ago',
     graph_paused="Paused",
 
-    data_view="<a href=\"https://mindwarriorgame.org/privacy-policy.en\">We respect your privacy</a> and want to treat your "
+    data_view="<a href=\"https://www.mindwarriorgame.org/privacy-policy.en\">We respect your privacy</a> and want to treat your "
               "data as transparent as possible. Below you can find all your data that "
               "the game stores on its server:",
     data_view_localstorage_button="View localStorage data 🔎",
@@ -832,17 +899,38 @@ de = Lang(
     lang_code='de',
     lang_name='Deutsch',
 
-    help_command_text=f"""Hey, Fremder! 👋 Willkommen beim <a href="https://mindwarriorgame.org/faq.de.html">MindWarrior-Spiel</a> Bot! 🥷  
+    start_command_text=f"""Hey, Fremder! 👋 Willkommen beim MindWarrior-Spielbot! 🥷
 
-🧪 Erstelle deine "<a href="https://mindwarriorgame.org/faq.de.html#formula">Formel der festen Entschlossenheit</a>", eine inspirierende Nachricht an dich selbst.
+🧪 1. Erstelle deine <i>"Formel der festen Entschlossenheit"</i> – eine inspirierende Nachricht an dich selbst.
 
-💫 <a href="https://mindwarriorgame.org/faq.de.html#review">Überprüfe sie</a> im Laufe des Tages, um motiviert zu bleiben und Belohnungen zu verdienen! <a href="https://mindwarriorgame.org/faq.de.html#forgot">Was, wenn ich es vergesse?</a>
+💫 2. Schau sie dir über den Tag verteilt immer wieder an, bleib motiviert und verdiene Belohnungen!
 
- ‣ <a href="https://mindwarriorgame.org/quick-start.de.html">Schnellstart-Anleitung</a>
- ‣ <a href="https://mindwarriorgame.org/faq.de.html">Häufige Fragen</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.de.html">Datenschutzerklärung</a>
+Verwirrt? Nutze den Befehl /help.
 
 Drücke den Button unten, um das Spiel zu starten.""",
+
+    help_command_text=f"""❓ Hilfe-Ressourcen:
+
+<a href="https://www.mindwarriorgame.org/quick-start.de.html">Schnellstart-Anleitung</a>
+
+FAQs:
+ - <a href="https://www.mindwarriorgame.org/faq.de.html#purpose">Wozu dient das Spiel?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.de.html#formula">Was soll ich in meiner Formel schreiben?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.de.html#name">Warum heißt das Spiel "MindWarrior"?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.de.html#review">usw.</a>
+
+So werden deine Daten verarbeitet:
+ - <a href="https://www.mindwarriorgame.org/privacy-policy.de.html">Datenschutzerklärung</a>
+ - <a href="https://www.mindwarriorgame.org/tos.de.html">AGB</a>
+
+<a href="https://github.com/orgs/mindwarriorgame/repositories">Quellcode des Spiels</a>
+
+Immer noch verwirrt?
+
+<a href="https://t.me/MindWarriorSupport_bot">Schreib mit uns!</a>
+""",
+
+    menu_help="❓ Hilfe",
 
     menu_review="💫️ Formel überprüfen",
     menu_pause="⏸️ Spiel pausieren",
@@ -866,7 +954,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     review_command_text="Überprüfe deine <i>Formel</i> 💫\n"
                         "\n"
-                        "<a href='https://mindwarriorgame.org/faq.de#name.betterworld'>Drücke einen Button unten</a>, um deine <i>Formel</i> zu überprüfen.",
+                        "<a href='https://www.mindwarriorgame.org/faq.de#name.betterworld'>Drücke einen Button unten</a>, um deine <i>Formel</i> zu überprüfen.",
 
     review_command_button_yourself="Verbessere dich selbst 💪",
     review_command_button_world="Verbessere die Welt 🙌",
@@ -908,7 +996,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
     paused_command="Das Spiel ist pausiert ⏸️\n"
                    "\n"
                    "Du wirst keine Erinnerungen an deine <i>Formel</i> erhalten, "
-                   "und der aktive Spielzeit-Zähler <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">ist eingefroren</a>.\n"
+                   "und der aktive Spielzeit-Zähler <a href=\"https://www.mindwarriorgame.org/faq.de.html#pause\">ist eingefroren</a>.\n"
                    "\n"
                    "Um das Spiel fortzusetzen, "
                    "überprüfe einfach deine <i>Formel</i> mit dem Button unten.",
@@ -916,10 +1004,10 @@ Drücke den Button unten, um das Spiel zu starten.""",
     stats_command=("🏆 Level : {level}\n"
                    "⌛ Aktive Spielzeit: {time}\n"
                    "💎 Diamanten verfügbar: {diamonds}, ausgegeben: {spent_diamonds}\n"
-                   "💪 <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty} ({difficulty_details})\n"
-                   "⏸️ <a href=\"https://mindwarriorgame.org/faq.de.html#pause\">Pausiert?</a> {paused}\n"
-                   "❄️ <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlzeit</a> vor der nächsten Belohnung: {cooldown}\n"
-                   "⏰ Zeit bis zur nächsten <a href=\"https://mindwarriorgame.org/faq.de.html#forgot\">Erinnerung</a>: {punishment}"),
+                   "💪 <a href=\"https://www.mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty} ({difficulty_details})\n"
+                   "⏸️ <a href=\"https://www.mindwarriorgame.org/faq.de.html#pause\">Pausiert?</a> {paused}\n"
+                   "❄️ <a href=\"https://www.mindwarriorgame.org/faq.de.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Abkühlzeit</a> vor der nächsten Belohnung: {cooldown}\n"
+                   "⏰ Zeit bis zur nächsten <a href=\"https://www.mindwarriorgame.org/faq.de.html#forgot\">Erinnerung</a>: {punishment}"),
 
     resumed="Das Spiel wurde fortgesetzt.",
     already_paused="Das Spiel ist bereits pausiert ⏸️\n"
@@ -928,7 +1016,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
     game_started="Das Spiel hat begonnen 🏁\n"
                  "{maybe_achievement}"
                  "\n"
-                 "💪<a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty}\n"
+                 "💪<a href=\"https://www.mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a>: {difficulty}\n"
                  "\n"
                  "Überprüfe deine <i>Formel</i> vor {next_review}\n"
                  "\n"
@@ -937,7 +1025,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     difficulty_command_text="Ändere den Schwierigkeitsgrad💪\n"
                             "\n"
-                            "Wähle einen neuen <a href=\"https://mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a> mit den untenstehenden Buttons aus.\n"
+                            "Wähle einen neuen <a href=\"https://www.mindwarriorgame.org/faq.de.html#difficulty\">Schwierigkeitsgrad</a> mit den untenstehenden Buttons aus.\n"
                             "\n"
                             "<b>⚠️Dies setzt deinen Spielfortschritt zurück!</b>\n",
 
@@ -945,7 +1033,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
 
     formula_command_text="Aktualisiere deine <i>Formel</i> 🧪\n"
                          "\n"
-                         "Verwende den untenstehenden Button, um deine <i><a href=\"https://mindwarriorgame.org/faq.de.html#formula\">Formel</a></i> zu aktualisieren.",
+                         "Verwende den untenstehenden Button, um deine <i><a href=\"https://www.mindwarriorgame.org/faq.de.html#formula\">Formel</a></i> zu aktualisieren.",
     formula_command_button="Aktualisiere deine Formel 🧪",
     review_command_timeout="Zeitüberschreitung, bitte versuche es erneut.🤷",
     graph_header="Intervalle zwischen den Überprüfungen (Minuten)",
@@ -957,7 +1045,7 @@ Drücke den Button unten, um das Spiel zu starten.""",
     graph_xmin='Vor 6 Tagen',
     graph_paused="Pausiert",
 
-    data_view = "<a href=\"https://mindwarriorgame.org/privacy-policy.de\">Wir respektieren Ihre Privatsphäre</a> "
+    data_view = "<a href=\"https://www.mindwarriorgame.org/privacy-policy.de\">Wir respektieren Ihre Privatsphäre</a> "
                 "und möchten Ihre Daten so transparent wie möglich behandeln. Unten finden Sie alle Daten, die das "
                 "Spiel auf seinem Server speichert:",
 
@@ -1067,17 +1155,39 @@ Drücke den Button unten, um das Spiel zu starten.""",
 ru = Lang(
     lang_code='ru',
     lang_name='Русский',
-    help_command_text=f"""👋 Приветствуем тебя, о, Cтранник! Добро пожаловать в игру <a href="https://mindwarriorgame.org/faq.ru.html">MindWarrior</a>! 🥷  
+    start_command_text=f"""Привет, незнакомец! 👋 Добро пожаловать в игрового бота MindWarrior! 🥷  
 
-🧪 Создай свою "<a href="https://mindwarriorgame.org/faq.ru.html#formula">Формулу Твердой Решимости</a>", мотивирующее послание самому себе.
+🧪 1. Создай свою <i>"Формулу твёрдой решимости"</i> — вдохновляющее послание самому себе.
 
-💫 <a href="https://mindwarriorgame.org/faq.ru.html#review">Просматривай ее</a> в течение дня, поддерживай мотивацию и фокус, зарабатывай награды! <a href="https://mindwarriorgame.org/faq.ru.html#forgot">Что будет, если я забуду?</a>
+💫 2. Перечитывай её в течение дня, чтобы сохранять мотивацию, и получай награды!
 
- ‣ <a href="https://mindwarriorgame.org/quick-start.ru.html">Краткое руководство</a>
- ‣ <a href="https://mindwarriorgame.org/faq.ru.html">Вопросы и ответы</a>
- ‣ <a href="https://mindwarriorgame.org/privacy-policy.ru.html">Политика конфиденциальности</a>
+Вопросы? Используй команду /help.
 
-Нажмите кнопку ниже, чтобы начать игру.""",
+Нажми кнопку ниже, чтобы начать игру.""",
+
+help_command_text=f"""❓ Справочные материалы:
+
+<a href="https://www.mindwarriorgame.org/quick-start.ru.html">Краткое руководство</a>
+
+FAQ:
+ - <a href="https://www.mindwarriorgame.org/faq.ru.html#purpose">В чём цель игры?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.ru.html#formula">Что писать в «Формуле»?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.ru.html#name">Почему игра называется «MindWarrior»?</a>
+ - <a href="https://www.mindwarriorgame.org/faq.ru.html#review">и т. д.</a>
+
+Как обрабатываются ваши данные:
+ - <a href="https://www.mindwarriorgame.org/privacy-policy.ru.html">Политика конфиденциальности</a>
+ - <a href="https://www.mindwarriorgame.org/tos.ru.html">Условия использования</a>
+
+<a href="https://github.com/orgs/mindwarriorgame/repositories">Исходный код игры</a>
+
+Всё ещё есть вопросы?
+
+<a href="https://t.me/MindWarriorSupport_bot">Напишите нам в чат!</a>
+""",
+
+    menu_help="❓ помощь",
+
 
     menu_review="💫️ просмотреть Формулу",
     menu_pause="⏸️ поставить игру на паузу",
@@ -1102,7 +1212,7 @@ ru = Lang(
 
     review_command_text="Просмотрите свою <i>Формулу</i> 💫\n"
                         "\n"
-                        "<a href='https://mindwarriorgame.org/faq.ru#name.betterworld'>Нажмите любую кнопку ниже</a>, чтобы просмотреть свою <i>Формулу</i>.",
+                        "<a href='https://www.mindwarriorgame.org/faq.ru#name.betterworld'>Нажмите любую кнопку ниже</a>, чтобы просмотреть свою <i>Формулу</i>.",
 
     review_command_button_yourself="Улучшить себя 💪",
     review_command_button_world="Улучшить мир 🙌",
@@ -1144,17 +1254,17 @@ ru = Lang(
     paused_command="Игра на паузе ⏸️\n"
                    "\n"
                    "Напоминания о просмотрах <i>Формулы</i> и счетчик "
-                   "времени активной игры <a href=\"https://mindwarriorgame.org/faq.ru#pause\">остановлены</a>.\n"
+                   "времени активной игры <a href=\"https://www.mindwarriorgame.org/faq.ru#pause\">остановлены</a>.\n"
                    "\n"
                    "Для снятия с паузы просмотрите свою <i>Формулу</i> с помощью кнопки ниже.",
 
     stats_command=("🏆 Уровень: {level}\n"
                    "⌛ Время активной игры: {time}\n"
                    "💎 Алмазов доступно: {diamonds}, потрачено: {spent_diamonds}\n"
-                   "💪 <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">Сложность игры</a>: {difficulty} ({difficulty_details})\n"
-                   "⏸️ <a href=\"https://mindwarriorgame.org/faq.ru.html#pause\">На паузе?</a> {paused}\n"
-                   "❄️ <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Время до следующей награды</a>: {cooldown}\n"
-                   "⏰ Время до <a href=\"https://mindwarriorgame.org/faq.ru.html#forgot\">напоминания</a>: {punishment}"),
+                   "💪 <a href=\"https://www.mindwarriorgame.org/faq.ru.html#difficulty\">Сложность игры</a>: {difficulty} ({difficulty_details})\n"
+                   "⏸️ <a href=\"https://www.mindwarriorgame.org/faq.ru.html#pause\">На паузе?</a> {paused}\n"
+                   "❄️ <a href=\"https://www.mindwarriorgame.org/faq.ru.html#difficulty:~:text=will%20be%20rewarded%20(-,%22cool%2Ddown%22%20rule,-).\">Время до следующей награды</a>: {cooldown}\n"
+                   "⏰ Время до <a href=\"https://www.mindwarriorgame.org/faq.ru.html#forgot\">напоминания</a>: {punishment}"),
     resumed="Игра снята с паузы.",
     already_paused="Игра уже на паузе ⏸️\n"
                    "\n"
@@ -1163,7 +1273,7 @@ ru = Lang(
     game_started="Игра начата 🏁\n"
                  "{maybe_achievement}"
                  "\n"
-                 "💪<a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">Уровень сложности</a>: {difficulty}\n"
+                 "💪<a href=\"https://www.mindwarriorgame.org/faq.ru.html#difficulty\">Уровень сложности</a>: {difficulty}\n"
                  "\n"
                  "Просмотрите свою <i>Формулу</i> не позже {next_review}\n"
                  "\n"
@@ -1173,7 +1283,7 @@ ru = Lang(
 
     difficulty_command_text="Изменить сложность 💪\n"
                             "\n"
-                            "Выберите новый <a href=\"https://mindwarriorgame.org/faq.ru.html#difficulty\">уровень сложности</a>.\n"
+                            "Выберите новый <a href=\"https://www.mindwarriorgame.org/faq.ru.html#difficulty\">уровень сложности</a>.\n"
                             "\n"
                             "<b>⚠️Это обнулит ваш игровой прогресс!</b>",
 
@@ -1181,7 +1291,7 @@ ru = Lang(
 
     formula_command_text="️Обновите свою <i>Формулу</i> 🧪\n"
                          "\n"
-                         "Используйте кнопку ниже, чтобы обновить свою <i><a href=\"https://mindwarriorgame.org/faq.ru.html#formula\">Формулу</a></i>.",
+                         "Используйте кнопку ниже, чтобы обновить свою <i><a href=\"https://www.mindwarriorgame.org/faq.ru.html#formula\">Формулу</a></i>.",
 
     formula_command_button="Обновить Формулу 🧪",
     review_command_timeout="Таймаут, попробуйте еще раз.🤷",
@@ -1194,7 +1304,7 @@ ru = Lang(
     graph_xmin='6 дней назад',
     graph_paused="Пауза",
 
-    data_view="<a href=\"https://mindwarriorgame.org/privacy-policy.ru\">Мы уважаем вашу конфиденциальность</a> и "
+    data_view="<a href=\"https://www.mindwarriorgame.org/privacy-policy.ru\">Мы уважаем вашу конфиденциальность</a> и "
               "стремимся максимально прозрачно обрабатывать ваши данные. Ниже вы можете найти все ваши данные, "
               "которые игра хранит на своем сервере:",
     data_view_localstorage_button="Посмотреть данные localStorage 🔎",

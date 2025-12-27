@@ -106,6 +106,9 @@ class GameManager:
             self.user['user_id'] = -1
             return ret
         
+        if "stash_clear" in user_message:
+            return [self.on_stash_clear()]
+        
         if "stash" in user_message:
             return [self.on_stash()]
         
@@ -127,6 +130,11 @@ class GameManager:
         
         user_orm2.upsert_user(self.user)
         return self._render_single_message("Stashed!", None, None)
+    
+    def on_stash_clear(self) -> Reply:
+        user_orm2 = UsersOrm("mindwarrior_stash.db")
+        user_orm2.remove_user(self.user['user_id'])
+        return self._render_single_message("Stash is clear!", None, None)
     
     def on_pop(self) -> Reply:
         user_orm2 = UsersOrm("mindwarrior_stash.db")
@@ -319,7 +327,7 @@ class GameManager:
     def _render_start_game_screen(self) -> Reply:
         return {
             'to_chat_id': self.user['user_id'],
-            'message': self.lang.help_command_text.format(difficulty=self.lang.difficulties[self.user['difficulty']]),
+            'message': self.lang.start_command_text.format(difficulty=self.lang.difficulties[self.user['difficulty']]),
             'buttons': [self._render_start_game_button()],
             'menu_commands': self._render_menu_commands(),
             'image': None
@@ -347,6 +355,9 @@ class GameManager:
 
     def on_feedback_command(self) -> Reply:
         return self._render_single_message(self.lang.feedback_text, None, None)
+    
+    def on_help_command(self) -> Reply:
+        return self._render_single_message(self.lang.help_command_text, None, None)
 
     def on_pause_command(self) -> Reply:
         if self.user['active_game_counter_state'] is None:
@@ -719,7 +730,7 @@ class GameManager:
             }],
             'menu_commands': [],
             'image': fname
-        }
+        }   
 
     def _render_edit_formula(self) -> Reply:
         return {
@@ -968,7 +979,8 @@ class GameManager:
             ("formula", self.lang.menu_formula),
             ("stats", self.lang.menu_stats),
             ("shop", self.lang.menu_shop),
-            ("settings", self.lang.menu_settings)
+            ("settings", self.lang.menu_settings),
+            ("help", self.lang.menu_help)
         ]
 
     def _render_settings_screen(self) -> Reply:

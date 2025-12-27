@@ -105,7 +105,11 @@ async def start_command(update, context):
     chat_id = message.chat.id
 
     user, game_manager = get_user_and_game_manager(chat_id)
-    ret = game_manager.on_start_command()
+    print(message)
+    if message.text == "/start en":
+        ret = game_manager.on_lang_input("en")
+    else:
+        ret = game_manager.on_start_command()
     user_orm.upsert_user(user)
 
     await send_reply(message, ret)
@@ -221,6 +225,19 @@ async def feedback_command(update: Update, context):
     user_orm.upsert_user(user)
     
     await send_reply(message, ret)
+
+async def help_command(update: Update, context):
+    message = get_message(update)
+    if not message:
+        return
+    chat_id = message.chat.id
+
+    user, game_manager = get_user_and_game_manager(chat_id)
+    ret = game_manager.on_help_command()
+    user_orm.upsert_user(user)
+    
+    await send_reply(message, ret)
+
 
 async def shop_unblock_command(update: Update, context):
     message = get_message(update)
@@ -394,6 +411,7 @@ async def main():
     app.add_handler(CommandHandler('data', data_command))
     app.add_handler(CommandHandler('difficulty', difficulty_command))
     app.add_handler(CommandHandler('feedback', feedback_command))
+    app.add_handler(CommandHandler('help', help_command))
 
     app.add_handler(CallbackQueryHandler(button))
 
