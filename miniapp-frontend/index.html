@@ -4,6 +4,139 @@
     <title>MindWarrior</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+
+<script>
+(function installErrorOverlay(options = {}) {
+  const cfg = {
+    reportUrl: options.reportUrl || null,   // e.g. "https://your-backend.com/log-js-error"
+    maxBody: options.maxBody || 8000,
+    show: options.show !== false,
+  };
+
+  function safeString(x) {
+    try {
+      if (x == null) return String(x);
+      if (typeof x === "string") return x;
+      if (x instanceof Error) return (x.stack || x.message || String(x));
+      return JSON.stringify(x, Object.getOwnPropertyNames(x));
+    } catch (_) {
+      return String(x);
+    }
+  }
+
+  function redact(s) {
+    // add your own redaction rules if needed
+    return String(s)
+      .replace(/(tgWebAppData=)[^&\s]+/gi, "$1[REDACTED]")
+      .slice(0, cfg.maxBody);
+  }
+
+  function ensureOverlay() {
+    let el = document.getElementById("__err_overlay__");
+    if (el) return el;
+
+    el = document.createElement("div");
+    el.id = "__err_overlay__";
+    el.style.cssText = [
+      "position:fixed",
+      "z-index:2147483647",
+      "left:0",
+      "right:0",
+      "top:0",
+      "max-height:55vh",
+      "overflow:auto",
+      "background:rgba(0,0,0,.92)",
+      "color:#fff",
+      "font:12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+      "padding:10px",
+      "border-bottom:1px solid rgba(255,255,255,.2)"
+    ].join(";");
+
+    el.innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+        <strong style="color:#ff6b6b;">JS ERROR</strong>
+        <button id="__err_copy__" style="cursor:pointer;">Copy</button>
+        <button id="__err_close__" style="cursor:pointer;">Close</button>
+        <span id="__err_hint__" style="opacity:.7;margin-left:auto;"></span>
+      </div>
+      <pre id="__err_pre__" style="white-space:pre-wrap;word-break:break-word;margin:0;"></pre>
+    `;
+    document.documentElement.appendChild(el);
+
+    el.querySelector("#__err_close__").onclick = () => el.remove();
+    el.querySelector("#__err_copy__").onclick = async () => {
+      const text = el.querySelector("#__err_pre__").textContent || "";
+      try { await navigator.clipboard.writeText(text); } catch (_) {}
+    };
+    return el;
+  }
+
+  function writeOverlay(text) {
+    if (!cfg.show) return;
+    const el = ensureOverlay();
+    el.querySelector("#__err_pre__").textContent = text;
+    el.querySelector("#__err_hint__").textContent =
+      "Please screenshot or tap Copy and send to support.";
+  }
+
+  function report(payload) {
+    if (!cfg.reportUrl) return;
+    try {
+      fetch(cfg.reportUrl, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(payload),
+        keepalive: true, // helps on page close
+      }).catch(() => {});
+    } catch (_) {}
+  }
+
+  function buildContext() {
+    return {
+      href: location.href,
+      ua: navigator.userAgent,
+      ts: new Date().toISOString(),
+      // Telegram Mini App context if available:
+      tg: (window.Telegram && window.Telegram.WebApp) ? {
+        platform: window.Telegram.WebApp.platform,
+        version: window.Telegram.WebApp.version,
+        initDataUnsafe: window.Telegram.WebApp.initDataUnsafe
+          ? { user: window.Telegram.WebApp.initDataUnsafe.user?.id } // keep minimal; avoid leaking
+          : undefined,
+      } : null,
+    };
+  }
+
+  function handle(kind, errLike) {
+    const message = redact(safeString(errLike));
+    const ctx = buildContext();
+    const text = `[${kind}] ${ctx.ts}\n${message}\n\nURL: ${ctx.href}\nUA: ${ctx.ua}\nTG: ${safeString(ctx.tg)}`;
+    writeOverlay(text);
+    report({ kind, message, ctx });
+  }
+
+  window.addEventListener("error", (e) => {
+    // e.error is the actual Error object in many cases
+    handle("window.error", e.error || `${e.message}\n@${e.filename}:${e.lineno}:${e.colno}`);
+  });
+
+  window.addEventListener("unhandledrejection", (e) => {
+    handle("unhandledrejection", e.reason || "Promise rejected");
+  });
+
+  // Optional: also surface console.error
+  const origConsoleError = console.error;
+  console.error = function(...args) {
+    try { handle("console.error", args.map(safeString).join(" ")); } catch (_) {}
+    origConsoleError.apply(console, args);
+  };
+
+})(/* options */ {
+  // reportUrl: "https://your-backend.com/log-js-error"
+});
+</script>
+
+
     <script src="server-time.js?v=1"></script>
 
     <script>
