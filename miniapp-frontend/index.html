@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#000000" />
 
 <script>
+    /*
 (function installErrorOverlay(options = {}) {
   const cfg = {
     reportUrl: options.reportUrl || null,   // e.g. "https://your-backend.com/log-js-error"
@@ -131,9 +132,11 @@
     origConsoleError.apply(console, args);
   };
 
-})(/* options */ {
+})( {
   // reportUrl: "https://your-backend.com/log-js-error"
 });
+
+*/
 </script>
 
 
@@ -460,7 +463,27 @@
             name="description"
             content="MindWarrior"
     />
-    <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
+    
+    
+        <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
+        <script>
+  (function () {
+    const FALLBACK = "vendor/telegram-web-app.js?59"; // serve from your domain/CDN
+
+    function inject(src) {
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      document.head.appendChild(s);
+      return s;
+    }
+    if (!window.Telegram){
+        inject(FALLBACK);
+    }
+  })();
+</script>
+
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -801,6 +824,8 @@
 </body>
 
 <script>
+
+function run(app) {
 
     const urlParams = new URLSearchParams(window.location.search);
     const langCode = urlParams.get('lang_code') || 'en';
@@ -1558,7 +1583,7 @@
     }
 
 
-    const app = window?.Telegram?.WebApp;
+
 
     const isNewGame = !!(urlParams.get('new_game'));
     const isReview = !!(urlParams.get('review'));
@@ -1622,6 +1647,24 @@
     setTimeout(() => {
         app?.expand();
     }, 0);
+
+};
+
+let interval = 0;
+if (window.Telegram?.WebApp) {
+    console.log("Telegram found");
+    run(window.Telegram.WebApp);
+} else {
+    interval = setInterval(function() {
+        if (window.Telegram.WebApp) {
+            run(window.Telegram.WebApp);
+            clearInterval(interval);
+            console.log("Running");
+            return;
+        }
+        console.log("No Telegram, waiting");
+    }, 100);
+}
 
 </script>
 
