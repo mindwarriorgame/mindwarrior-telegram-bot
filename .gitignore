@@ -8,3 +8,5 @@ __pycache__
 analytics*  
 tmp*
 mindwarrior_bot_launcher.sh
+_backup
+backup.sh
