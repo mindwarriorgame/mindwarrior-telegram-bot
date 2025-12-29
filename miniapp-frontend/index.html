@@ -1169,7 +1169,12 @@ class DataSubmitComponent {
         const data = this.dataProvider();
         this._showData(data);
         const queryId = await tgGetQueryId();
-        const url = window.getServerBaseUrl() + `/index.php?env=${env}&lang_code=${langCode}&query_id=` + 
+        const baseUrl = window.getServerBaseUrl();
+        if (!baseUrl) {
+            tgCloseDeferred();
+            return;
+        }
+        const url = baseUrl + `/index.php?env=${env}&lang_code=${langCode}&query_id=` + 
             encodeURIComponent(queryId) + '&data=' + encodeURIComponent(data)+'&_=' + new Date().getTime();
         const corsUrl = url; //'https://corsproxy.io/?' + encodeURIComponent(url);
 
