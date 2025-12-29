@@ -466,7 +466,7 @@
     
     
         <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
-        <script>
+<script>
   (function () {
     const FALLBACK = "vendor/telegram-web-app.js?59"; // serve from your domain/CDN
 
@@ -481,6 +481,39 @@
         inject(FALLBACK);
     }
   })();
+
+function whenTelegramWebAppReady(cb) {
+  if (window?.Telegram?.WebApp) {
+    return cb(window.Telegram.WebApp);
+  }
+
+  const id = setInterval(() => {
+    if (window?.Telegram?.WebApp) {
+      clearInterval(id);
+      cb(window.Telegram.WebApp);
+    }
+  }, 50);
+}
+
+function tgReadyDeferred() {
+    whenTelegramWebAppReady((wa) => wa.ready());
+}
+
+function tgExpandDeferred() {
+    whenTelegramWebAppReady((wa) => wa.expand());
+}
+
+function tgCloseDeferred() {
+    whenTelegramWebAppReady((wa) => wa.close());
+}
+
+function tgGetQueryId() {
+    return new Promise((resolve) => {
+        whenTelegramWebAppReady((wa) => {
+            resolve(wa.initDataUnsafe.query_id);
+        });
+    });
+}
 </script>
 
 
@@ -1135,8 +1168,9 @@ class DataSubmitComponent {
         this.dataProvider = dataProvider;
         const data = this.dataProvider();
         this._showData(data);
+        const queryId = await tgGetQueryId();
         const url = window.getServerBaseUrl() + `/index.php?env=${env}&lang_code=${langCode}&query_id=` + 
-            encodeURIComponent(window.Telegram.WebApp.initDataUnsafe.query_id) + '&data=' + encodeURIComponent(data)+'&_=' + new Date().getTime();
+            encodeURIComponent(queryId) + '&data=' + encodeURIComponent(data)+'&_=' + new Date().getTime();
         const corsUrl = url; //'https://corsproxy.io/?' + encodeURIComponent(url);
 
         if (!AbortSignal.timeout) {
@@ -1158,7 +1192,7 @@ class DataSubmitComponent {
                 this._showError(this.lang.errTelegram + `${json.status} ${json.response}`);
                 return;
             }
-            window.Telegram.WebApp.close();
+            tgCloseDeferred();
         } catch (err) {
             this._showError(err.message);
         }
@@ -1640,27 +1674,10 @@ if (isFormula || isNewGame) {
     (new FormulaEditor(dataSubmitter, isNewGame, window.langs[langCode], nextReviewPromptMinutes));
 }
 
-
-
-
-function onPageReady() {
-    window.Telegram.WebApp.ready();
-    setTimeout(() => {
-        window.Telegram.WebApp.expand();
-    }, 0);
-}
-
-let interval = 0;
-if (window.Telegram?.WebApp) {
-    onPageReady();
-} else {
-    interval = setInterval(function() {
-        if (window.Telegram.WebApp) {
-            onPageReady();
-            clearInterval(interval);
-        }
-    }, 100);
-}
+tgReadyDeferred();
+setTimeout(() => {
+    tgExpandDeferred();
+}, 0);
 
 </script>
 
