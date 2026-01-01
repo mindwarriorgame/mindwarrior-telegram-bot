@@ -546,6 +546,7 @@ function tgGetQueryId() {
             justify-content: center;
             align-items: center;
             flex-shrink: 0;
+            position: relative;
         }
 
 
@@ -715,6 +716,25 @@ function tgGetQueryId() {
             padding: 10px;
         }
 
+        #freeze-timer {
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 5;
+        }
+
+        #freeze-timer .time {
+            font-variant-numeric: tabular-nums;
+        }
+
         #back-to-edit {
             background-color: rgba(240, 240, 240, 0.7);
         }
@@ -804,6 +824,10 @@ function tgGetQueryId() {
         <button class="action-btn">Apply Change</button>
         <div style="flex-grow: 1">&nbsp;</div>
         <img src="Hamburger_icon.svg" height="32" style="visibility:hidden" />
+        <div id="freeze-timer" class="hidden">
+            <span class="emoji">❄️</span>
+            <span class="time">00:00</span>
+        </div>
     </div>
     <div id="content" style="position: relative">
         <textarea class="" autofocus="autofocus"></textarea>
@@ -1057,6 +1081,11 @@ const CONTENT = {
     }
 };
 
+const FREEZE_TIMER = {
+    parent: document.querySelector('#freeze-timer'),
+    time: document.querySelector('#freeze-timer .time')
+};
+
 const PREVIEW_BTN = {
     parent: document.querySelector('#preview-btn'),
     link: document.querySelector('#preview-btn a')
@@ -1100,6 +1129,7 @@ function hideEverything() {
 
     hide(CONTENT.textarea);
     hide(CONTENT.review);
+    hide(FREEZE_TIMER.parent);
 
     hide(CONTENT.text.parent);
     hide(CONTENT.text.preSecond);
@@ -1120,6 +1150,34 @@ function hideEverything() {
     hide(MENU.parent);
 
     hide(FOOTER);
+}
+
+function startFreezeCountdown(freezeUntilSec) {
+    if (!Number.isFinite(freezeUntilSec)) {
+        return;
+    }
+
+    let timerId = null;
+    const update = () => {
+        const nowSec = Math.floor(SERVER_TIME.now() / 1000);
+        const remaining = freezeUntilSec - nowSec;
+
+        if (remaining <= 0) {
+            hide(FREEZE_TIMER.parent);
+            if (timerId) {
+                clearInterval(timerId);
+            }
+            return;
+        }
+
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        FREEZE_TIMER.time.textContent = String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
+        show(FREEZE_TIMER.parent);
+    };
+
+    timerId = setInterval(update, 1000);
+    update();
 }
 
 class DataSubmitComponent {
@@ -1627,6 +1685,8 @@ const isFormula = !!(urlParams.get('formula'));
 const isDeleteData = !!(urlParams.get('delete_data'));
 const isViewLocalstorageData = !!(urlParams.get('view_localstorage'));
 const newDifficulty = urlParams.get('set_difficulty') || null;
+const freezeUntilRaw = urlParams.get('freeze_until');
+const freezeUntil = freezeUntilRaw ? parseInt(freezeUntilRaw, 10) : null;
 
 
 const sleep = urlParams.get('sleep') || null;
@@ -1673,6 +1733,7 @@ if (isReview) {
     } else {
         new ReviewComponent(dataSubmitter, window.langs[langCode], nextReviewPromptMinutes);
     }
+    startFreezeCountdown(freezeUntil);
 }
 
 if (isFormula || isNewGame) {
