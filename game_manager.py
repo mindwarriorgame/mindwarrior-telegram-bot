@@ -577,9 +577,21 @@ class GameManager:
     def _render_review_button(self) -> Button:
         return {
             'text': self.lang.review_btn,
-            'url': self._get_frontend_base_url() +
-                   f'?env={self.env}&lang_code={self.lang.lang_code}&review=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}'
+            'url': self._generate_review_button_url()
         }
+
+    def _generate_review_button_url(self) -> str:
+        url =  self._get_frontend_base_url() + f'?env={self.env}&lang_code={self.lang.lang_code}&review=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}'
+
+        now_in_active_playtime_seconds = Counter(self.user['active_game_counter_state']).get_total_seconds()
+        since_last_reward_secs = now_in_active_playtime_seconds - self.user['last_reward_time_at_active_counter_time_secs']
+
+        freeze_secs_left = 5 * 60 - since_last_reward_secs
+        is_cooldown = (freeze_secs_left > 0) and self.user['counters_history_serialized'] is not None
+        if is_cooldown:
+            url += "&freeze_until=" + str(int(now_utc().timestamp() + freeze_secs_left))
+        return url
+
 
     def _render_game_started_screen(self, next_review: str, maybe_badge_message: Optional[str], maybe_badge_button: Optional[Button]) -> Reply:
         difficulty_name = self.lang.difficulties[self.user['difficulty']]
@@ -762,13 +774,11 @@ class GameManager:
             'buttons': [
                 {
                     'text': self.lang.review_command_button_yourself,
-                    'url': self._get_frontend_base_url() +
-                           f'?env={self.env}&lang_code={self.lang.lang_code}&review=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}'
+                    'url': self._generate_review_button_url()
                 },
                 {
                     'text': self.lang.review_command_button_world,
-                    'url': self._get_frontend_base_url() +
-                           f'?env={self.env}&lang_code={self.lang.lang_code}&review=1&{NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM}'
+                    'url': self._generate_review_button_url()
                 }
             ],
             'menu_commands': self._render_menu_commands(),
