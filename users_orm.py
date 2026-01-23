@@ -43,6 +43,8 @@ class User(TypedDict):
 
     has_repeller: bool
 
+    last_admin_message_id_sent: int
+
 
 class UsersOrm:
 
@@ -82,6 +84,8 @@ class UsersOrm:
                 autopause_config_serialized TEXT,
                             
                 has_repeller INTEGER NOT NULL DEFAULT 1,
+
+                last_admin_message_id_sent INTEGER NOT NULL DEFAULT 0,
                 
                 PRIMARY KEY (user_id)
             )
@@ -120,6 +124,12 @@ class UsersOrm:
             )
             self.conn.commit()
 
+        if "last_admin_message_id_sent" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE users ADD COLUMN last_admin_message_id_sent INTEGER NOT NULL DEFAULT 0"
+            )
+            self.conn.commit()
+
         self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_prompt_time ON users (difficulty, active_game_counter_state_is_null, paused_counter_state_is_null, next_prompt_time)')
         self.conn.commit()
 
@@ -127,6 +137,9 @@ class UsersOrm:
         self.conn.commit()
 
         self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_next_autopause_event_time ON users (next_autopause_event_time)')
+        self.conn.commit()
+
+        self.cursor.execute('CREATE INDEX IF NOT EXISTS idx_last_admin_message_id_sent ON users (active_game_counter_state_is_null, last_admin_message_id_sent)')
         self.conn.commit()
 
     def get_user_by_id(self, user_id: int) -> User:
@@ -154,7 +167,8 @@ class UsersOrm:
             spent_diamonds,
             frontend_base_url_override,
             last_reward_time_at_active_counter_time_secs,
-            has_repeller
+            has_repeller,
+            last_admin_message_id_sent
                 FROM users WHERE user_id = ?""", (user_id,))
         return self._to_user_obj(self.cursor.fetchone(), user_id)
 
@@ -180,7 +194,8 @@ class UsersOrm:
             spent_diamonds,
             frontend_base_url_override,
             last_reward_time_at_active_counter_time_secs,
-            has_repeller
+            has_repeller,
+            last_admin_message_id_sent
                 FROM users WHERE difficulty = ? AND active_game_counter_state_is_null = 0 AND paused_counter_state_is_null = 1 AND next_prompt_time < ? LIMIT ?""",
                             (difficulty, cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -207,7 +222,8 @@ class UsersOrm:
             spent_diamonds,
             frontend_base_url_override,
             last_reward_time_at_active_counter_time_secs,
-            has_repeller
+            has_repeller,
+            last_admin_message_id_sent
                 FROM users WHERE next_autopause_event_time < ? LIMIT ?""",
                             (cutoff_time, limit))
         return [self._to_user_obj(row, row[0]) for row in self.cursor.fetchall()]
@@ -254,7 +270,8 @@ class UsersOrm:
                 spent_diamonds=0,
                 frontend_base_url_override=None,
                 last_reward_time_at_active_counter_time_secs=0,
-                has_repeller=True
+                has_repeller=True,
+                last_admin_message_id_sent=0
             )
         return User(
             user_id=param[0],
@@ -274,7 +291,8 @@ class UsersOrm:
             spent_diamonds=param[16],
             frontend_base_url_override=param[17],
             last_reward_time_at_active_counter_time_secs=param[18],
-            has_repeller=bool(param[19])
+            has_repeller=bool(param[19]),
+            last_admin_message_id_sent=param[20]
         )
 
     def remove_user(self, user_id: int):
@@ -303,8 +321,9 @@ class UsersOrm:
                 spent_diamonds,
                 frontend_base_url_override,
                 last_reward_time_at_active_counter_time_secs,
-                has_repeller
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                has_repeller,
+                last_admin_message_id_sent
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 lang_code = excluded.lang_code,
                 difficulty = excluded.difficulty,
@@ -324,7 +343,8 @@ class UsersOrm:
                 spent_diamonds = excluded.spent_diamonds,
                 frontend_base_url_override = excluded.frontend_base_url_override,
                 last_reward_time_at_active_counter_time_secs = excluded.last_reward_time_at_active_counter_time_secs,
-                has_repeller = excluded.has_repeller
+                has_repeller = excluded.has_repeller,
+                last_admin_message_id_sent = excluded.last_admin_message_id_sent
         ''', (
             user['user_id'],
             user['lang_code'],
@@ -351,6 +371,38 @@ class UsersOrm:
             user['frontend_base_url_override'],
             user.get('last_reward_time_at_active_counter_time_secs', 0),
 
-            1 if user.get('has_repeller', True) else 0
+            1 if user.get('has_repeller', True) else 0,
+            user.get('last_admin_message_id_sent', 0)
         ))
         self.conn.commit()
+
+    def get_one_user_for_admin_message(self, last_admin_message_id: int) -> Optional[User]:
+        self.cursor.execute("""SELECT
+            user_id,
+            lang_code,
+            difficulty,
+            review_counter_state,
+            next_prompt_time,
+            active_game_counter_state,
+            active_game_counter_state_is_null,
+            paused_counter_state,
+            paused_counter_state_is_null,
+            counters_history_serialized,
+            shared_key_uuid,
+            next_prompt_type,
+            badges_serialized,
+            next_autopause_event_time,
+            autopause_config_serialized,
+            diamonds,
+            spent_diamonds,
+            frontend_base_url_override,
+            last_reward_time_at_active_counter_time_secs,
+            has_repeller,
+            last_admin_message_id_sent
+                FROM users WHERE active_game_counter_state_is_null = 0 AND last_admin_message_id_sent < ?
+                ORDER BY last_admin_message_id_sent ASC, user_id ASC LIMIT 1""",
+                            (last_admin_message_id,))
+        row = self.cursor.fetchone()
+        if row is None:
+            return None
+        return self._to_user_obj(row, row[0])
