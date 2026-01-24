@@ -2,6 +2,7 @@ import datetime
 import os
 import unittest
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import time_machine
 import time
@@ -69,7 +70,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
     def _create_game_manager(self, user: User):
         return GameManager(user, 'prod')
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_start_game_starts(self):
         user = self.user
 
@@ -80,7 +81,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         data = self._create_game_manager(user).on_data_provided('start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
-                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45&freeze_until=1650463500'},
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&new_badge=f0&level=1&b1=f0am_s0_c0&bp1=c0_0_100--s0_3_0&ts=1650463200'}],
                                  'image': None,
@@ -129,7 +130,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'message': 'Please press the button below to enter your <i>Formula</i> and '
                                             'start the game.',
                                  'to_chat_id': 1}])
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_not_generating_prompt_if_game_was_started(self):
         user = self.user
 
@@ -145,7 +146,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                  'to_chat_id': 1}])
 
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_process_tick_sends_reminders(self):
         user = self.user
 
@@ -193,8 +194,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                 'to_chat_id': 1})
         
 
-    # TODO: fix timezone @time_machine.travel(datetime(2022, 4, 21, tzinfo=timezone.utc), tick=False)
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_process_tick_brings_grumpy_cat(self):
         user = self.user
 
@@ -252,7 +252,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                 badges = BadgesManager(user['difficulty'], user['badges_serialized'])
                 self.assertEqual(badges.get_last_badge(), "c0")
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_process_tick_grumpy_cat_blocking(self):
         user = self.user
 
@@ -312,7 +312,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(user['next_prompt_type'], 'reminder')
             
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_review_first_time(self):
         user = self.user
 
@@ -340,7 +340,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            'any button below</a> to review your <i>Formula</i>.',
                                 'to_chat_id': 1})
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_review_next_time(self):
         user = self.user
 
@@ -370,7 +370,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            'any button below</a> to review your <i>Formula</i>.',
                                 'to_chat_id': 1})
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_start_game_reset_existing_game(self):
         user = self.user
         counter = Counter("")
@@ -385,7 +385,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         data = self._create_game_manager(user).on_data_provided('start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00')
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
-                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45&freeze_until=1650463500'},
+                                              'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'},
                                              {'text': 'View achievements 🏆',
                                               'url': 'http://frontend?lang=en&env=prod&new_badge=f0&level=1&b1=f0am_s0_s1_s2_c0&bp1=c0_0_100--s0_7_0&ts=1650463200'}],
                                  'image': None,
@@ -448,7 +448,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data['buttons'], [{'text': 'Create "Formula" and start playing! 🏁',
                                             'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45&shared_key_uuid=' + user['shared_key_uuid']}])
 
-    @time_machine.travel("2022-04-22", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 22, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_set_difficulty_updates_resets_scores(self):
         user = self.user
 
@@ -506,7 +506,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(user['spent_diamonds'], 0)
         self.assertEqual(user['has_repeller'], True)
 
-    @time_machine.travel("2022-04-22", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 22, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_set_difficulty_sets_next_reminder_for_low_levels(self):
         user = self.user
 
@@ -545,7 +545,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(user['next_prompt_type'], 'reminder')
 
 
-    @time_machine.travel("2022-04-22", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 22, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_set_difficulty_updates_difficulty_sets_next_prompt_type_correctly_for_high_levels(self):
         user = self.user
 
@@ -564,7 +564,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(user['next_prompt_type'], 'penalty')
 
 
-    @time_machine.travel("2022-04-22", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 22, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_stats_no_graph(self):
         user = self.user
 
@@ -602,7 +602,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                            '1h 45m',
                                 'to_chat_id': 1})
 
-    @time_machine.travel("2022-04-22", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 22, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_stats_unpaused(self):
         user = self.user
 
@@ -658,7 +658,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data['buttons'], [{'text': 'Create "Formula" and start playing! 🏁',
                                             'url': 'http://frontend?env=prod&lang_code=en&new_game=1&next_review_prompt_minutes=360,180,90,60,45&shared_key_uuid=' + user['shared_key_uuid']}])
 
-    @time_machine.travel("2022-04-22", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 22, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_pause_puts_counter_to_pause(self):
         user = self.user
 
@@ -700,7 +700,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                 'button below.',
                                         'to_chat_id': 1})
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_formula_reviewed_resumed(self):
         user = self.user
 
@@ -743,7 +743,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 1, 15).astimezone(datetime.timezone.utc))
 
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_formula_reviewed_adds_badges(self):
         user = self.user
 
@@ -784,7 +784,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_not_rendering_sleep_prompt_if_autopause_enabled(self):
         user = self.user
 
@@ -817,7 +817,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             ' ‣ /pause - pause the game',
                                  'to_chat_id': 1}])
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_formula_reviewed_not_showing_grumpy_cat(self):
         user = self.user
 
@@ -855,7 +855,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_data_reviewed_records_counter_histories_correctly_calculates_next_prompt_for_high_levels_without_prompts(self):
         user = self.user
 
@@ -891,7 +891,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(user['next_prompt_type'], 'penalty')
         self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 1, 0).astimezone(datetime.timezone.utc))
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_formula_reviewed_cooldown_rule(self):
         user = self.user
         
@@ -957,7 +957,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                                     'to_chat_id': 1})
 
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_data_command(self):
         user = self.user
         
@@ -1027,10 +1027,12 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' - last_reward_time_at_active_counter_time_secs: 0\n'
                                             '\n'
-                                            ' - has_repeller: True</code>',
+                                            ' - has_repeller: True\n'
+                                            '\n'
+                                            ' - last_admin_message_id_sent: 0</code>',
                                  'to_chat_id': 1}])
 
-    @time_machine.travel("2023-04-20", tick=False)
+    @time_machine.travel(datetime.datetime(2023, 4, 20, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_expel_grumpy_cats(self):
         user = self.user
         
@@ -1186,7 +1188,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             ' ‣ /settings - configure sleep scheduler',
                                  'to_chat_id': 1}])
 
-    @time_machine.travel("2023-04-20", tick=False)
+    @time_machine.travel(datetime.datetime(2023, 4, 20, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_repeller_prevents_grumpy_cat(self):
         user = self.user
         
@@ -1210,7 +1212,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
 
         self.assertEqual(data, [{'buttons': [{'text': 'Review your "Formula" 💫',
-                                                'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45&freeze_until=1681913100'}],
+                                                'url': 'http://frontend?env=prod&lang_code=en&review=1&next_review_prompt_minutes=360,180,90,60,45'}],
                                     'image': None,
                                     'menu_commands': [],
                                     'message': 'You forgot to review your <i>Formula</i> 🟥\n'
@@ -1223,7 +1225,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
         user = self.users_orm.get_user_by_id(1)
         self.assertEqual(user['has_repeller'], False)
 
-    @time_machine.travel("2023-04-20", tick=False)
+    @time_machine.travel(datetime.datetime(2023, 4, 20, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_sleep_command_no_autosleep(self):
         user = self.user
 
@@ -1243,7 +1245,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                                             'Sleep time: N/A - N/A\n',
                                                                  'to_chat_id': 1})
 
-    @time_machine.travel("2023-04-20", tick=False)
+    @time_machine.travel(datetime.datetime(2023, 4, 20, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_sleep_command_with_autosleep(self):
         user = self.user
 
@@ -1266,7 +1268,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                                             'Sleep time: 22:30 - 06:00\n',
                                                                  'to_chat_id': 1})
 
-    @time_machine.travel("2023-04-20 22:00", tick=False)
+    @time_machine.travel(datetime.datetime(2023, 4, 20, 22, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_autosleep_round_robin(self):
         user = self.user
         
@@ -1375,7 +1377,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                                  ' ‣ /settings - configure sleep scheduler',
                                       'to_chat_id': 1}])
 
-    @time_machine.travel("2023-04-20 22:00", tick=False)
+    @time_machine.travel(datetime.datetime(2023, 4, 20, 22, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_autosleep_disable(self):
         user = self.user
         
@@ -1510,7 +1512,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
 
         # TODO: check that a cat has been kicked out
 
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_review_should_render_shop_button_when_enough_diamonds(self):
         user = self.user
 
@@ -1548,7 +1550,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                          "\n" \
                          " ‣ /settings - configure sleep scheduler"
         )
-    @time_machine.travel("2022-04-21", tick=False)
+    @time_machine.travel(datetime.datetime(2022, 4, 21, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)
     def test_on_review_should_render_shop_button_when_grumpy_cat_block_achivements_and_enough_diamnds(self):
         user = self.user
 
