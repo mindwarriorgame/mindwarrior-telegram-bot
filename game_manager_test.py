@@ -179,6 +179,107 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(user['next_prompt_time'], datetime.datetime(2022, 4, 21, 6, 5).astimezone(datetime.timezone.utc))
             self.assertEqual(user['next_prompt_type'], 'penalty')
 
+    def test_process_tick_sends_admin_messages(self):
+        user = self.user
+
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+        self._create_game_manager(user).on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+        user['difficulty'] = 99
+        user['next_prompt_time'] = datetime.datetime(2100, 1, 1, tzinfo=datetime.timezone.utc)
+        user['last_admin_message_id_sent'] = 0
+        self.users_orm.upsert_user(user)
+
+        with patch("game_manager.AdminMessages") as admin_messages_cls:
+            admin_messages = admin_messages_cls.return_value
+            admin_messages.get_last_message_id.return_value = 2
+            admin_messages.get_pending_messages.return_value = [
+                {'message_id': 1, 'message': 'First'},
+                {'message_id': 2, 'message': 'Second'},
+            ]
+
+            data = GameManager.process_tick(self.users_orm, "prod")
+
+        admin_messages.get_pending_messages.assert_called_once_with(0, 'en')
+        self.assertEqual(data, [
+            {'to_chat_id': 1, 'message': 'First', 'buttons': [], 'menu_commands': [], 'image': None},
+            {'to_chat_id': 1, 'message': 'Second', 'buttons': [], 'menu_commands': [], 'image': None},
+        ])
+        user = self.users_orm.get_user_by_id(1)
+        self.assertEqual(user['last_admin_message_id_sent'], 2)
+
+    def test_process_tick_skips_not_started_users_for_admin_messages(self):
+        user = self.user
+        user['lang_code'] = 'en'
+        user['active_game_counter_state'] = None
+        self.users_orm.upsert_user(user)
+
+        with patch("game_manager.AdminMessages") as admin_messages_cls:
+            admin_messages = admin_messages_cls.return_value
+            admin_messages.get_last_message_id.return_value = 1
+
+            data = GameManager.process_tick(self.users_orm, "prod")
+
+        self.assertEqual(data, [])
+        admin_messages.get_pending_messages.assert_not_called()
+
+    def test_process_tick_limits_admin_messages_per_tick(self):
+        user = self.user
+
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+        self._create_game_manager(user).on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+        user['difficulty'] = 99
+        user['next_prompt_time'] = datetime.datetime(2100, 1, 1, tzinfo=datetime.timezone.utc)
+        user['last_admin_message_id_sent'] = 0
+        self.users_orm.upsert_user(user)
+
+        with patch("game_manager.AdminMessages") as admin_messages_cls:
+            admin_messages = admin_messages_cls.return_value
+            admin_messages.get_last_message_id.return_value = 4
+            admin_messages.get_pending_messages.return_value = [
+                {'message_id': 1, 'message': 'One'},
+                {'message_id': 2, 'message': 'Two'},
+                {'message_id': 3, 'message': 'Three'},
+                {'message_id': 4, 'message': 'Four'},
+            ]
+
+            data = GameManager.process_tick(self.users_orm, "prod")
+
+        admin_messages.get_pending_messages.assert_called_once_with(0, 'en')
+        self.assertEqual(data, [
+            {'to_chat_id': 1, 'message': 'One', 'buttons': [], 'menu_commands': [], 'image': None},
+            {'to_chat_id': 1, 'message': 'Two', 'buttons': [], 'menu_commands': [], 'image': None},
+            {'to_chat_id': 1, 'message': 'Three', 'buttons': [], 'menu_commands': [], 'image': None},
+        ])
+        user = self.users_orm.get_user_by_id(1)
+        self.assertEqual(user['last_admin_message_id_sent'], 3)
+
+    def test_start_game_and_change_difficulty_bump_admin_message_id(self):
+        user = self.user
+
+        user['lang_code'] = 'en'
+        self.users_orm.upsert_user(user)
+
+        with patch("game_manager.AdminMessages") as admin_messages_cls:
+            admin_messages = admin_messages_cls.return_value
+            admin_messages.get_last_message_id.side_effect = [5, 7, 7]
+
+            self._create_game_manager(user).on_data_provided("start_game;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+            self.assertEqual(user['last_admin_message_id_sent'], 5)
+
+            self._create_game_manager(user).on_data_provided("set_difficulty:2;next_review:10:00,,11:00,,12:00,,13:00,,14:00")
+            self.assertEqual(user['last_admin_message_id_sent'], 7)
+
+            user['difficulty'] = 99
+            user['next_prompt_time'] = datetime.datetime(2100, 1, 1, tzinfo=datetime.timezone.utc)
+            self.users_orm.upsert_user(user)
+            data = GameManager.process_tick(self.users_orm, "prod")
+            self.assertEqual(data, [])
+
+        self.assertEqual(data, [])
+        admin_messages.get_pending_messages.assert_not_called()
+
     def test_on_start_command(self):
         user = self.user
 
@@ -1029,7 +1130,7 @@ class TestGameManager(unittest.IsolatedAsyncioTestCase):
                                             '\n'
                                             ' - has_repeller: True\n'
                                             '\n'
-                                            ' - last_admin_message_id_sent: 0</code>',
+                                            ' - last_admin_message_id_sent: 1</code>',
                                  'to_chat_id': 1}])
 
     @time_machine.travel(datetime.datetime(2023, 4, 20, tzinfo=ZoneInfo("Australia/Brisbane")), tick=False)

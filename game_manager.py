@@ -14,6 +14,7 @@ from frontend_base_url_extractor import get_frontend_base_urls
 from graph_renderer import REVIEW_COUNTER_HISTORY_NAME, PAUSED_COUNTER_HISTORY_NAME, GraphRenderer
 from history import add_timer_rec_to_history, get_timer_recs_from_history
 from lang_provider import LangProvider, Lang, en, ru
+from admin_messages import AdminMessages
 from users_orm import UsersOrm, User
 
 SET_SERVER_PREFIX = "set_server:"
@@ -42,6 +43,7 @@ NEXT_REVIEW_PROMPT_MINUTES_QUERY_PARAM  = 'next_review_prompt_minutes=' + ",".jo
 
 NEXT_PROMPT_TYPE_REMINDER = "reminder"
 NEXT_PROMPT_TYPE_PENALTY = "penalty"
+ADMIN_MESSAGES_PER_TICK = 3
 
 # Too much effort to keep it in the Db, and too low value. Let's do in-memory instead
 LAST_PROGRESS_CACHE = {}
@@ -249,6 +251,7 @@ class GameManager:
         self.user['diamonds'] = 0
         self.user['spent_diamonds'] = 0
         self.user['has_repeller'] = True
+        self.user['last_admin_message_id_sent'] = AdminMessages().get_last_message_id()
 
     def on_review_command(self) -> Reply:
         if self.user['active_game_counter_state'] is None:
@@ -503,6 +506,35 @@ class GameManager:
     @staticmethod
     def process_tick(users_orm: UsersOrm, env) -> list[Reply]:
         replies: list[Reply] = []
+        admin_messages = AdminMessages()
+        last_admin_message_id = admin_messages.get_last_message_id()
+        if last_admin_message_id > 0:
+            user = users_orm.get_one_user_for_admin_message(last_admin_message_id)
+            if user is not None:
+                pending_messages = admin_messages.get_pending_messages(
+                    user.get('last_admin_message_id_sent', 0),
+                    user.get('lang_code')
+                )
+                if pending_messages:
+                    print("Sending an admin message to the user")
+                    last_sent_message_id = user.get('last_admin_message_id_sent', 0)
+                    for admin_message in pending_messages[:ADMIN_MESSAGES_PER_TICK]:
+                        message_id = admin_message.get('message_id', 0)
+                        message = admin_message.get('message', "")
+                        if not message:
+                            continue
+                        replies.append({
+                            'to_chat_id': user['user_id'],
+                            'message': message,
+                            'buttons': [],
+                            'menu_commands': [],
+                            'image': None
+                        })
+                        if message_id > last_sent_message_id:
+                            last_sent_message_id = message_id
+                    user['last_admin_message_id_sent'] = last_sent_message_id
+                    users_orm.upsert_user(user)
+
         quota = 20
         for difficulty in range(0, 5):
             if quota <= 0:
@@ -1016,11 +1048,6 @@ class GameManager:
         else:
             parsed_base_urls = get_frontend_base_urls()
             return parsed_base_urls[0]['base_url']
-
-
-
-
-
 
 
 
